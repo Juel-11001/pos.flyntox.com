@@ -848,6 +848,17 @@ class SellPosController extends Controller
             $output['data'] = $receipt_details;
         } else {
             $layout = !empty($receipt_details->design) ? 'sale_pos.receipts.' . $receipt_details->design : 'sale_pos.receipts.classic';
+            $transaction = Transaction::with('payment_lines')->find($transaction_id);
+            $payments = optional($transaction)->payment_lines ? $transaction->payment_lines->where('is_return', 0) : collect();
+            $is_cash_invoice = $from_pos_screen
+                && $payments->isNotEmpty()
+                && $payments->every(function ($payment) {
+                    return $payment->method === 'cash';
+                });
+
+            if ($is_cash_invoice) {
+                $layout = 'sale_pos.receipts.cash_invoice';
+            }
 
             $output['html_content'] = view($layout, compact('receipt_details'))->render();
         }
