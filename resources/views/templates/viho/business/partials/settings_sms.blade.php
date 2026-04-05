@@ -99,7 +99,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         $sms_settings['request_method'], ['class' => 'form-control', 'id' => 'request_method']); !!}
       </div>
     </div>
-    <div class="col-sm-12 col-lg-6 col-xl-4">
+    <div class="col-sm-12 col-xl-4">
       <div class="form-group">
         {!! Form::label('data_parameter_type', __('lang_v1.data_parameter_type') . ':') !!}
         {!! Form::select('sms_settings[data_parameter_type]', ['form-data' => 'Form Data', 'json' => 'JSON'],
@@ -125,7 +125,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_header_key2', __('lang_v1.sms_settings_header_key', ['number' => 2]) . ':') !!}
@@ -142,7 +142,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_header_key3', __('lang_v1.sms_settings_header_key', ['number' => 3]) . ':') !!}
@@ -159,7 +159,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <hr>
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
@@ -176,7 +176,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key2', __('lang_v1.sms_settings_param_key', ['number' => 2]) . ':') !!}
@@ -192,7 +192,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key3', __('lang_v1.sms_settings_param_key', ['number' => 3]) . ':') !!}
@@ -208,7 +208,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key4', __('lang_v1.sms_settings_param_key', ['number' => 4]) . ':') !!}
@@ -224,7 +224,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key5', __('lang_v1.sms_settings_param_key', ['number' => 5]) . ':') !!}
@@ -240,7 +240,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key6', __('lang_v1.sms_settings_param_key', ['number' => 6]) . ':') !!}
@@ -257,7 +257,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         => 'sms_settings_param_val6' ]); !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key7', __('lang_v1.sms_settings_param_key', ['number' => 7]) . ':') !!}
@@ -274,7 +274,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         => 'sms_settings_param_val7' ]); !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key8', __('lang_v1.sms_settings_param_key', ['number' => 8]) . ':') !!}
@@ -291,7 +291,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         => 'sms_settings_param_val8' ]); !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key9', __('lang_v1.sms_settings_param_key', ['number' => 9]) . ':') !!}
@@ -308,7 +308,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         => 'sms_settings_param_val9' ]); !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <div class="col-sm-12 col-lg-6 col-xl-4">
       <div class="form-group">
         {!! Form::label('sms_settings_param_key10', __('lang_v1.sms_settings_param_key', ['number' => 10]) . ':') !!}
@@ -325,7 +325,7 @@ $sms_service = isset($sms_settings['sms_service']) ? $sms_settings['sms_service'
         __('lang_v1.sms_settings_param_val', ['number' => 10]), 'id' => 'sms_settings_param_val10' ]); !!}
       </div>
     </div>
-    <div class="clearfix"></div>
+    <!-- <div class="clearfix"></div> -->
     <hr>
     <div class="col-md-8 col-xs-12">
       <div class="form-group">

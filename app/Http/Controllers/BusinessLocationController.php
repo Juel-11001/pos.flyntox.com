@@ -107,7 +107,7 @@ class BusinessLocationController extends Controller
                         ? route('ai-template.business-location.activate-deactivate', [$row->id])
                         : url('business-location/activate-deactivate/'.$row->id);
 
-                    $edit_btn = '<button type="button" data-href="'.$edit_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".location_edit_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                    $edit_btn = '<button type="button" data-href="'.$edit_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline btn-white btn-modal" data-container=".location_edit_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
                     $settings_btn = '<a href="'.$settings_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-accent"><i class="fa fa-wrench"></i> '.__('messages.settings').'</a>';
                     $toggle_class = $row->is_active ? 'tw-dw-btn-error' : 'tw-dw-btn-accent';
                     $toggle_text = $row->is_active ? __('lang_v1.deactivate_location') : __('lang_v1.activate_location');
