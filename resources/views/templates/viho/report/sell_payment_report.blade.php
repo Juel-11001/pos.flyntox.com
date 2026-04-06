@@ -14,60 +14,63 @@
     <div class="col-md-12">
       @component('components.filters', ['title' => __('report.filters')])
       {!! Form::open(['url' => '#', 'method' => 'get', 'id' => 'sell_payment_report_form' ]) !!}
-      <div class="col-md-3">
-        <div class="form-group">
-          {!! Form::label('customer_id', __('contact.customer') . ':') !!}
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-user"></i>
-            </span>
-            {!! Form::select('customer_id', $customers, null, ['class' => 'form-control select2', 'style' =>
-            'width:100%', 'placeholder' => __('messages.all'), 'required']); !!}
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+          <div class="form-group">
+            {!! Form::label('customer_id', __('contact.customer') . ':') !!}
+            <div class="input-group flex-nowrap">
+              <span class="input-group-addon">
+                <i class="fa fa-user"></i>
+              </span>
+              {!! Form::select('customer_id', $customers, null, ['class' => 'form-control select2', 'style' =>
+              'width:100%', 'placeholder' => __('messages.all'), 'required']); !!}
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group">
-          {!! Form::label('location_id', __('purchase.business_location').':') !!}
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-map-marker"></i>
-            </span>
-            {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' =>
-            'width:100%', 'placeholder' => __('messages.all'), 'required']); !!}
+        <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+          <div class="form-group">
+            {!! Form::label('location_id', __('purchase.business_location').':') !!}
+            <div class="input-group flex-nowrap">
+              <span class="input-group-addon">
+                <i class="fa fa-map-marker"></i>
+              </span>
+              {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' =>
+              'width:100%', 'placeholder' => __('messages.all'), 'required']); !!}
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group">
-          {!! Form::label('payment_types', __('lang_v1.payment_method').':') !!}
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fas fa-money-bill-alt"></i>
-            </span>
-            {!! Form::select('payment_types', $payment_types, null, ['class' => 'form-control select2', 'placeholder' =>
-            __('messages.all'), 'required', 'style' => 'width:100%']); !!}
+        <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+          <div class="form-group">
+            {!! Form::label('payment_types', __('lang_v1.payment_method').':') !!}
+            <div class="input-group flex-nowrap">
+              <span class="input-group-addon">
+                <i class="fas fa-money-bill-alt"></i>
+              </span>
+              {!! Form::select('payment_types', $payment_types, null, ['class' => 'form-control select2', 'placeholder'
+              =>
+              __('messages.all'), 'required', 'style' => 'width:100%']); !!}
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group">
-          {!! Form::label('customer_group_filter', __('lang_v1.customer_group').':') !!}
-          <div class="input-group">
-            <span class="input-group-addon">
-              <i class="fa fa-users"></i>
-            </span>
-            {!! Form::select('customer_group_filter', $customer_groups, null, ['class' => 'form-control select2',
-            'style' => 'width:100%']); !!}
+        <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+          <div class="form-group">
+            {!! Form::label('customer_group_filter', __('lang_v1.customer_group').':') !!}
+            <div class="input-group flex-nowrap">
+              <span class="input-group-addon">
+                <i class="fa fa-users"></i>
+              </span>
+              {!! Form::select('customer_group_filter', $customer_groups, null, ['class' => 'form-control select2',
+              'style' => 'width:100%']); !!}
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group">
+        <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+          <div class="form-group">
 
-          {!! Form::label('spr_date_filter', __('report.date_range') . ':') !!}
-          {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
-          'form-control', 'id' => 'spr_date_filter', 'readonly']); !!}
+            {!! Form::label('spr_date_filter', __('report.date_range') . ':') !!}
+            {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
+            'form-control', 'id' => 'spr_date_filter', 'readonly']); !!}
+          </div>
         </div>
       </div>
       {!! Form::close() !!}
@@ -77,7 +80,7 @@
   <div class="row">
     <div class="col-md-12">
       @component('components.widget', ['class' => 'box-primary'])
-      <div class="table-responsive">
+      <div class="d-flex w-100 overflow-auto">
         <table class="table table-bordered table-striped" id="sell_payment_report_table">
           <thead>
             <tr>

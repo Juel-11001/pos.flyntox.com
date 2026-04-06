@@ -408,6 +408,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::post('import-sales/preview', [ImportSalesController::class, 'preview'])->name('import-sales.preview');
         Route::post('import-sales', [ImportSalesController::class, 'import'])->name('import-sales.import');
 
+        // Account-Types
+        Route::resource('account-types', AccountController::class);
         // Reports (Viho) - Batch 1
         Route::get('reports/profit-loss', [ReportController::class, 'getProfitLoss'])->name('reports.profit-loss');
         Route::get('reports/purchase-sell', [ReportController::class, 'getPurchaseSell'])->name('reports.purchase-sell');
