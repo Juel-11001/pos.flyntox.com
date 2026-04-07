@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
                     <h5 class="mb-0">@lang('lang_v1.sales_commission_agents')</h5>
                     @can('user.create')
                         <a class="btn btn-primary" href="{{ route('ai-template.sales-commission-agents.create') }}">
@@ -21,7 +21,7 @@
                         <div class="col-sm-12 col-md-6 text-center" id="sales_agent_dt_buttons"></div>
                         <div class="col-sm-12 col-md-3 text-md-end" id="sales_agent_dt_filter"></div>
                     </div>
-                        <div class="table-responsive">
+                        <div class="d-flex w-100 overflow-auto">
                             <table class="table table-bordered table-striped" id="sales_commission_agent_table">
                                 <thead>
                                     <tr>

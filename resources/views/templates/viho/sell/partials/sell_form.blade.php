@@ -84,59 +84,61 @@
             </div>
           </div>
           @else
-          @php
-          reset($price_groups);
-          @endphp
-          {!! Form::hidden('price_group', key($price_groups), ['id' => 'price_group']) !!}
-          @endif
-          @endif
+          <div class="row">
+            @php
+            reset($price_groups);
+            @endphp
+            {!! Form::hidden('price_group', key($price_groups), ['id' => 'price_group']) !!}
+            @endif
+            @endif
 
-          {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
+            {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
-          @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-          <div class="col-md-4 col-sm-6">
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon">
-                  <i class="fa fa-external-link-square-alt text-primary service_modal_btn"></i>
-                </span>
-                {!! Form::select('types_of_service_id', $types_of_service, null, [
-                'class' => 'form-control',
-                'id' => 'types_of_service_id',
-                'style' => 'width: 100%;',
-                'placeholder' => __('lang_v1.select_types_of_service'),
-                ]) !!}
+            @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">
+                    <i class="fa fa-external-link-square-alt text-primary service_modal_btn"></i>
+                  </span>
+                  {!! Form::select('types_of_service_id', $types_of_service, null, [
+                  'class' => 'form-control',
+                  'id' => 'types_of_service_id',
+                  'style' => 'width: 100%;',
+                  'placeholder' => __('lang_v1.select_types_of_service'),
+                  ]) !!}
 
-                {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
+                  {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
 
-                <span class="input-group-addon">
-                  @show_tooltip(__('lang_v1.types_of_service_help'))
-                </span>
+                  <span class="input-group-addon">
+                    @show_tooltip(__('lang_v1.types_of_service_help'))
+                  </span>
+                </div>
+                <small>
+                  <p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p>
+                </small>
               </div>
-              <small>
-                <p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p>
-              </small>
             </div>
-          </div>
-          @endif
+            @endif
 
-          @if (in_array('subscription', $enabled_modules))
-          <div class="col-md-4 pull-right col-sm-6">
-            <div class="checkbox">
-              <label>
-                {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
-                @lang('lang_v1.subscribe')?
-              </label><button type="button" data-toggle="modal" data-target="#recurringInvoiceModal"
-                class="btn btn-link"><i
-                  class="fa fa-external-link"></i></button>@show_tooltip(__('lang_v1.recurring_invoice_help'))
+            @if (in_array('subscription', $enabled_modules))
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="checkbox">
+                <label>
+                  {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
+                  @lang('lang_v1.subscribe')?
+                </label><button type="button" data-toggle="modal" data-target="#recurringInvoiceModal"
+                  class="btn btn-link"><i
+                    class="fa fa-external-link"></i></button>@show_tooltip(__('lang_v1.recurring_invoice_help'))
+              </div>
             </div>
+            @endif
           </div>
-          @endif
           <div class="clearfix"></div>
-          <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+          <div class="@if (!empty($commission_agent)) @else col-sm-12 col-md-6 col-xl-4 @endif">
             <div class="form-group">
               {!! Form::label('contact_id', __('contact.customer') . ':*') !!}
-              <div class="input-group">
+              <div class="input-group flex-nowrap">
                 <span class="input-group-addon">
                   <i class="fa fa-user"></i>
                 </span>
@@ -184,7 +186,7 @@
             </small>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
               <div class="multi-input">
                 @php
@@ -228,7 +230,7 @@
             </div>
           </div>
           @endif
-          <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+          <div class="@if (!empty($commission_agent)) @else col-sm-12 col-md-6 col-xl-4 @endif">
             <div class="form-group">
               {!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
               <div class="input-group">
@@ -241,6 +243,7 @@
             </div>
           </div>
           @if (!empty($status))
+          <br>
           <input type="hidden" name="status" id="status" value="{{ $status }}">
 
           @if (in_array($status, ['draft', 'quotation']))
@@ -259,7 +262,7 @@
           </div>
           @endif
           @if ($sale_type != 'sales_order')
-          <div class="col-sm-3">
+          <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
               {!! Form::label('invoice_scheme_id', __('invoice.invoice_scheme') . ':') !!}
               {!! Form::select('invoice_scheme_id', $invoice_schemes, $default_invoice_schemes->id, [
@@ -270,7 +273,7 @@
           </div>
           @endif
           @can('edit_invoice_number')
-          <div class="col-sm-3">
+          <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
               {!! Form::label(
               'invoice_no',
@@ -402,13 +405,15 @@
             </div>
           </div>
           @endif
-          <div class="col-sm-3">
+          <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
               {!! Form::label('upload_document', __('purchase.attach_document') . ':') !!}
-              {!! Form::file('sell_document', [
-              'id' => 'upload_document',
-              'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types'))),
-              ]) !!}
+              <div class="w-50">
+                {!! Form::file('sell_document', [
+                'id' => 'upload_document',
+                'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types'))),
+                ]) !!}
+              </div>
               <p class="help-block">
                 @lang('purchase.max_file_size', ['size' => config('constants.document_size_limit') / 1000000])
                 @includeIf('components.document_help_text')
@@ -450,7 +455,7 @@
             $hide_tax = 'hide';
             }
             @endphp
-            <div class="table-responsive">
+            <div class="d-flex w-100 overflow-auto">
               <table class="table table-condensed table-bordered table-striped table-responsive" id="pos_table">
                 <thead>
                   <tr>
@@ -490,7 +495,7 @@
                 <tbody></tbody>
               </table>
             </div>
-            <div class="table-responsive">
+            <div class="d-flex w-100 overflow-auto">
               <table class="table table-condensed table-bordered table-striped">
                 <tr>
                   <td>
@@ -532,7 +537,7 @@
           </div>
           @endcomponent
           @component('components.widget', ['class' => 'box-solid'])
-          <div class="col-md-4  @if ($sale_type == 'sales_order') hide @endif">
+          <div class="col-sm-12 col-md-6 col-xl-4  @if ($sale_type == 'sales_order') hide @endif">
             <div class="form-group">
               {!! Form::label('discount_type', __('sale.discount_type') . ':*') !!}
               <div class="input-group">
@@ -571,7 +576,7 @@
           $default_sales_tax = null;
           }
           @endphp
-          <div class="col-md-4 @if ($sale_type == 'sales_order') hide @endif">
+          <div class="col-sm-12 col-md-6 col-xl-4 @if ($sale_type == 'sales_order') hide @endif">
             <div class="form-group">
               {!! Form::label('discount_amount', __('sale.discount_amount') . ':*') !!}
               <div class="input-group">
@@ -589,11 +594,11 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4 @if ($sale_type == 'sales_order') hide @endif"><br>
+          <div class="col-sm-12 col-md-6 col-xl-4 @if ($sale_type == 'sales_order') hide @endif"><br>
             <b>@lang('sale.discount_amount'):</b>(-)
             <span class="display_currency" id="total_discount">0</span>
           </div>
-          <div class="clearfix"></div>
+          <!-- <div class="clearfix"></div> -->
           <div
             class="col-md-12 well well-sm bg-light-gray @if (session('business.enable_rp') != 1 || $sale_type == 'sales_order') hide @endif">
             <input type="hidden" name="rp_redeemed" id="rp_redeemed" value="0">
@@ -627,7 +632,7 @@
             </div>
           </div>
           <div class="clearfix"></div>
-          <div class="col-md-4  @if ($sale_type == 'sales_order') hide @endif">
+          <div class="col-sm-12 col-md-6 col-xl-4  @if ($sale_type == 'sales_order') hide @endif">
             <div class="form-group">
               {!! Form::label('tax_rate_id', __('sale.order_tax') . ':*') !!}
               <div class="input-group">
@@ -649,12 +654,12 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4 col-md-offset-4  @if ($sale_type == 'sales_order') hide @endif">
+          <div class="col-sm-12 col-md-6 col-xl-4 @if ($sale_type == 'sales_order') hide @endif">
             <b>@lang('sale.order_tax'):</b>(+)
             <span class="display_currency" id="order_tax">0</span>
           </div>
 
-          <div class="col-md-12">
+          <div class="col-xs-12">
             <div class="form-group">
               {!! Form::label('sell_note', __('sale.sell_note')) !!}
               {!! Form::textarea('sale_note', null, ['class' => 'form-control', 'rows' => 3]) !!}
@@ -664,66 +669,68 @@
           <input type="hidden" name="is_serial_no" value="1">
           @endcomponent
           @component('components.widget', ['class' => 'box-solid'])
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('shipping_details', __('sale.shipping_details')) !!}
-              {!! Form::textarea('shipping_details', null, [
-              'class' => 'form-control',
-              'placeholder' => __('sale.shipping_details'),
-              'rows' => '3',
-              'cols' => '30',
-              ]) !!}
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('shipping_address', __('lang_v1.shipping_address')) !!}
-              {!! Form::textarea('shipping_address', null, [
-              'class' => 'form-control',
-              'placeholder' => __('lang_v1.shipping_address'),
-              'rows' => '3',
-              'cols' => '30',
-              ]) !!}
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('shipping_charges', __('sale.shipping_charges')) !!}
-              <div class="input-group">
-                <span class="input-group-addon">
-                  <i class="fa fa-info"></i>
-                </span>
-                {!! Form::text('shipping_charges', @num_format(0.0), [
-                'class' => 'form-control input_number',
-                'placeholder' => __('sale.shipping_charges'),
+          <div class="row">
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                {!! Form::label('shipping_details', __('sale.shipping_details')) !!}
+                {!! Form::textarea('shipping_details', null, [
+                'class' => 'form-control',
+                'placeholder' => __('sale.shipping_details'),
+                'rows' => '3',
+                'cols' => '30',
                 ]) !!}
               </div>
             </div>
-          </div>
-          <div class="clearfix"></div>
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('shipping_status', __('lang_v1.shipping_status')) !!}
-              {!! Form::select('shipping_status', $shipping_statuses, null, [
-              'class' => 'form-control',
-              'placeholder' => __('messages.please_select'),
-              ]) !!}
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                {!! Form::label('shipping_address', __('lang_v1.shipping_address')) !!}
+                {!! Form::textarea('shipping_address', null, [
+                'class' => 'form-control',
+                'placeholder' => __('lang_v1.shipping_address'),
+                'rows' => '3',
+                'cols' => '30',
+                ]) !!}
+              </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('delivered_to', __('lang_v1.delivered_to') . ':') !!}
-              {!! Form::text('delivered_to', null, ['class' => 'form-control', 'placeholder' =>
-              __('lang_v1.delivered_to')]) !!}
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                {!! Form::label('shipping_charges', __('sale.shipping_charges')) !!}
+                <div class="input-group">
+                  <span class="input-group-addon">
+                    <i class="fa fa-info"></i>
+                  </span>
+                  {!! Form::text('shipping_charges', @num_format(0.0), [
+                  'class' => 'form-control input_number',
+                  'placeholder' => __('sale.shipping_charges'),
+                  ]) !!}
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
-              {!! Form::select('delivery_person', $users, null, [
-              'class' => 'form-control select2',
-              'placeholder' => __('messages.please_select'),
-              ]) !!}
+            <!-- <div class="clearfix"></div> -->
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                {!! Form::label('shipping_status', __('lang_v1.shipping_status')) !!}
+                {!! Form::select('shipping_status', $shipping_statuses, null, [
+                'class' => 'form-control',
+                'placeholder' => __('messages.please_select'),
+                ]) !!}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                {!! Form::label('delivered_to', __('lang_v1.delivered_to') . ':') !!}
+                {!! Form::text('delivered_to', null, ['class' => 'form-control', 'placeholder' =>
+                __('lang_v1.delivered_to')]) !!}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="form-group">
+                {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
+                {!! Form::select('delivery_person', $users, null, [
+                'class' => 'form-control select2',
+                'placeholder' => __('messages.please_select'),
+                ]) !!}
+              </div>
             </div>
           </div>
           @php
@@ -903,14 +910,16 @@
             </div>
           </div>
           @endif
-          <div class="col-md-4">
+          <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
               {!! Form::label('shipping_documents', __('lang_v1.shipping_documents') . ':') !!}
-              {!! Form::file('shipping_documents[]', [
-              'id' => 'shipping_documents',
-              'multiple',
-              'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types'))),
-              ]) !!}
+              <div class="w-50">
+                {!! Form::file('shipping_documents[]', [
+                'id' => 'shipping_documents',
+                'multiple',
+                'accept' => implode(',', array_keys(config('constants.document_upload_mimes_types'))),
+                ]) !!}
+              </div>
               <p class="help-block">
                 @lang('purchase.max_file_size', ['size' => config('constants.document_size_limit') / 1000000])
                 @includeIf('components.document_help_text')
@@ -918,12 +927,12 @@
             </div>
           </div>
           <div class="clearfix"></div>
-          <div class="col-md-12 text-center">
-            <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-sm tw-text-white"
+          <div class="col-12 text-center">
+            <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-sm text-white"
               id="toggle_additional_expense"> <i class="fas fa-plus"></i> @lang('lang_v1.add_additional_expenses') <i
                 class="fas fa-chevron-down"></i></button>
           </div>
-          <div class="col-md-8 col-md-offset-4" id="additional_expenses_div" style="display: none;">
+          <div class="col-md-8" id="additional_expenses_div" style="display: none;">
             <table class="table table-condensed">
               <thead>
                 <tr>
@@ -991,7 +1000,7 @@
               </tbody>
             </table>
           </div>
-          <div class="col-md-4 col-md-offset-8">
+          <div class="col-md-4">
             @if (!empty($pos_settings['amount_rounding_method']) && $pos_settings['amount_rounding_method'] > 0)
             <small id="round_off"><br>(@lang('lang_v1.round_off'): <span id="round_off_text">0</span>)</small>
             <br />
@@ -1191,9 +1200,9 @@
           {!! Form::hidden('is_save_and_print', 0, ['id' => 'is_save_and_print']) !!}
           <div class="col-sm-12 text-center tw-mt-4">
             <button type="button" id="submit-sell"
-              class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-lg tw-text-white">@lang('messages.save')</button>
+              class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-md text-white">@lang('messages.save')</button>
             <button type="button" id="save-and-print"
-              class="tw-dw-btn tw-dw-btn-success tw-dw-btn-lg tw-text-white">@lang('lang_v1.save_and_print')</button>
+              class="tw-dw-btn tw-dw-btn-success tw-dw-btn-md text-white">@lang('lang_v1.save_and_print')</button>
           </div>
         </div>
 

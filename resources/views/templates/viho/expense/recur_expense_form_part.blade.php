@@ -32,17 +32,17 @@
           <p class="help-block">@lang('lang_v1.recur_expense_repetition_help')</p>
         </div>
       </div>
-      @php
-      $repetitions = [];
-      for ($i=1; $i <= 30; $i++) { $repetitions[$i]=str_ordinal($i); } @endphp <div
-        class="recur_repeat_on_div col-md-4 @if(empty($expense->recur_interval_type)) hide @elseif(!empty($expense->recur_interval_type) && $expense->recur_interval_type != 'months') hide @endif">
-        <div class="form-group">
-          {!! Form::label('subscription_repeat_on', __('lang_v1.repeat_on') . ':' ) !!}
-          {!! Form::select('subscription_repeat_on', $repetitions, !empty($expense->subscription_repeat_on) ?
-          $expense->subscription_repeat_on : null, ['class' => 'form-control', 'placeholder' =>
-          __('messages.please_select')]); !!}
-        </div>
     </div>
+    @php
+    $repetitions = [];
+    for ($i=1; $i <= 30; $i++) { $repetitions[$i]=str_ordinal($i); } @endphp <div
+      class="recur_repeat_on_div col-md-4 @if(empty($expense->recur_interval_type)) hide @elseif(!empty($expense->recur_interval_type) && $expense->recur_interval_type != 'months') hide @endif">
+      <div class="form-group">
+        {!! Form::label('subscription_repeat_on', __('lang_v1.repeat_on') . ':' ) !!}
+        {!! Form::select('subscription_repeat_on', $repetitions, !empty($expense->subscription_repeat_on) ?
+        $expense->subscription_repeat_on : null, ['class' => 'form-control', 'placeholder' =>
+        __('messages.please_select')]); !!}
+      </div>
   </div>
 </div>
 </div>

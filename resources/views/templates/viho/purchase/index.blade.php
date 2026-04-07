@@ -112,8 +112,8 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
     <div class="col-sm-12">
       <div class="card card-primary card-outline">
         <div class="card-header">
-          <div class="d-flex align-items-center justify-content-between">
-            <h3 class="card-title">
+          <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <h3 class="card-title fs-6">
               <i class="fas fa-shopping-cart mr-1"></i>
               @lang('purchase.all_purchases')
             </h3>
