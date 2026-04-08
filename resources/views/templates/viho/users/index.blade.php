@@ -76,26 +76,6 @@
 #users_table {
   width: 100% !important;
 }
-#users_dt_buttons{
-  margin-top:20px !important;
-  width: 100% !important;
-}
-.users_dt_length{
-  display: flex !important;
-  justify-content: center !important;
-  /* align-items: center !important; */
-}
-#users_dt_filter{
-  display: flex !important;
-  justify-content: flex-end !important;
-}
-
-.dt-buttons .btn-group{
-  display: flex !important;
-  justify-content: center !important;
-  width: 40% !important;
-}
-
 .dataTables_paginate {
   display: flex !important;
   justify-content: flex-end !important;

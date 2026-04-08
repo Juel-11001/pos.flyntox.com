@@ -79,6 +79,74 @@
   opacity: 1 !important;
   display: block !important;
 }
+
+/* DataTables Buttons Responsive Styles */
+#product_dt_buttons .dt-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+#product_dt_buttons .dt-buttons .btn {
+  margin: 2px;
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+/* Stock report buttons */
+#stock_report_dt_buttons .dt-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+#stock_report_dt_buttons .dt-buttons .btn {
+  margin: 2px;
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1200px) {
+  #product_dt_buttons .dt-buttons .btn,
+  #stock_report_dt_buttons .dt-buttons .btn {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  #product_dt_buttons,
+  #stock_report_dt_buttons {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  #product_dt_buttons .dt-buttons,
+  #stock_report_dt_buttons .dt-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  #product_dt_buttons .dt-buttons,
+  #stock_report_dt_buttons .dt-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #product_dt_buttons .dt-buttons .btn,
+  #stock_report_dt_buttons .dt-buttons .btn {
+    width: 100%;
+    max-width: 200px;
+    margin: 2px 0;
+  }
+}
 </style>
 @endpush
 @section('content')

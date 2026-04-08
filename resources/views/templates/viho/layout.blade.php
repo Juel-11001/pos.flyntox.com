@@ -140,6 +140,7 @@
         div[id$="_dt_length"] .dataTables_length select {
             margin: 0;
             width: auto !important;
+            margin-bottom:  4px !important;
         }
 
         div[id$="_dt_filter"],
@@ -477,6 +478,154 @@
             border-radius: 4px;
             box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
         }
+
+        /* DataTables Buttons Responsive Fix */
+        .dt-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .dt-buttons .btn {
+            margin: 2px;
+            white-space: nowrap;
+        }
+
+        /* Ensure buttons container doesn't overflow */
+        div[id$="_dt_buttons"] {
+            min-height: 40px;
+        }
+
+        /* Responsive adjustments for DataTables controls */
+        @media screen and (max-width: 1200px) {
+            .dt-buttons .btn {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+        }
+
+        @media screen and (max-width: 575px) {
+            .dt-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .dt-buttons .btn {
+                width: 100%;
+                max-width: 200px;
+                margin: 2px 0;
+            }
+
+            div[id$="_dt_buttons"] {
+                margin-bottom: 10px;
+            }
+
+            /* Center search input */
+            div[id$="_dt_filter"] .dataTables_filter {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            div[id$="_dt_filter"] .dataTables_filter input {
+                width: 100%;
+                max-width: 250px;
+                margin-left: 0 !important;
+            }
+
+            div[id$="_dt_filter"] .dataTables_filter label {
+                width: 100%;
+                max-width: 250px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+
+        /* Global layout for DataTables top controls (custom *_dt_top containers) */
+        div[id$="_dt_top"] {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        div[id$="_dt_top"] > div {
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
+
+        div[id$="_dt_top"] > div:not(:last-child) {
+            margin-bottom: 8px;
+        }
+
+        div[id$="_dt_top"] > div[id$="_dt_buttons"] {
+            order: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        div[id$="_dt_top"] > div[id$="_dt_length"] {
+            order: 2;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        div[id$="_dt_top"] > div[id$="_dt_filter"] {
+            order: 3;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        div[id$="_dt_filter"] .dataTables_filter {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        div[id$="_dt_filter"] .dataTables_filter label {
+            margin-bottom: 0;
+        }
+
+        @media screen and (min-width: 576px) {
+            div[id$="_dt_top"] > div[id$="_dt_length"],
+            div[id$="_dt_top"] > div[id$="_dt_filter"] {
+                flex: 0 0 50% !important;
+                max-width: 50% !important;
+                margin-bottom: 0;
+            }
+
+            div[id$="_dt_filter"] .dataTables_filter input {
+                margin-left: 8px;
+                width: auto;
+                min-width: 150px;
+            }
+        }
+
+        @media screen and (max-width: 575px) {
+            div[id$="_dt_top"] > div[id$="_dt_length"],
+            div[id$="_dt_top"] > div[id$="_dt_filter"] {
+                justify-content: center;
+            }
+
+            div[id$="_dt_filter"] .dataTables_filter {
+                justify-content: center;
+            }
+
+            div[id$="_dt_info"],
+            div[id$="_dt_paginate"] {
+                justify-content: center;
+                text-align: center !important;
+            }
+        }
+
+        @media screen and (min-width: 1200px) {
+            div[id$="_dt_filter"] .dataTables_filter input {
+                min-width: 200px;
+            }
+        }
     </style>
 
     @stack('styles')
@@ -644,9 +793,10 @@
                 // Use Viho-like DataTables layout (length left, buttons center, search right; info left, paginate right).
                 if ($.fn && $.fn.dataTable && $.fn.dataTable.defaults) {
                     $.extend($.fn.dataTable.defaults, {
-                        dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-2'l><'col-sm-12 col-md-8 text-center'B><'col-sm-12 col-md-2 text-md-end'f>>" +
+                        dom: "<'row mb-3'<'col-12'B>>" +
+                            "<'row align-items-center mb-2'<'col-sm-6'l><'col-sm-6 text-sm-end'f>>" +
                             "<'row'<'col-sm-12'tr>>" +
-                            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 text-md-end'p>>"
                     });
                 }
 
