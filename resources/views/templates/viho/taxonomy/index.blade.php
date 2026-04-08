@@ -99,8 +99,8 @@
                         <div class="col-sm-12 col-md-6 text-center" id="category_dt_buttons"></div>
                         <div class="col-sm-12 col-md-3 text-md-end" id="category_dt_filter"></div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="category_table">
+                    <div class="d-flex w-100 overflow-auto">
+                        <table class="table table-bordered table-striped" id="category_table" style='min-width: 600px;'>
                             <thead>
                                 <tr>
                                     <th>

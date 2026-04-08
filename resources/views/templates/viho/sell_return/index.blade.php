@@ -51,26 +51,26 @@
                     <!-- Filters -->
                     <div class="row mb-3">
                         @component('components.filters', ['title' => __('report.filters')])
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('sell_list_filter_location_id',  __('purchase.business_location') . ':') !!}
                                     {!! Form::select('sell_list_filter_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all') ]); !!}
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('sell_list_filter_customer_id',  __('contact.customer') . ':') !!}
                                     {!! Form::select('sell_list_filter_customer_id', $customers, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('sell_list_filter_date_range', __('report.date_range') . ':') !!}
                                     {!! Form::text('sell_list_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
                                 </div>
                             </div>
                             @can('access_sell_return')
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('created_by',  __('report.user') . ':') !!}
                                     {!! Form::select('created_by', $sales_representative, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
@@ -85,7 +85,7 @@
                         <div class="col-sm-12 col-md-6" id="sell_return_dt_length"></div>
                         <div class="col-sm-12 col-md-6 text-md-end" id="sell_return_dt_filter"></div>
                     </div>
-                    <div class="table-responsive">
+                    <div class="d-flex overflow-auto w-100">
                         <table class="table table-bordered table-striped ajax_view" id="sell_return_table">
                             <thead>
                                 <tr>

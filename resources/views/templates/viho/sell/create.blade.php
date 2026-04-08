@@ -18,7 +18,7 @@
   <div class="col-sm-12">
     <div class="card">
       <div class="card-body">
-        @include('sell.partials.sell_form')
+        @include('templates.viho.sell.partials.sell_form')
       </div>
     </div>
   </div>

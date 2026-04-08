@@ -8,7 +8,7 @@
       @endif
       @if (count($business_locations) > 0)
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-12 col-md-6 col-lg-4">
           <div class="form-group">
             <div class="input-group">
               <span class="input-group-addon">

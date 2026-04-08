@@ -325,7 +325,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::resource('units', UnitController::class);
 
         // Categories/Taxonomies (Viho)
-        Route::get('/taxonomies', [TaxonomyController::class, 'index']);
+                    
+        Route::resource('taxonomies', TaxonomyController::class);
 
         // Variation Templates (Viho)
         Route::resource('variation-templates', VariationTemplateController::class);

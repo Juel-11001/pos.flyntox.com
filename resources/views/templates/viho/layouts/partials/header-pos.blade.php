@@ -48,7 +48,7 @@
                     @endif
                 </div>
                 <div
-                    class="tw-hidden md:tw-block tw-bg-[#646EE4] hover:tw-bg-[#414aac] tw-py-1.5 tw-px-2 tw-rounded-md">
+                    class="tw-hidden md:tw-block bg-danger hover:tw-bg-[#414aac] tw-py-1.5 tw-px-2 tw-rounded-md">
                      &nbsp; <span
                         class="curr_datetime text-white tw-font-semibold">{{ @format_datetime('now') }}</span>
                     <i class="fa fa-keyboard hover-q text-white" aria-hidden="true" data-container="body"

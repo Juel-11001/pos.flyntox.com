@@ -51,39 +51,39 @@
                     <!-- Filters -->
                     <div class="row mb-3">
                         @component('components.filters', ['title' => __('report.filters')])
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('sell_list_filter_location_id',  __('purchase.business_location') . ':') !!}
                                     {!! Form::select('sell_list_filter_location_id', $business_locations, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all') ]); !!}
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('sell_list_filter_customer_id',  __('contact.customer') . ':') !!}
                                     {!! Form::select('sell_list_filter_customer_id', $customers, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('sell_list_filter_date_range', __('report.date_range') . ':') !!}
                                     {!! Form::text('sell_list_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('shipping_status', __('lang_v1.shipping_status') . ':') !!}
                                     {!! Form::select('shipping_status', $shipping_statuses, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                                 </div>
                             </div>
                             @if ($is_service_staff_enabled)
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('service_staff_id', __('lang_v1.service_staff') . ':') !!}
                                     {!! Form::select('service_staff_id', $service_staffs, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
                                 </div>
                             </div>
                             @endif
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('delivery_person', __('lang_v1.delivery_person') . ':') !!}
                                     {!! Form::select('delivery_person', $delevery_person, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
@@ -93,7 +93,7 @@
                     </div>
 
                     <!-- Shipments Table -->
-                    <div class="table-responsive">
+                    <div class="d-flex w-100 overflow-auto">
                         <table class="table table-bordered table-striped ajax_view" id="shipments_table">
                             <thead>
                                 <tr>

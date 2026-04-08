@@ -68,7 +68,7 @@
                             <div class="col-sm-12 col-md-6" id="discount_dt_length"></div>
                             <div class="col-sm-12 col-md-6 text-md-end" id="discount_dt_filter"></div>
                         </div>
-                        <div class="table-responsive">
+                        <div class="d-flex w-100 overflow-auto">
                             <table class="table table-bordered table-striped" id="discounts_table">
                                 <thead>
                                     <tr>

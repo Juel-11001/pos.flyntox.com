@@ -57,7 +57,7 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between">
+            <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
                 <h5>@lang('lang_v1.all_warranties')</h5>
                 <a class="btn btn-primary btn-sm btn-modal" data-href="{{ route('ai-template.warranties.create') }}"
                     data-container=".view_modal"><i class="fa fa-plus"></i> @lang('messages.add')</a>
@@ -68,7 +68,8 @@
                     <div class="col-sm-12 col-md-6 text-center" id="warranty_dt_buttons"></div>
                     <div class="col-sm-12 col-md-3 text-md-end" id="warranty_dt_filter"></div>
                 </div>
-                <table class="table table-bordered table-striped" id="warranty_table">
+               <div class="w-100 overflow-auto d-flex">
+                 <table class="table table-bordered table-striped" id="warranty_table" style="min-width: 600px;">
                     <thead>
                         <tr>
                             <th>@lang('lang_v1.name')</th>
@@ -78,6 +79,7 @@
                         </tr>
                     </thead>
                 </table>
+               </div>
                 <div class="row align-items-center mt-2" id="warranty_dt_bottom">
                     <div class="col-sm-12 col-md-5" id="warranty_dt_info"></div>
                     <div class="col-sm-12 col-md-7 text-md-end" id="warranty_dt_paginate"></div>

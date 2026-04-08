@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="d-flex w-100 overflow-auto">
 	<table class="table table-bordered table-striped" id="subscriptions_table">
 		<thead>
 			<tr>

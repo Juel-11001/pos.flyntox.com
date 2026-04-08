@@ -8,3 +8,7 @@
 }
 @layer utilities {
 }
+
+.bg-own{
+  background-color: #24695C !important;
+}

@@ -29,19 +29,21 @@
                 <div class="card-body">
                     {!! Form::open(['url' => action([\App\Http\Controllers\ImportSalesController::class, 'preview']), 'method' => 'post', 'enctype' => 'multipart/form-data' ]) !!}
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-sm-12 col-md-6 col-xl-4">
                             <div class="form-group">
                                 {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}
-                                {!! Form::file('sales', ['required' => 'required', 'accept' => '.xlsx,.csv']); !!}
+                                <div class="border rounded">
+                                    {!! Form::file('sales', ['required' => 'required', 'accept' => '.xlsx,.csv']); !!}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-sm-12 col-md-4">
                             <br>
                             <button type="submit" class="btn btn-primary">@lang('lang_v1.upload_and_review')</button>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-sm-12 col-md-6">
                             <br>
                             <a href="{{ asset('files/import_sales_template.xlsx') }}" class="btn btn-success" download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
                         </div>
@@ -86,7 +88,8 @@
                     <hr>
 
                     <h4>@lang('lang_v1.imports'):</h4>
-                    <table class="table table-striped" id="imported_sales_table">
+                    <div class="d-flex w-100 overflow-auto">
+                        <table class="table table-striped" id="imported_sales_table" style="min-width: 600px;">
                         <thead>
                             <tr>
                                 <th>@lang('lang_v1.import_batch')</th>
@@ -111,6 +114,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>

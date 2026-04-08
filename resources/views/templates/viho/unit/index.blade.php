@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
                     <h5>@lang('unit.all_your_units')</h5>
                     <a class="btn btn-primary btn-sm btn-modal"
                        data-href="{{ route('ai-template.units.create') }}"
@@ -28,8 +28,8 @@
                         <div id="unit_dt_length"></div>
                         <div id="unit_dt_filter"></div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="unit_table">
+                    <div class="d-flex w-100 overflow-auto">
+                        <table class="table table-bordered table-striped" id="unit_table" style="min-width: 600px;">
                             <thead>
                                 <tr>
                                     <th>@lang('unit.name')</th>

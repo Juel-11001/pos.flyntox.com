@@ -51,7 +51,7 @@
                     <!-- Filters -->
                     <div class="row mb-3">
                         @component('components.filters', ['title' => __('report.filters')])
-                            <div class="col-md-3">
+                            <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
                                 <div class="form-group">
                                     {!! Form::label('subscriptions_filter_date_range', __('report.date_range') . ':') !!}
                                     {!! Form::text('subscriptions_filter_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'readonly']); !!}
@@ -62,7 +62,7 @@
 
                     <!-- Subscriptions Table -->
                     @can('sell.view')
-                        <div class="table-responsive">
+                        <div class="d-flex w-100 overflow-auto">
                             @include('templates.viho.sale_pos.partials.subscriptions_table')
                         </div>
                     @endcan

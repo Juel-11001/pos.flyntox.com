@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-sm-12">
                 <div class="card">
-                <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
                     <h5>@lang('brand.all_your_brands')</h5>
                     <a class="btn btn-primary btn-sm btn-modal float-end"
                        data-href="{{ route('ai-template.brands.create') }}"
@@ -28,8 +28,8 @@
                         <div id="brands_dt_length"></div>
                         <div id="brands_dt_filter"></div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="brands_table">
+                    <div class="w-100 overflow-auto d-flex">
+                        <table class="table table-bordered table-striped" id="brands_table" style="min-width: 600px;">
                             <thead>
                                 <tr>
                                     <th>@lang('brand.brands')</th>
