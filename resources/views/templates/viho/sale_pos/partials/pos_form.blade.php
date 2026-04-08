@@ -3,7 +3,7 @@
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon">
-          <i class="fa fa-user"></i>
+          <i class="fa fa-user" style='color: #24695C;'></i>
         </span>
         <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] ?? ''}}">
         <input type="hidden" id="default_customer_name" value="{{ $walk_in_customer['name'] ?? ''}}">
@@ -19,8 +19,8 @@
         phone', 'required']); !!}
         <span class="input-group-btn">
           <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""
-            @if(!auth()->user()->can('customer.create')) disabled @endif><i
-              class="fa fa-plus-circle text-primary fa-lg"></i></button>
+            @if(!auth()->user()->can('customer.create')) disabled @endif><i class="fa fa-plus-circle fa-lg"
+              style='color: #24695C;'></i></button>
         </span>
       </div>
       <small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong>
@@ -33,7 +33,7 @@
         <div class="input-group-btn">
           <button type="button" class="btn btn-default bg-white btn-flat" data-toggle="modal"
             data-target="#configure_search_modal" title="{{__('lang_v1.configure_product_search')}}"><i
-              class="fas fa-search-plus"></i></button>
+              class="fas fa-search-plus" style='color: #24695C;'></i></button>
         </div>
         {{-- Removed mousetrap class as it was causing issue with barcode scanning --}}
         {!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' =>
@@ -53,7 +53,8 @@
 
           <button type="button" class="btn btn-default bg-white btn-flat pos_add_quick_product"
             data-href="{{action([\App\Http\Controllers\ProductController::class, 'quickAdd'])}}"
-            data-container=".quick_add_product_modal"><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+            data-container=".quick_add_product_modal"><i class="fa fa-plus-circle fa-lg"
+              style='color: #24695C;'></i></button>
         </span>
       </div>
     </div>

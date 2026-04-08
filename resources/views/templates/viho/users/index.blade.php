@@ -76,6 +76,25 @@
 #users_table {
   width: 100% !important;
 }
+#users_dt_buttons{
+  margin-top:20px !important;
+  width: 100% !important;
+}
+.users_dt_length{
+  display: flex !important;
+  justify-content: center !important;
+  /* align-items: center !important; */
+}
+#users_dt_filter{
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+.dt-buttons .btn-group{
+  display: flex !important;
+  justify-content: center !important;
+  width: 40% !important;
+}
 
 .dataTables_paginate {
   display: flex !important;
@@ -107,7 +126,7 @@ $(document).ready(function() {
       [10, 25, 50, 100, -1],
       [10, 25, 50, 100, 'All']
     ],
-    dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-3'l><'col-sm-12 col-md-6 text-center'B><'col-sm-12 col-md-3 text-md-end'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 text-md-end'p>>",
+    dom: "<'row mb-3'<'col-sm-12'l><'col-sm-12 text-center'B><'col-sm-12 text-md-end'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12'i><'col-sm-12 text-md-end'p>>",
     buttons: [{
         extend: 'csv',
         className: 'btn btn-outline-primary btn-xs',
