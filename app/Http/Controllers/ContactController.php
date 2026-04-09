@@ -122,19 +122,19 @@ class ContactController extends Controller
 
         $contact = $this->contactUtil->getContactQuery($business_id, 'supplier');
 
-        if (request()->has('has_purchase_due')) {
+        if (request()->input('has_purchase_due') == 'true') {
 			$contact->havingRaw('(IFNULL(total_purchase, 0) - IFNULL(purchase_paid, 0) - IFNULL(total_ledger_discount, 0)) > 0');
 		}
 
-        if (request()->has('has_purchase_return')) {
+        if (request()->input('has_purchase_return') == 'true') {
             $contact->havingRaw('total_purchase_return > 0');
         }
 
-        if (request()->has('has_advance_balance')) {
+        if (request()->input('has_advance_balance') == 'true') {
             $contact->where('balance', '>', 0);
         }
 
-        if (request()->has('has_opening_balance')) {
+        if (request()->input('has_opening_balance') == 'true') {
             $contact->havingRaw('opening_balance > 0');
         }
 
@@ -312,19 +312,19 @@ class ContactController extends Controller
 
         $query = $this->contactUtil->getContactQuery($business_id, 'customer');
 
-        if (request()->has('has_sell_due')) {
+        if (request()->input('has_sell_due') == 'true') {
             $query->havingRaw('(COALESCE(total_invoice, 0) - COALESCE(invoice_received, 0) - COALESCE(total_ledger_discount, 0) - COALESCE(total_sell_return, 0) + COALESCE(sell_return_paid, 0)) > 0');
         }
 
-        if (request()->has('has_sell_return')) {
+        if (request()->input('has_sell_return') == 'true') {
             $query->havingRaw('total_sell_return > 0');
         }
 
-        if (request()->has('has_advance_balance')) {
+        if (request()->input('has_advance_balance') == 'true') {
             $query->where('balance', '>', 0);
         }
 
-        if (request()->has('has_opening_balance')) {
+        if (request()->input('has_opening_balance') == 'true') {
             $query->havingRaw('opening_balance > 0');
         }
 
@@ -393,7 +393,7 @@ class ContactController extends Controller
                 'action',
                 function ($row) {
                     $is_viho = $this->isAiTemplateRequest() || request()->is('ai-template/*');
-                    $route_prefix = $use_viho ? 'ai-template.' : '';
+                    $route_prefix = $is_viho ? 'ai-template.' : '';
                     $show_url = route($route_prefix . 'contacts.show', [$row->id]);
                     $edit_url = route($route_prefix . 'contacts.edit', [$row->id]);
                     $delete_url = route($route_prefix . 'contacts.destroy', [$row->id]);
