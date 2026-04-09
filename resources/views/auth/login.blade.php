@@ -32,7 +32,7 @@
             background-color: #091f1b !important;
         }
     </style>
-    <div class="row">
+    <div class="row" style="margin-top: 30px;">
         <div class="col-md-4">
         @if (config('app.env') == 'demo')
         
