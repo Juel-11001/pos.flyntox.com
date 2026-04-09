@@ -100,6 +100,12 @@
             align-items: center;
         }
 
+        /* Modal Vertical Alignment Fix */
+        .modal-dialog {
+            margin-top: 60px !important;
+            z-index: 1060 !important;
+        }
+
         .page-main-header .left-menu-header,
         .page-main-header .left-menu-header ul {
             margin: 0;
@@ -784,6 +790,7 @@
     <script src="{{ $viho_asset }}/js/icons/feather-icon/feather-icon.js"></script>
     <script src="{{ $viho_asset }}/js/config.js"></script>
     <script src="{{ $viho_asset }}/js/script.js"></script>
+    <script src="{{ asset('js/viho-app.js') }}"></script>
 
     <script>
         (function () {

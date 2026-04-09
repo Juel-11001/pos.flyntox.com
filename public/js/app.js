@@ -21,6 +21,76 @@ $(document).ready(function () {
 
     __select2($('.select2'));
 
+    function __ensure_modal_on_body($container) {
+        if (!$container || !$container.length) {
+            return $container;
+        }
+        var $target = $container.first();
+        if ($target.hasClass('modal') && !$target.parent().is('body')) {
+            $target.appendTo('body');
+        }
+        return $target;
+    }
+
+    function __show_modal_container($container) {
+        var $target = __ensure_modal_on_body($container);
+        if (!$target || !$target.length) {
+            return;
+        }
+
+        if ($.fn.modal) {
+            $target.modal('show');
+            return;
+        }
+
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            var el = $target.get(0);
+            if (el) {
+                bootstrap.Modal.getOrCreateInstance(el).show();
+            }
+        }
+    }
+
+    // Keep all modals attached to body so they are not blocked by parent overflow/z-index.
+    $(document).on('show.bs.modal', '.modal', function () {
+        __ensure_modal_on_body($(this));
+    });
+
+    function __ensure_modal_on_body($container) {
+        if (!$container || !$container.length) {
+            return $container;
+        }
+        var $target = $container.first();
+        if ($target.hasClass('modal') && !$target.parent().is('body')) {
+            $target.appendTo('body');
+        }
+        return $target;
+    }
+
+    function __show_modal_container($container) {
+        var $target = __ensure_modal_on_body($container);
+        if (!$target || !$target.length) {
+            return;
+        }
+
+        if ($.fn.modal) {
+            $target.modal('show');
+            return;
+        }
+
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            var el = $target.get(0);
+            if (el) {
+                bootstrap.Modal.getOrCreateInstance(el).show();
+            }
+        }
+    }
+
+    // Keep all modals attached to body so they are not blocked by parent overflow/z-index.
+    $(document).on('show.bs.modal', '.modal', function () {
+        __ensure_modal_on_body($(this));
+    });
+
     // popover
     $('body').on('mouseover', '[data-toggle="popover"]', function () {
         if ($(this).hasClass('popover-default')) {
@@ -66,7 +136,7 @@ $(document).ready(function () {
             url: href,
             dataType: 'html',
             success: function (result) {
-                var $container = $(container);
+                var $container = $(container).first();
                 if ($container.length === 0) {
                     var $fallback = $('<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>');
                     if (container[0] === '#') {
@@ -80,17 +150,7 @@ $(document).ready(function () {
                     $container = $fallback;
                 }
                 $container.html(result);
-
-                // Support both Bootstrap 4 (jQuery modal plugin) and Bootstrap 5 (bootstrap.Modal)
-                if ($.fn.modal) {
-                    $container.modal('show');
-                } else if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var el = $container.get(0);
-                    if (el) {
-                        var instance = bootstrap.Modal.getOrCreateInstance(el);
-                        instance.show();
-                    }
-                }
+                __show_modal_container($container);
             },
             error: function () {
                 if (typeof toastr !== 'undefined') {
@@ -873,6 +933,7 @@ $(document).ready(function () {
         e.preventDefault();
         $('div.contact_modal').load($(this).attr('href'), function () {
             $(this).modal('show');
+            // __show_modal_container($(this));
         });
     });
 
