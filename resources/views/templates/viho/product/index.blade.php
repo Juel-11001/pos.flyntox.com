@@ -401,11 +401,9 @@ $(document).ready(function() {
     }
   };
 
-  // Determine AJAX URL based on template
-  var products_ajax_url = (window.location && window.location.pathname && window.location.pathname.indexOf(
-      '/ai-template') === 0) ?
-    '/ai-template/products' :
-    '/products';
+  // Use route helpers so URLs work even when app is served from a subdirectory.
+  var products_ajax_url = "{{ route('ai-template.products.index') }}";
+  var stock_report_ajax_url = "{{ route('ai-template.reports.stock-report') }}";
 
   destroyDataTable('#product_table');
   product_table = $('#product_table').DataTable({
@@ -701,8 +699,7 @@ $(document).ready(function() {
         });
       } else {
         $('input#selected_rows').val('');
-        swal('@lang('
-          lang_v1.no_row_selected ')');
+        swal(@json(__('lang_v1.no_row_selected')));
       }
     });
 
@@ -745,8 +742,7 @@ $(document).ready(function() {
         });
       } else {
         $('input#selected_products').val('');
-        swal('@lang('
-          lang_v1.no_row_selected ')');
+        swal(@json(__('lang_v1.no_row_selected')));
       }
     })
 
@@ -761,8 +757,7 @@ $(document).ready(function() {
         $('form#bulk_edit_form').submit();
       } else {
         $('input#selected_products').val('');
-        swal('@lang('
-          lang_v1.no_row_selected ')');
+        swal(@json(__('lang_v1.no_row_selected')));
       }
     })
 
@@ -829,8 +824,7 @@ $(document).ready(function() {
         $("input#woocommerce_products_sync").val(selected_rows);
       } else {
         $('input#selected_products').val('');
-        swal('@lang('
-          lang_v1.no_row_selected ')');
+        swal(@json(__('lang_v1.no_row_selected')));
       }
     });
 
@@ -1015,8 +1009,7 @@ $('a[data-bs-toggle="tab"]')
           fixedHeader: false,
           dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-2'l><'col-sm-12 col-md-8 text-center'B><'col-sm-12 col-md-2 text-md-end'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 text-md-end'p>>",
           ajax: {
-            url: products_ajax_url === '/ai-template/products' ? '/ai-template/reports/stock-report' :
-              '/reports/stock-report',
+            url: stock_report_ajax_url,
             data: function(d) {
               d.location_id = $('#location_id').val();
               d.category_id = $('#product_list_filter_category_id').val();

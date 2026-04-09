@@ -195,6 +195,9 @@
         .page-body {
             padding-top: 0 !important;
         }
+        .select2-container {
+            width: 100% !important;
+        }
     </style>
 @endpush
 
@@ -202,9 +205,179 @@
     <div class="viho-dashboard">
         {!! $dashboard_body ?? '' !!}
     </div>
+
+    @can('sell.view')
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <div class="col-12">
+                    <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                        <div class="tw-p-4 sm:tw-p-5">
+                            <div class="tw-flex tw-items-center tw-gap-2.5">
+                                <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                    <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M12 9v4"></path>
+                                        <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"></path>
+                                        <path d="M12 16h.01"></path>
+                                    </svg>
+                                </div>
+                                <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
+                                    <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                        <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
+                                            {{ __('lang_v1.sales_payment_dues') }}
+                                            @show_tooltip(__('lang_v1.tooltip_sales_payment_dues'))
+                                        </h3>
+                                    </div>
+                                    <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                        {!! Form::select('sales_payment_dues_location', $all_locations ?? [], null, [
+                                            'class' => 'form-control select2',
+                                            'placeholder' => __('lang_v1.select_location'),
+                                            'id' => 'sales_payment_dues_location',
+                                        ]) !!}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tw-flow-root tw-mt-5 tw-border-gray-200">
+                                <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
+                                    <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
+                                        <table class="table table-bordered table-striped" id="sales_payment_dues_table" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>@lang('contact.customer')</th>
+                                                    <th>@lang('sale.invoice_no')</th>
+                                                    <th>@lang('home.due_amount')</th>
+                                                    <th>@lang('messages.action')</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                @can('purchase.view')
+                    <div class="col-lg-6 mb-4">
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                            <div class="tw-p-4 sm:tw-p-5">
+                                <div class="tw-flex tw-items-center tw-gap-2.5">
+                                    <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                        <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
+                                            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M12 9v4"></path>
+                                            <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"></path>
+                                            <path d="M12 16h.01"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
+                                        <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                            <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
+                                                {{ __('lang_v1.purchase_payment_dues') }}
+                                                @show_tooltip(__('tooltip.payment_dues'))
+                                            </h3>
+                                        </div>
+                                        <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                            @if (count($all_locations ?? []) > 1)
+                                                {!! Form::select('purchase_payment_dues_location', $all_locations, null, [
+                                                    'class' => 'form-control select2',
+                                                    'placeholder' => __('lang_v1.select_location'),
+                                                    'id' => 'purchase_payment_dues_location',
+                                                ]) !!}
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tw-flow-root tw-mt-5 tw-border-gray-200">
+                                    <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
+                                        <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
+                                            <table class="table table-bordered table-striped" id="purchase_payment_dues_table" style="width: 100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>@lang('purchase.supplier')</th>
+                                                        <th>@lang('purchase.ref_no')</th>
+                                                        <th>@lang('home.due_amount')</th>
+                                                        <th>@lang('messages.action')</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endcan
+
+                @can('stock_report.view')
+                    <div class="col-lg-6 mb-4">
+                        <div class="tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
+                            <div class="tw-p-4 sm:tw-p-5">
+                                <div class="tw-flex tw-items-center tw-gap-2.5">
+                                    <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                        <svg aria-hidden="true" class="tw-text-yellow-500 tw-size-5 tw-shrink-0"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
+                                            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                                            <path d="M12 8v4"></path>
+                                            <path d="M12 16h.01"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="tw-flex tw-items-center tw-flex-1 tw-min-w-0 tw-gap-1">
+                                        <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                            <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
+                                                {{ __('home.product_stock_alert') }}
+                                                @show_tooltip(__('tooltip.product_stock_alert'))
+                                            </h3>
+                                        </div>
+                                        <div class="tw-w-full sm:tw-w-1/2 md:tw-w-1/2">
+                                            @if (count($all_locations ?? []) > 1)
+                                                {!! Form::select('stock_alert_location', $all_locations, null, [
+                                                    'class' => 'form-control select2',
+                                                    'placeholder' => __('lang_v1.select_location'),
+                                                    'id' => 'stock_alert_location',
+                                                ]) !!}
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tw-flow-root tw-mt-5 tw-border-gray-200">
+                                    <div class="tw--mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
+                                        <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
+                                            <table class="table table-bordered table-striped" id="stock_alert_table" style="width: 100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>@lang('sale.product')</th>
+                                                        <th>@lang('business.location')</th>
+                                                        <th>@lang('report.current_stock')</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endcan
+            </div>
+        </div>
+    @endcan
 @endsection
 
 @push('scripts')
+    <script src="{{ asset('js/home.js?v=' . $asset_v) }}"></script>
+    <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
     <script src="{{ asset('templates/viho/assets/js/chart/chartist/chartist.js') }}"></script>
     <script src="{{ asset('templates/viho/assets/js/chart/chartist/chartist-plugin-tooltip.js') }}"></script>
     <script src="{{ asset('templates/viho/assets/js/chart/knob/knob.min.js') }}"></script>

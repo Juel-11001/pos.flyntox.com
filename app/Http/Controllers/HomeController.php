@@ -63,6 +63,7 @@ class HomeController extends Controller
         $business_id = request()->session()->get('user.business_id');
 
         $is_admin = $this->businessUtil->is_admin(auth()->user());
+        $all_locations = BusinessLocation::forDropdown($business_id)->toArray();
 
         $is_ai_template = request()->segment(1) === 'ai-template';
         if ($is_ai_template) {
@@ -150,7 +151,7 @@ class HomeController extends Controller
                 $dashboard_body = preg_replace('/<pre><code[^>]*>[\\s\\S]*?<\\/code><\\/pre>/i', '', $dashboard_body);
             }
 
-            return view('templates.viho.home', compact('dashboard_body'));
+            return view('templates.viho.home', compact('dashboard_body', 'all_locations'));
         }
 
         if (!auth()->user()->can('dashboard.data')) {
@@ -165,8 +166,6 @@ class HomeController extends Controller
 
         //get all sells
         $sells_this_fy = $this->transactionUtil->getSellsCurrentFy($business_id, $least_30_days, $fy['end']);
-
-        $all_locations = BusinessLocation::forDropdown($business_id)->toArray();
 
         //Chart for sells last 30 days
         $labels = [];
