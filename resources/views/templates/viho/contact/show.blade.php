@@ -356,59 +356,63 @@
                     ]
                 });
 
-                supplier_stock_report_table = $('#supplier_stock_report_table').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    fixedHeader: false,
-                    'ajax': {
-                        url: "{{ action([\App\Http\Controllers\ContactController::class, 'getSupplierStockReport'], [$contact->id]) }}",
-                        data: function(d) {
-                            d.location_id = $('#sr_location_id').val();
-                        }
-                    },
-                    columns: [{
-                            data: 'product_name',
-                            name: 'p.name'
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable('#supplier_stock_report_table')) {
+                    supplier_stock_report_table = $('#supplier_stock_report_table').DataTable();
+                } else {
+                    supplier_stock_report_table = $('#supplier_stock_report_table').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        fixedHeader: false,
+                        'ajax': {
+                            url: "{{ action([\App\Http\Controllers\ContactController::class, 'getSupplierStockReport'], [$contact->id]) }}",
+                            data: function(d) {
+                                d.location_id = $('#sr_location_id').val();
+                            }
                         },
-                        {
-                            data: 'sub_sku',
-                            name: 'v.sub_sku'
+                        columns: [{
+                                data: 'product_name',
+                                name: 'p.name'
+                            },
+                            {
+                                data: 'sub_sku',
+                                name: 'v.sub_sku'
+                            },
+                            {
+                                data: 'purchase_quantity',
+                                name: 'purchase_quantity',
+                                searchable: false
+                            },
+                            {
+                                data: 'total_quantity_sold',
+                                name: 'total_quantity_sold',
+                                searchable: false
+                            },
+                            {
+                                data: 'total_quantity_transfered',
+                                name: 'total_quantity_transfered',
+                                searchable: false
+                            },
+                            {
+                                data: 'total_quantity_returned',
+                                name: 'total_quantity_returned',
+                                searchable: false
+                            },
+                            {
+                                data: 'current_stock',
+                                name: 'current_stock',
+                                searchable: false
+                            },
+                            {
+                                data: 'stock_price',
+                                name: 'stock_price',
+                                searchable: false
+                            }
+                        ],
+                        fnDrawCallback: function(oSettings) {
+                            __currency_convert_recursively($('#supplier_stock_report_table'));
                         },
-                        {
-                            data: 'purchase_quantity',
-                            name: 'purchase_quantity',
-                            searchable: false
-                        },
-                        {
-                            data: 'total_quantity_sold',
-                            name: 'total_quantity_sold',
-                            searchable: false
-                        },
-                        {
-                            data: 'total_quantity_transfered',
-                            name: 'total_quantity_transfered',
-                            searchable: false
-                        },
-                        {
-                            data: 'total_quantity_returned',
-                            name: 'total_quantity_returned',
-                            searchable: false
-                        },
-                        {
-                            data: 'current_stock',
-                            name: 'current_stock',
-                            searchable: false
-                        },
-                        {
-                            data: 'stock_price',
-                            name: 'stock_price',
-                            searchable: false
-                        }
-                    ],
-                    fnDrawCallback: function(oSettings) {
-                        __currency_convert_recursively($('#supplier_stock_report_table'));
-                    },
-                });
+                    });
+                }
             @endif
 
             $('#sr_location_id').change(function() {
@@ -613,8 +617,6 @@
         <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
     @endif
 
-    <!-- document & note.js -->
-    @include('documents_and_notes.document_and_note_js')
     @if (!empty($contact_view_tabs))
         @foreach ($contact_view_tabs as $key => $tabs)
             @foreach ($tabs as $index => $value)
@@ -627,6 +629,32 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            function loadAiTemplateContactDocumentsAndNotes() {
+                if (
+                    typeof getDocAndNoteIndexPage !== 'function' ||
+                    typeof initializeDocumentAndNoteDataTable !== 'function'
+                ) {
+                    return;
+                }
+
+                getDocAndNoteIndexPage();
+
+                setTimeout(function() {
+                    if (!$.fn.DataTable) {
+                        return;
+                    }
+
+                    if ($.fn.DataTable.isDataTable('#documents_and_notes_table')) {
+                        $('#documents_and_notes_table').DataTable().ajax.reload(null, false);
+                        return;
+                    }
+
+                    initializeDocumentAndNoteDataTable();
+                }, 200);
+            }
+
+            loadAiTemplateContactDocumentsAndNotes();
+
             $('#purchase_list_filter_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {
@@ -642,6 +670,15 @@
 
             $('#purchases-link').on('click', function(e) {
                 purchase_table.ajax.reload();
+            });
+
+            $('a[href="#documents_and_notes_tab"]').on('shown.bs.tab', function() {
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable('#documents_and_notes_table')) {
+                    $('#documents_and_notes_table').DataTable().ajax.reload(null, false);
+                    return;
+                }
+
+                loadAiTemplateContactDocumentsAndNotes();
             });
         });
     </script>
