@@ -9,7 +9,9 @@
 @yield('css')
 
 <!-- app css -->
-<link rel="stylesheet" href="{{ asset('css/app.css?v='.$asset_v) }}">
+@if(!(isset($is_viho_template) && $is_viho_template))
+    <link rel="stylesheet" href="{{ asset('css/app.css?v='.$asset_v) }}">
+@endif
 
 @if(isset($pos_layout) && $pos_layout)
 	<style type="text/css">

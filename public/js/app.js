@@ -105,6 +105,9 @@ $(document).ready(function () {
         endDate: 'today',
     });
     $(document).on('click', '.btn-modal', function (e) {
+        if (typeof window.template !== 'undefined' && window.template === 'viho') {
+            return;
+        }
         e.preventDefault();
         var container = $(this).data('container');
         if (!container) {
@@ -1908,6 +1911,9 @@ $(document).ready(function () {
     }
 
     $(document).on('click', 'a.pay_purchase_due, a.pay_sale_due', function (e) {
+        if (typeof window.template !== 'undefined' && window.template === 'viho') {
+            return;
+        }
         e.preventDefault();
         $.ajax({
             url: $(this).attr('href'),

@@ -1,4 +1,4 @@
-<div class="modal-dialog" role="document">
+<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
   <div class="modal-content">
 
     {!! Form::open(['url' => action([\App\Http\Controllers\TransactionPaymentController::class, 'postPayContactDue']), 'method' => 'post', 'id' => 'pay_contact_due_form', 'files' => true ]) !!}
@@ -6,8 +6,8 @@
     {!! Form::hidden("contact_id", $contact_details->contact_id); !!}
     {!! Form::hidden("due_payment_type", $due_payment_type); !!}
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'purchase.add_payment' )</h4>
+      <h5 class="modal-title">@lang( 'purchase.add_payment' )</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
     <div class="modal-body">
@@ -116,7 +116,7 @@
           <div class="form-group">
             {!! Form::label("method" , __('purchase.payment_method') . ':*') !!}
             <div class="input-group">
-              <span class="input-group-addon">
+              <span class="input-group-text">
                 <i class="fas fa-money-bill-alt"></i>
               </span>
               {!! Form::select("method", $payment_types, $payment_line->method, ['class' => 'form-control select2 payment_types_dropdown', 'required', 'style' => 'width:100%;']); !!}
@@ -127,7 +127,7 @@
           <div class="form-group">
             {!! Form::label("paid_on" , __('lang_v1.paid_on') . ':*') !!}
             <div class="input-group">
-              <span class="input-group-addon">
+              <span class="input-group-text">
                 <i class="fa fa-calendar"></i>
               </span>
               {!! Form::text('paid_on', @format_datetime($payment_line->paid_on), ['class' => 'form-control', 'readonly', 'required']); !!}
@@ -138,7 +138,7 @@
           <div class="form-group">
             {!! Form::label("amount" , __('sale.amount') . ':*') !!}
             <div class="input-group">
-              <span class="input-group-addon">
+              <span class="input-group-text">
                 <i class="fas fa-money-bill-alt"></i>
               </span>
               @if(in_array($due_payment_type, ['sell_return', 'purchase_return']))
@@ -217,7 +217,7 @@
             <div class="form-group">
               {!! Form::label("account_id" , __('lang_v1.payment_account') . ':') !!}
               <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-text">
                   <i class="fas fa-money-bill-alt"></i>
                 </span>
                 {!! Form::select("account_id", $accounts, !empty($payment_line->account_id) ? $payment_line->account_id : '' , ['class' => 'form-control select2', 'id' => "account_id", 'style' => 'width:100%;']); !!}
@@ -239,7 +239,7 @@
 
     <div class="modal-footer">
       <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'messages.save' )</button>
-      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
+      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-bs-dismiss="modal">@lang( 'messages.close' )</button>
     </div>
 
     {!! Form::close() !!}

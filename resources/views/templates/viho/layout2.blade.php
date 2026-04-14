@@ -10,6 +10,7 @@
     @php
         $asset_v = $asset_v ?? config('constants.asset_version');
         $viho_asset = asset('templates/viho/assets');
+        $is_viho_template = true;
     @endphp
 
     <title>@yield('title', config('app.name'))</title>

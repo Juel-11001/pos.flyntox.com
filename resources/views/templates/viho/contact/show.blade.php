@@ -301,21 +301,126 @@
         </div>
     </section>
     <!-- /.content -->
-    <div class="modal fade payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade modal-bookmark payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
-    <div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade modal-bookmark edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
-    <div class="modal fade pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal fade modal-bookmark pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
     <div class="modal fade" id="edit_ledger_discount_modal" tabindex="-1" role="dialog"
         aria-labelledby="gridSystemModalLabel">
     </div>
     @include('ledger_discount.create')
 
+    <!-- Updated Viho Template Modal -->
+    <div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addContactModalLabel">Add a New Contact</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contactType" class="form-label">Contact Type*</label>
+                                    <select class="form-select" id="contactType">
+                                        <option value="individual">Individual</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contactId" class="form-label">Contact ID</label>
+                                    <input type="text" class="form-control" id="contactId" placeholder="Leave empty to autogenerate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="mobile" class="form-label">Mobile*</label>
+                                    <input type="text" class="form-control" id="mobile" placeholder="Mobile">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Email">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="alternateContact" class="form-label">Alternate Contact Number</label>
+                                    <input type="text" class="form-control" id="alternateContact" placeholder="Alternate Contact">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="landline" class="form-label">Landline</label>
+                                    <input type="text" class="form-control" id="landline" placeholder="Landline">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="assignedTo" class="form-label">Assigned To</label>
+                                    <input type="text" class="form-control" id="assignedTo" placeholder="Assigned To">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="button">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trigger Button for Pay Contact Due Modal -->
+    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target=".pay_contact_due_modal">
+        Open Pay Contact Due Modal
+    </button>
+
+    <!-- Dropdown Menu with Pay Option -->
+    <div class="dropdown">
+        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Actions
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li>
+                <a class="dropdown-item" href="#" id="payContactDue">Pay</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">View</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">Edit</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">Delete</a>
+            </li>
+        </ul>
+    </div>
+
 @stop
 @section('javascript')
     <script type="text/javascript">
         $(document).ready(function() {
+            // Ensure modals are properly initialized
+            $('.payment_modal, .edit_payment_modal, .pay_contact_due_modal').on('shown.bs.modal', function() {
+                console.log('Modal is shown:', $(this).attr('class'));
+            });
+
             $('#ledger_date_range').daterangepicker(
                 dateRangeSettings,
                 function(start, end) {
@@ -492,8 +597,7 @@
 
         $(document).on('shown.bs.modal', '#edit_ledger_discount_modal', function(e) {
             $('#edit_ledger_discount_modal').find('#edit_discount_date').datetimepicker({
-                format: moment_date_format + ' ' + moment_time_format,
-                ignoreReadonly: true,
+                format: 'YYYY-MM-DD HH:mm:ss'
             });
         })
 

@@ -70,10 +70,9 @@ $api_key = env('GOOGLE_MAP_API_KEY');
           @elseif($type == 'supplier')
           <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
             <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  {!! Form::checkbox('has_purchase_due', 1, false, ['class' => 'input-icheck', 'id' =>
-                  'has_purchase_due']) !!}
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="has_purchase_due" name="has_purchase_due">
+                <label class="form-check-label" for="has_purchase_due">
                   <strong>@lang('report.purchase_due')</strong>
                 </label>
               </div>
@@ -81,10 +80,9 @@ $api_key = env('GOOGLE_MAP_API_KEY');
           </div>
           <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
             <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  {!! Form::checkbox('has_purchase_return', 1, false, ['class' => 'input-icheck', 'id' =>
-                  'has_purchase_return']) !!}
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="has_purchase_return" name="has_purchase_return">
+                <label class="form-check-label" for="has_purchase_return">
                   <strong>@lang('lang_v1.purchase_return')</strong>
                 </label>
               </div>
@@ -93,10 +91,9 @@ $api_key = env('GOOGLE_MAP_API_KEY');
           @endif
           <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
             <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  {!! Form::checkbox('has_advance_balance', 1, false, ['class' => 'input-icheck', 'id' =>
-                  'has_advance_balance']) !!}
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="has_advance_balance" name="has_advance_balance">
+                <label class="form-check-label" for="has_advance_balance">
                   <strong>@lang('lang_v1.advance_balance')</strong>
                 </label>
               </div>
@@ -104,10 +101,9 @@ $api_key = env('GOOGLE_MAP_API_KEY');
           </div>
           <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
             <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  {!! Form::checkbox('has_opening_balance', 1, false, ['class' => 'input-icheck', 'id' =>
-                  'has_opening_balance']) !!}
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="has_opening_balance" name="has_opening_balance">
+                <label class="form-check-label" for="has_opening_balance">
                   <strong>@lang('lang_v1.opening_balance')</strong>
                 </label>
               </div>
@@ -153,12 +149,11 @@ $api_key = env('GOOGLE_MAP_API_KEY');
           <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
             <div class="form-group">
               <label for="status_filter">@lang('sale.status'):</label>
-              {!! Form::select(
-              'status_filter',
-              ['active' => __('business.is_active'), 'inactive' => __('lang_v1.inactive')],
-              null,
-              ['class' => 'form-control', 'id' => 'status_filter', 'placeholder' => __('lang_v1.none')],
-              ) !!}
+              <select class="form-select" id="status_filter" name="status_filter">
+                <option value="">@lang('lang_v1.none')</option>
+                <option value="active">@lang('business.is_active')</option>
+                <option value="inactive">@lang('lang_v1.inactive')</option>
+              </select>
             </div>
           </div>
         </div>
@@ -291,7 +286,40 @@ $api_key = env('GOOGLE_MAP_API_KEY');
 
 <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
 </div>
-<div class="modal fade pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+<div class="modal fade modal-bookmark viho-modal pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="payContactDueModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="payContactDueModalLabel">Pay Contact Due</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please enter the payment details below:</p>
+                <form id="payContactDueForm">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="note" class="form-label">Note</label>
+                        <textarea class="form-control" id="note" name="note" rows="3" placeholder="Add a note (optional)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit" form="payContactDueForm">Submit Payment</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @endsection
@@ -727,6 +755,27 @@ $(document).ready(function() {
   padding: 0 !important;
   pointer-events: auto !important;
   display: inline-block !important;
+}
+
+/* Fix Select2 dropdown search input background and text color */
+.select2-container--default .select2-search--dropdown .select2-search__field,
+.select2-container--default .select2-search--inline .select2-search__field {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ced4da !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field::placeholder,
+.select2-container--default .select2-search--inline .select2-search__field::placeholder {
+  color: #6c757d !important;
+  opacity: 1 !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field:focus,
+.select2-container--default .select2-search--inline .select2-search__field:focus {
+  background: #fff !important;
+  color: #000 !important;
+  outline: none !important;
 }
 </style>
 @endpush

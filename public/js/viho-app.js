@@ -111,6 +111,33 @@ $(document).ready(function () {
         });
     });
 
+    // Viho-specific pay modal handler for pay links
+    $(document).off('click', 'a.pay_purchase_due, a.pay_sale_due').on('click', 'a.pay_purchase_due, a.pay_sale_due', function (e) {
+        e.preventDefault();
+        console.log('Viho: pay_due link clicked');
+        var href = $(this).attr('href') || $(this).data('href');
+        if (!href || href === '#') {
+            return;
+        }
+        var $container = $('.pay_contact_due_modal').first();
+        if ($container.length === 0) {
+            $container = $('<div class="modal fade pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>');
+            $('body').append($container);
+        }
+
+        $.ajax({
+            url: href,
+            dataType: 'html',
+            success: function (result) {
+                $container.html(result);
+                __show_modal_safe($container);
+            },
+            error: function (xhr) {
+                console.error('Viho: AJAX error loading pay modal', xhr);
+            }
+        });
+    });
+
     // Special handling for Edit buttons (Contacts, Customer Groups, etc.)
     $(document).on('click', '.edit_contact_button, .edit_button, .edit_customer_group_button, .delete_customer_group_button', function (e) {
         if (!$(this).hasClass('btn-modal')) {

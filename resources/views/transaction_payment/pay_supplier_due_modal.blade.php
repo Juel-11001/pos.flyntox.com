@@ -1,4 +1,8 @@
-<div class="modal-dialog" role="document">
+@php
+    $is_viho_modal = request()->is('ai-template/*');
+@endphp
+
+<div class="modal-dialog{{ $is_viho_modal ? ' modal-lg modal-dialog-centered' : '' }}" role="document">
   <div class="modal-content">
 
     {!! Form::open(['url' => action([\App\Http\Controllers\TransactionPaymentController::class, 'postPayContactDue']), 'method' => 'post', 'id' => 'pay_contact_due_form', 'files' => true ]) !!}
@@ -6,8 +10,13 @@
     {!! Form::hidden("contact_id", $contact_details->contact_id); !!}
     {!! Form::hidden("due_payment_type", $due_payment_type); !!}
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'purchase.add_payment' )</h4>
+      @if($is_viho_modal)
+        <h5 class="modal-title">@lang( 'purchase.add_payment' )</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      @else
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">@lang( 'purchase.add_payment' )</h4>
+      @endif
     </div>
 
     <div class="modal-body">
@@ -238,8 +247,13 @@
     </div>
 
     <div class="modal-footer">
-      <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'messages.save' )</button>
-      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
+      @if($is_viho_modal)
+        <button type="submit" class="btn btn-primary">@lang( 'messages.save' )</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang( 'messages.close' )</button>
+      @else
+        <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'messages.save' )</button>
+        <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
+      @endif
     </div>
 
     {!! Form::close() !!}

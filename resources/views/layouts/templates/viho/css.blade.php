@@ -388,6 +388,112 @@
         color: #2c323f !important;
     }
 
+    /* Viho modal design overrides */
+    .viho-template-active .modal {
+        z-index: 1065 !important;
+    }
+
+    .viho-template-active .modal-backdrop {
+        background: rgba(15, 23, 42, 0.45) !important;
+    }
+
+    .viho-template-active .modal-dialog {
+        max-width: 820px;
+        margin: 1.75rem auto;
+    }
+
+    .viho-template-active .modal-content {
+        border-radius: 18px;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        background: #ffffff;
+        box-shadow: 0 30px 80px rgba(46, 53, 68, 0.12);
+        overflow: hidden;
+    }
+
+    .viho-template-active .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #edf2f8;
+        background: #ffffff;
+    }
+
+    .viho-template-active .modal-title {
+        color: #1f2937;
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+
+    .viho-template-active .modal-body {
+        padding: 1.5rem;
+        color: #2c323f;
+        background: #f8fafc;
+    }
+
+    .viho-template-active .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #edf2f8;
+        background: #ffffff;
+    }
+
+    .viho-template-active .modal-header .btn-close,
+    .viho-template-active .modal-footer .btn-close {
+        top: 1.25rem;
+        right: 1.25rem;
+    }
+
+    .viho-template-active .modal.fade .modal-dialog {
+        transform: translate(0, -40px);
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+
+    .viho-template-active .modal.show .modal-dialog {
+        transform: translate(0, 0);
+    }
+
+    .viho-template-active .modal.modal-bookmark .modal-content {
+        border-radius: 26px;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: 0 34px 95px rgba(46, 53, 68, 0.16);
+    }
+
+    .viho-template-active .modal.modal-bookmark .modal-header {
+        padding: 1.5rem 1.75rem;
+        border-bottom: 1px solid #eef2f8;
+        background: transparent;
+    }
+
+    .viho-template-active .modal.modal-bookmark .modal-body {
+        padding: 1.75rem 1.75rem 1.5rem;
+        background: #f8fafc;
+    }
+
+    .viho-template-active .modal.modal-bookmark .modal-footer {
+        padding: 1.25rem 1.75rem;
+        border-top: 1px solid #eef2f8;
+        background: #ffffff;
+    }
+
+    .viho-template-active .modal.modal-bookmark .modal-header .btn-close {
+        top: 1.4rem;
+        right: 1.4rem;
+        width: 2.3rem;
+        height: 2.3rem;
+        border-radius: 50%;
+        background: #f3f4f6;
+        opacity: 1;
+    }
+
+    .viho-template-active .modal.modal-bookmark .form-label {
+        font-weight: 600;
+        color: #344054;
+    }
+
+    .viho-template-active .modal.modal-bookmark .form-control,
+    .viho-template-active .modal.modal-bookmark .form-select,
+    .viho-template-active .modal.modal-bookmark textarea.form-control {
+        min-height: 44px;
+        border-radius: 0.85rem;
+    }
+
     /* Ensure specific report tables are visible */
     .viho-template-active #product_table,
     .viho-template-active #stock_report_table,
