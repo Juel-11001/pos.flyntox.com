@@ -268,6 +268,66 @@
         box-shadow: none;
     }
 
+    /* Modal buttons: force white text on viho template */
+    .viho-template-active .modal-footer .tw-dw-btn-primary,
+    .viho-template-active .modal-footer .tw-dw-btn-neutral,
+    .viho-template-active .modal-footer .tw-dw-btn,
+    .viho-template-active .modal-footer button,
+    .viho-template-active .modal-footer .tw-dw-btn-primary *,
+    .viho-template-active .modal-footer .tw-dw-btn-neutral *,
+    .viho-template-active .modal-footer .tw-dw-btn *,
+    .viho-template-active .modal-footer button * {
+        color: #ffffff !important;
+    }
+
+    /* Add Discount Modal - ensure display when shown */
+    .viho-template-active #add_discount_modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        overflow: auto !important;
+    }
+    .viho-template-active #add_discount_modal.show {
+        z-index: 1070 !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    .viho-template-active #add_discount_modal.show .modal-dialog {
+        transform: none !important;
+        opacity: 1 !important;
+        display: block !important;
+        visibility: visible !important;
+        margin: 1.75rem auto !important;
+    }
+    .viho-template-active #add_discount_modal.show .modal-content {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    .viho-template-active #add_discount_modal.show .modal-body,
+    .viho-template-active #add_discount_modal.show .modal-header,
+    .viho-template-active #add_discount_modal.show .modal-footer {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    .viho-template-active #add_discount_modal .form-control,
+    .viho-template-active #add_discount_modal .form-group {
+        display: block !important;
+        visibility: visible !important;
+    }
+    .viho-template-active #add_discount_modal .modal-body .form-group label,
+    .viho-template-active #add_discount_modal .modal-body .form-group input,
+    .viho-template-active #add_discount_modal .modal-body .form-group select,
+    .viho-template-active #add_discount_modal .modal-body .form-group textarea {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
     /* Sidebar: keep menu data, update spacing/typography */
     .viho-template-active .side-bar .sidebar-menu,
     .viho-template-active .side-bar #side-bar {

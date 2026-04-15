@@ -27,12 +27,29 @@
 
       <div class="form-group selling_price_group-field hide">
             {!! Form::label('selling_price_group_id', __( 'lang_v1.selling_price_group' ) . ':') !!}
-            {!! Form::select('selling_price_group_id', $price_groups, null, ['class' => 'form-control']); !!}
+            <div class="input-group">
+              <span class="input-group-addon">
+                <i class="fas fa-tags"></i>
+              </span>
+              {!! Form::select('selling_price_group_id', $price_groups, null, ['class' => 'form-control select2', 'style' => 'width:100%']); !!}
+            </div>
       </div>
 
     </div>
 
     <div class="modal-footer">
+      <style>
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn-primary,
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn-neutral,
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn,
+        .viho-template-active .modal-content .modal-footer button,
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn-primary *,
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn-neutral *,
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn *,
+        .viho-template-active .modal-content .modal-footer button * {
+          color: #ffffff !important;
+        }
+      </style>
       <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'messages.save' )</button>
       <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
     </div>

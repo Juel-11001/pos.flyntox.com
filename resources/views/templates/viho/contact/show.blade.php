@@ -118,7 +118,7 @@
                             @if (!empty($view_type) && $view_type == 'payments') active
                             @else
                                 '' @endif">
-                            <a href="#payments_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-money-bill-alt"
+                            <a href="#payments_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-money-bill"
                                     aria-hidden="true"></i> @lang('sale.payments')</a>
                         </li>
 
@@ -310,7 +310,7 @@
     <div class="modal fade" id="edit_ledger_discount_modal" tabindex="-1" role="dialog"
         aria-labelledby="gridSystemModalLabel">
     </div>
-    @include('ledger_discount.create')
+    @include('templates.viho.ledger_discount.create')
 
     <!-- Updated Viho Template Modal -->
     <div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel"
@@ -379,6 +379,14 @@
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <style>
+                        .viho-template-active .modal-content .modal-footer .btn,
+                        .viho-template-active .modal-content .modal-footer button,
+                        .viho-template-active .modal-content .modal-footer .btn *,
+                        .viho-template-active .modal-content .modal-footer button * {
+                            color: #ffffff !important;
+                        }
+                    </style>
                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary" type="button">Save</button>
                 </div>
@@ -387,15 +395,15 @@
     </div>
 
     <!-- Trigger Button for Pay Contact Due Modal -->
-    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target=".pay_contact_due_modal">
+    {{-- <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target=".pay_contact_due_modal">
         Open Pay Contact Due Modal
-    </button>
+    </button> --}}
 
     <!-- Dropdown Menu with Pay Option -->
-    <div class="dropdown">
+    {{-- <div class="dropdown">
         <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
             Actions
-        </button>
+        </button> --}}
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <li>
                 <a class="dropdown-item" href="#" id="payContactDue">Pay</a>
@@ -600,6 +608,111 @@
                 format: 'YYYY-MM-DD HH:mm:ss'
             });
         })
+
+        // Fix discount modal button - clean functionality
+        $(document).on('click', '#open_discount_modal_btn', function(e) {
+            e.preventDefault();
+            
+            // Clear form
+            $('#add_discount_form')[0].reset();
+            
+            // Show modal
+            $('#add_discount_modal').css({
+                'display': 'block',
+                'visibility': 'visible',
+                'opacity': '1'
+            }).addClass('show');
+            
+            // Prevent body scroll
+            $('body').css('overflow', 'hidden');
+        });
+
+        // Handle modal close
+        $(document).on('click', '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]', function(e) {
+            e.preventDefault();
+            $('#add_discount_modal').css({
+                'display': 'none',
+                'visibility': 'hidden',
+                'opacity': '0'
+            }).removeClass('show');
+            
+            // Restore body scroll
+            $('body').css('overflow', 'auto');
+            
+            console.log('Modal hidden');
+        });
+
+        // Close modal when clicking outside
+        $(document).on('click', '#add_discount_modal', function(e) {
+            if (e.target === this) {
+                $('#add_discount_modal .btn-close').click();
+            }
+        });
+
+        // Edit discount functionality
+        $(document).on('click', '.edit_discount_btn', function(e) {
+            e.preventDefault();
+            var discountId = $(this).data('discount-id');
+            
+            $.ajax({
+                url: '/ledger-discount/' + discountId + '/edit',
+                method: 'GET',
+                success: function(response) {
+                    // Load edit modal content via AJAX
+                    $('#edit_ledger_discount_modal').html(response);
+                    
+                    // Show modal like create modal
+                    $('#edit_ledger_discount_modal').css({
+                        'display': 'block',
+                        'visibility': 'visible',
+                        'opacity': '1'
+                    }).addClass('show');
+                    
+                    // Prevent body scroll
+                    $('body').css('overflow', 'hidden');
+                },
+                error: function() {
+                    toastr.error('Error loading discount data');
+                }
+            });
+        });
+
+        // Delete discount functionality
+        $(document).on('click', '.delete_discount_btn', function(e) {
+            e.preventDefault();
+            var discountId = $(this).data('discount-id');
+            
+            if (confirm('Are you sure you want to delete this discount?')) {
+                $.ajax({
+                    url: '/ledger-discount/' + discountId,
+                    method: 'DELETE',
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.msg);
+                            get_contact_ledger(); // Refresh ledger
+                        } else {
+                            toastr.error(response.msg);
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Error deleting discount');
+                    }
+                });
+            }
+        });
+
+        // Handle edit modal close
+        $(document).on('click', '#edit_discount_modal .btn-close, #edit_discount_modal [data-bs-dismiss="modal"]', function(e) {
+            e.preventDefault();
+            $('#edit_discount_modal').css({
+                'display': 'none',
+                'visibility': 'hidden',
+                'opacity': '0'
+            }).removeClass('show');
+            
+            // Restore body scroll
+            $('body').css('overflow', 'auto');
+        });
 
         $("input.transaction_types, input#show_payments").on('ifChanged', function(e) {
             get_contact_ledger();

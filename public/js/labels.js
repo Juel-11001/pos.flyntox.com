@@ -18,7 +18,8 @@ $(document).ready(function() {
                             ._trigger('select', 'autocompleteselect', ui);
                         $(this).autocomplete('close');
                     } else if (ui.content.length == 0) {
-                        swal(LANG.no_products_found);
+                        // Don't show alert for empty results, just continue searching
+                        return;
                     }
                 },
                 select: function(event, ui) {

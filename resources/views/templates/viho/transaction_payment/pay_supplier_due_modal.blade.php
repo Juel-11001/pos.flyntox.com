@@ -117,7 +117,7 @@
             {!! Form::label("method" , __('purchase.payment_method') . ':*') !!}
             <div class="input-group">
               <span class="input-group-text">
-                <i class="fas fa-money-bill-alt"></i>
+                <i class="fas fa-money-bill"></i>
               </span>
               {!! Form::select("method", $payment_types, $payment_line->method, ['class' => 'form-control select2 payment_types_dropdown', 'required', 'style' => 'width:100%;']); !!}
             </div>
@@ -139,7 +139,7 @@
             {!! Form::label("amount" , __('sale.amount') . ':*') !!}
             <div class="input-group">
               <span class="input-group-text">
-                <i class="fas fa-money-bill-alt"></i>
+                <i class="fas fa-money-bill"></i>
               </span>
               @if(in_array($due_payment_type, ['sell_return', 'purchase_return']))
               {!! Form::text("amount", @num_format($payment_line->amount), ['class' => 'form-control input_number payment_amount', 'required', 'placeholder' => __('sale.amount'), 'data-rule-max-value' => $payment_line->amount, 'data-msg-max-value' => __('lang_v1.max_amount_to_be_paid_is', ['amount' => $amount_formated])]); !!}
@@ -218,7 +218,7 @@
               {!! Form::label("account_id" , __('lang_v1.payment_account') . ':') !!}
               <div class="input-group">
                 <span class="input-group-text">
-                  <i class="fas fa-money-bill-alt"></i>
+                  <i class="fas fa-money-bill"></i>
                 </span>
                 {!! Form::select("account_id", $accounts, !empty($payment_line->account_id) ? $payment_line->account_id : '' , ['class' => 'form-control select2', 'id' => "account_id", 'style' => 'width:100%;']); !!}
               </div>
@@ -238,6 +238,14 @@
     </div>
 
     <div class="modal-footer">
+      <style>
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn,
+        .viho-template-active .modal-content .modal-footer button,
+        .viho-template-active .modal-content .modal-footer .tw-dw-btn *,
+        .viho-template-active .modal-content .modal-footer button * {
+          color: #ffffff !important;
+        }
+      </style>
       <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'messages.save' )</button>
       <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-bs-dismiss="modal">@lang( 'messages.close' )</button>
     </div>

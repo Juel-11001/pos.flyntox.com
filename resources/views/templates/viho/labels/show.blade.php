@@ -235,7 +235,12 @@
     <div class="clearfix"></div>
 
     <div class="col-sm-12 text-center">
-      <button type="button" id="labels_preview" class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-md text-white">@lang(
+      <style>
+        .viho-template-active .tw-dw-btn-primary {
+          color: #ffffff !important;
+        }
+      </style>
+      <button type="button" id="labels_preview" class="btn btn-primary">@lang(
         'barcode.preview' )</button>
     </div>
   </div>

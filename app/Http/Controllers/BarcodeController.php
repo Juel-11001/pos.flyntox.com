@@ -297,4 +297,29 @@ class BarcodeController extends Controller
             return $output;
         }
     }
+
+    /**
+     * Generate barcode image
+     *
+     * @param  string  $sku
+     * @return \Illuminate\Http\Response
+     */
+    public function generateBarcode($sku)
+    {
+        try {
+            $type = request()->get('type', 'C128');
+            $width = request()->get('width', 2);
+            $height = request()->get('height', 30);
+            
+            // Generate barcode using DNS1D library
+            $barcode = DNS1D::getBarcodePNG($sku, $type, $width, $height, array(0, 0, 0), false);
+            
+            // Return as image
+            return response(base64_decode($barcode))->header('Content-Type', 'image/png');
+            
+        } catch (\Exception $e) {
+            // Return a simple error image or 404
+            abort(404, 'Barcode generation failed');
+        }
+    }
 }

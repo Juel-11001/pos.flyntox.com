@@ -338,6 +338,11 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         // Labels (Viho)
         Route::get('labels/show', [LabelsController::class, 'show'])->name('labels.show');
+        Route::get('labels/add-product-row', [LabelsController::class, 'addProductRow'])->name('labels.add-product-row');
+        Route::get('labels/preview', [LabelsController::class, 'preview'])->name('labels.preview');
+
+        // Reports (Viho)
+        Route::get('reports/stock-report', [ReportController::class, 'getStockReport'])->name('ai-template.reports.stock-report');
 
         // Import Products (Viho)
         Route::resource('import-products', ImportProductsController::class);

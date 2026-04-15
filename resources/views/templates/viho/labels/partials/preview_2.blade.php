@@ -66,7 +66,7 @@
 							{{$page_product->packing_date}}
 						</span>
 					@endif
-					<img style="max-width:90% !important;height: {{$barcode_details->height*0.24}}in !important; display: block;" src="data:image/png;base64,{{DNS1D::getBarcodePNG($page_product->sub_sku, $page_product->barcode_type, 3,90, array(0, 0, 0), false)}}">
+					<img style="max-width:90% !important;height: {{$barcode_details->height*0.24}}in !important; display: block;" src="data:image/png;base64,{{DNS1D::getBarcodePNG($page_product->sub_sku, $page_product->barcode_type, 3,90,array(0, 0, 0), true)}}">
 					<span style="font-size: 10px !important">
 						{{$page_product->sub_sku}}
 					</span>

@@ -217,20 +217,13 @@ class LabelsController extends Controller
                 $partial = $this->isAiTemplateRequest() ? 'templates.viho.labels.partials.preview_2' : 'labels.partials.preview_2';
                 $output = view($partial)
                             ->with(compact('print', 'page_products', 'business_name', 'barcode_details', 'margin_top', 'margin_left', 'paper_width', 'paper_height', 'is_first', 'is_last', 'factor'))->render();
-                print_r($output);
-                //$mpdf->WriteHTML($output);
-
-                // if($i < $len - 1){
-                //     // '', '', '', '', '', '', $margin_left, $margin_left, $margin_top, $margin_top, '', '', '', '', '', '', 0, 0, 0, 0, '', [$barcode_details->paper_width*1, $barcode_details->paper_height*1]
-                //     $mpdf->AddPage();
-                // }
+                echo $output;
 
                 $i++;
             }
 
-            print_r('<script>window.print()</script>');
+            echo '<script>window.print()</script>';
             exit;
-            //return $output;
 
             //$mpdf->Output();
 

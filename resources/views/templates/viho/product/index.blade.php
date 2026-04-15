@@ -895,15 +895,14 @@ $(document).on('click', 'a.view-product', function(e) {
       }
     },
   });
-});
 
-var data_table_initailized = false;
-$('a[data-bs-toggle="tab"]')
-  .off('shown.bs.tab.vihoProducts')
-  .on('shown.bs.tab.vihoProducts', function(e) {
-    if ($(e.target).attr('href') == '#product_stock_report') {
-      if (!data_table_initailized) {
-        //Stock report table
+  var data_table_initailized = false;
+  $('a[data-bs-toggle="tab"]')
+    .off('shown.bs.tab.vihoProducts')
+    .on('shown.bs.tab.vihoProducts', function(e) {
+      if ($(e.target).attr('href') == '#product_stock_report') {
+        if (!data_table_initailized) {
+          //Stock report table
         var stock_report_cols = [{
             data: 'action',
             name: 'action',
@@ -1089,11 +1088,12 @@ $('a[data-bs-toggle="tab"]')
           }
         });
         data_table_initailized = true;
-      } else {
-        stock_report_table.ajax.reload();
+        } else {
+          stock_report_table.ajax.reload();
+        }
       }
-    }
-  });
+    });
+});
 </script>
 @endsection
 
