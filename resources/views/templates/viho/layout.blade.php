@@ -346,6 +346,28 @@
             color: #fff;
         }
 
+        /* Viho Modal Fix - Only for Viho Template */
+        .modal {
+            z-index: 999999 !important;
+        }
+        .modal-backdrop {
+            z-index: 999998 !important;
+        }
+        .modal-dialog {
+            z-index: 999999 !important;
+            position: relative;
+        }
+        .modal-content {
+            z-index: 999999 !important;
+            position: relative;
+        }
+        .modal-open .page-wrapper {
+            overflow: visible !important;
+        }
+        .modal-open .page-body-wrapper {
+            overflow: visible !important;
+        }
+
         /* Bootstrap 3 Offset Shims */
         .col-md-offset-4 {
             margin-left: 33.33333333%;
@@ -372,9 +394,354 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 40px;
-            padding: 0.375rem 0.75rem;
-            white-space: nowrap;
+            min-width: 45px;
+        }
+
+        /* Modal Display Fix for Viho */
+        .modal.fade.in {
+            display: block !important;
+            opacity: 1 !important;
+        }
+        .modal.show {
+            display: block !important;
+            opacity: 1 !important;
+        }
+        .modal[style*="display: block"] {
+            display: block !important;
+        }
+        body.modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        /* =============================================
+           VIHO MODAL DESIGN SYSTEM
+           Based on Viho Admin Template v2.0
+           ============================================= */
+
+        /* Modal Container */
+        .modal-dialog {
+            z-index: 999999 !important;
+            margin: 30px auto !important;
+            position: relative !important;
+        }
+
+        /* Modal Content - Card Style */
+        .modal-content {
+            z-index: 999999 !important;
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(36, 105, 92, 0.15);
+            position: relative !important;
+            overflow: hidden;
+        }
+
+        .modal.in, .modal.show {
+            z-index: 999999 !important;
+            display: block !important;
+        }
+
+        /* Modal Backdrop - Viho Style */
+        .modal-backdrop {
+            z-index: 999998 !important;
+            background-color: rgba(36, 105, 92, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        /* =============================================
+           MODAL HEADER
+           ============================================= */
+        .modal-header {
+            background: linear-gradient(135deg, #24695c 0%, #2e8777 100%);
+            border-bottom: none;
+            padding: 20px 25px;
+            position: relative;
+        }
+
+        .modal-header .modal-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        /* Close Button - Viho Style */
+        .modal-header .close,
+        .modal-header .btn-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 20px;
+            line-height: 32px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+
+        .modal-header .close:hover,
+        .modal-header .btn-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-header .close span {
+            color: #fff;
+            font-weight: 300;
+        }
+
+        /* =============================================
+           MODAL BODY
+           ============================================= */
+        .modal-body {
+            padding: 25px;
+            background: #fff;
+        }
+
+        /* Form Elements in Modal */
+        .modal-body .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-body label {
+            color: #242934;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .modal-body .form-control {
+            border: 1px solid #e6edef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-body .form-control:focus {
+            border-color: #24695c;
+            box-shadow: 0 0 0 3px rgba(36, 105, 92, 0.1);
+        }
+
+        /* Input Groups in Modal */
+        .modal-body .input-group {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-body .input-group .input-group-addon,
+        .modal-body .input-group .input-group-text {
+            background: #f5f7fb;
+            border: 1px solid #e6edef;
+            color: #24695c;
+            padding: 12px 15px;
+        }
+
+        /* =============================================
+           MODAL FOOTER
+           ============================================= */
+        .modal-footer {
+            background: #f8fafb;
+            border-top: 1px solid #e6edef;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* =============================================
+           BUTTON STYLING - Viho Design System
+           ============================================= */
+        .modal-footer .btn {
+            padding: 10px 24px !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            border: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 80px !important;
+        }
+
+        /* ALL Buttons - Same Primary Style (with high specificity) */
+        .modal-content .modal-footer .btn-primary,
+        .modal-content .modal-footer .btn-secondary,
+        .modal-content .modal-footer .btn-default,
+        .modal-content .modal-footer button[data-dismiss="modal"],
+        .modal-dialog .modal-footer .btn,
+        .modal.in .modal-footer .btn-primary,
+        .modal.show .modal-footer .btn-primary {
+            background: linear-gradient(135deg, #24695c 0%, #2e8777 100%) !important;
+            background-color: #24695c !important;
+            color: #fff !important;
+            box-shadow: 0 4px 12px rgba(36, 105, 92, 0.3) !important;
+            border: none !important;
+            border-color: transparent !important;
+        }
+
+        .modal-content .modal-footer .btn-primary:hover,
+        .modal-content .modal-footer .btn-secondary:hover,
+        .modal-content .modal-footer .btn-default:hover,
+        .modal-content .modal-footer button[data-dismiss="modal"]:hover,
+        .modal-dialog .modal-footer .btn:hover,
+        .modal.in .modal-footer .btn-primary:hover,
+        .modal.show .modal-footer .btn-primary:hover {
+            background: linear-gradient(135deg, #1a4b41 0%, #24695c 100%) !important;
+            background-color: #1a4b41 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(36, 105, 92, 0.4) !important;
+            color: #fff !important;
+            border: none !important;
+        }
+
+        /* Success Button */
+        .modal-footer .btn-success {
+            background: #28a745;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .modal-footer .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* Danger/Button */
+        .modal-footer .btn-danger {
+            background: #dc3545;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .modal-footer .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Info Button */
+        .modal-footer .btn-info {
+            background: #0ea5e9;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .modal-footer .btn-info:hover {
+            background: #0284c7;
+            transform: translateY(-2px);
+        }
+
+        /* Warning Button */
+        .modal-footer .btn-warning {
+            background: #f59e0b;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .modal-footer .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        /* =============================================
+           OVERRIDE TAILWIND AND OTHER CLASSES
+           ============================================= */
+        /* Force all modal footer buttons to same style */
+        .modal-footer [class*="btn"],
+        .modal-footer [class*="tw-dw-btn"],
+        .modal-footer button {
+            background: linear-gradient(135deg, #24695c 0%, #2e8777 100%) !important;
+            background-color: #24695c !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(36, 105, 92, 0.3) !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+        }
+
+        .modal-footer [class*="btn"]:hover,
+        .modal-footer [class*="tw-dw-btn"]:hover,
+        .modal-footer button:hover {
+            background: linear-gradient(135deg, #1a4b41 0%, #24695c 100%) !important;
+            background-color: #1a4b41 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(36, 105, 92, 0.4) !important;
+            color: #fff !important;
+        }
+
+        /* =============================================
+           MODAL ANIMATIONS
+           ============================================= */
+        .modal.fade .modal-dialog {
+            transform: scale(0.95) translateY(-10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal.fade.in .modal-dialog,
+        .modal.fade.show .modal-dialog {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Modal Sizes */
+        .modal-dialog.modal-sm {
+            max-width: 400px;
+        }
+
+        .modal-dialog.modal-lg {
+            max-width: 800px;
+        }
+
+        .modal-dialog.modal-xl {
+            max-width: 1140px;
+        }
+
+        /* =============================================
+           RESPONSIVE MODAL
+           ============================================= */
+        @media (max-width: 767px) {
+            .modal-dialog {
+                margin: 15px;
+                max-width: calc(100% - 30px) !important;
+            }
+
+            .modal-header {
+                padding: 15px 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-footer {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+                padding: 12px 20px;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .modal-dialog {
+                max-width: 500px;
+            }
         }
 
         .input-group .input-group-addon:first-child {
@@ -435,6 +802,112 @@
             border-top-right-radius: 0.25rem;
             border-bottom-right-radius: 0.25rem;
             margin-left: -1px;
+        }
+
+        /* =============================================
+           FORM ELEMENTS IN MODAL - Viho Style
+           ============================================= */
+
+        /* Select Dropdowns */
+        .modal-body select.form-control,
+        .modal-body .form-select {
+            border: 1px solid #e6edef;
+            border-radius: 8px;
+            padding: 12px 35px 12px 15px;
+            font-size: 14px;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2324695c' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 15px center;
+            appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-body select.form-control:focus,
+        .modal-body .form-select:focus {
+            border-color: #24695c;
+            box-shadow: 0 0 0 3px rgba(36, 105, 92, 0.1);
+        }
+
+        /* Textarea */
+        .modal-body textarea.form-control {
+            border: 1px solid #e6edef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-body textarea.form-control:focus {
+            border-color: #24695c;
+            box-shadow: 0 0 0 3px rgba(36, 105, 92, 0.1);
+        }
+
+        /* Checkboxes and Radio Buttons */
+        .modal-body .form-check-input {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e6edef;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-body .form-check-input:checked {
+            background-color: #24695c;
+            border-color: #24695c;
+        }
+
+        .modal-body .form-check-label {
+            font-size: 14px;
+            color: #242934;
+            margin-left: 8px;
+        }
+
+        /* =============================================
+           MODAL LOADING ANIMATION
+           ============================================= */
+        .modal-loading {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .modal-loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 3px solid #e6edef;
+            border-top-color: #24695c;
+            border-radius: 50%;
+            animation: modal-spin 1s linear infinite;
+        }
+
+        @keyframes modal-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =============================================
+           MODAL SCROLLBAR STYLING
+           ============================================= */
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #24695c;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #1a4b41;
         }
 
         /* Fix file input styling */
