@@ -324,6 +324,28 @@
             vertical-align: -0.0667em;
         }
 
+        /* POS Tab Content - Hide inactive tabs */
+        div.pos-tab-content {
+            background-color: #ffffff;
+            padding-left: 20px;
+            padding-top: 20px;
+        }
+
+        div.pos-tab div.pos-tab-content:not(.active) {
+            display: none;
+        }
+
+        /* POS Tab Menu Styling */
+        .pos-tab-menu .list-group-item {
+            cursor: pointer;
+        }
+
+        .pos-tab-menu .list-group-item.active {
+            background-color: #3c8dbc;
+            border-color: #3c8dbc;
+            color: #fff;
+        }
+
         /* Bootstrap 3 Offset Shims */
         .col-md-offset-4 {
             margin-left: 33.33333333%;

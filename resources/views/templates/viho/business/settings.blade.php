@@ -264,6 +264,27 @@ $(document).ready(function() {
     browseLabel: LANG.file_browse_label,
     removeLabel: LANG.remove,
   });
+
+  $(document).on('click', '.pos-tab-menu .list-group > a', function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var $menu = $this.closest('div.list-group');
+    var $tabContainer = $this.closest('.pos-tab-container');
+
+    if ($tabContainer.length === 0) {
+      $tabContainer = $this.parents().has('.pos-tab').first();
+    }
+
+    $menu.find('> a.active').removeClass('active');
+    $this.addClass('active');
+
+    var index = $menu.find('> a').index($this);
+    var $tabContents = $tabContainer.find('.pos-tab').first().find('.pos-tab-content');
+    if ($tabContents.length === 0) {
+      $tabContents = $('.pos-tab').first().find('.pos-tab-content');
+    }
+    $tabContents.removeClass('active').eq(index).addClass('active');
+  });
 });
 </script>
 @endsection
