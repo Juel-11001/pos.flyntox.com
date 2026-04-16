@@ -456,5 +456,46 @@ $(document).ready(function () {
         // The modal will close on successful response if needed
     });
 
+    /**
+     * Global AJAX handler to auto-close modals after successful create/update
+     * Works for all modals: view_modal, category_modal, unit_modal, etc.
+     */
+    $(document).ajaxComplete(function(event, xhr, settings) {
+        try {
+            var response = xhr.responseJSON;
+            console.log('Viho: AJAX response', response);
+            
+            // Check for success (handle both boolean true and string "true")
+            if (response && (response.success === true || response.success === 1 || response.success === 'true')) {
+                console.log('Viho: AJAX success detected, closing modals');
+                
+                // Find ALL visible modals with common classes
+                var $allModals = $('div.view_modal, div.category_modal, div.unit_modal, div.expense_category_modal, div.variation_modal');
+                console.log('Viho: Found ' + $allModals.length + ' modals');
+                
+                $allModals.each(function() {
+                    var $modal = $(this);
+                    console.log('Viho: Checking modal', this.className, 'show=' + $modal.hasClass('show'), 'visible=' + $modal.is(':visible'));
+                    
+                    // Force close if modal exists
+                    if ($modal.length) {
+                        console.log('Viho: Closing modal', this.className);
+                        $modal.modal('hide');
+                        $modal.removeClass('show in');
+                        $modal.addClass('hide');
+                        $modal.css('display', 'none');
+                    }
+                });
+                
+                // Always cleanup backdrop and body
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('overflow', '');
+                $('body').css('padding-right', '');
+            }
+        } catch (e) {
+            console.log('Viho: Error in ajaxComplete', e);
+        }
+    });
+
     console.log('Viho: All modal handlers registered');
 });

@@ -6,19 +6,21 @@
       <h4 class="modal-title">@lang('unit.add_unit')</h4>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        {!! Form::label('actual_name', __( 'unit.name' ) . ':*') !!}
-        {!! Form::text('actual_name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'unit.name' ) ]); !!}
-      </div>
-      <div class="form-group">
-        {!! Form::label('short_name', __( 'unit.short_name' ) . ':*') !!}
-        {!! Form::text('short_name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'unit.short_name' )]); !!}
-      </div>
-      <div class="checkbox">
-        <label>
-          {!!Form::checkbox('allow_decimal', 1, false, ['class' => 'input-icheck']) !!}
-          {{ __( 'unit.allow_decimal' )}}
-        </label>
+      <div class="row">
+        <div class="form-group col-sm-12">
+          {!! Form::label('actual_name', __( 'unit.name' ) . ':*') !!}
+          {!! Form::text('actual_name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'unit.name' )]); !!}
+        </div>
+
+        <div class="form-group col-sm-12">
+          {!! Form::label('short_name', __( 'unit.short_name' ) . ':*') !!}
+          {!! Form::text('short_name', null, ['class' => 'form-control', 'placeholder' => __( 'unit.short_name' ), 'required']); !!}
+        </div>
+
+        <div class="form-group col-sm-12">
+          {!! Form::label('allow_decimal', __( 'unit.allow_decimal' ) . ':*') !!}
+          {!! Form::select('allow_decimal', ['1' => __('messages.yes'), '0' => __('messages.no')], null, ['placeholder' => __( 'messages.please_select' ), 'required', 'class' => 'form-control']); !!}
+        </div>
       </div>
     </div>
     <div class="modal-footer">

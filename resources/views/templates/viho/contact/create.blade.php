@@ -37,15 +37,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-15">
-                <label class="radio-inline">
-                    <input type="radio" name="contact_type_radio" id="inlineRadio1" value="individual">
-                    @lang('lang_v1.individual')
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="contact_type_radio" id="inlineRadio2" value="business">
-                    @lang('business.business')
-                </label>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {!! Form::label(null, __('contact.contact_type') . ':') !!}
+                    <div class="radio-group">
+                        <label class="radio-inline">
+                            <input type="radio" name="contact_type_radio" id="inlineRadio1" value="individual">
+                            @lang('lang_v1.individual')
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="contact_type_radio" id="inlineRadio2" value="business">
+                            @lang('business.business')
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
@@ -113,7 +118,8 @@
             </div>
             <div class="clearfix"></div>
         
-            <div class="col-md-3">
+            <!-- Row 1: Mobile, Alternate, Landline -->
+            <div class="col-md-4">
                 <div class="form-group">
                     {!! Form::label('mobile', __('contact.mobile') . ':*') !!}
                     <div class="input-group">
@@ -125,7 +131,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group">
                     {!! Form::label('alternate_number', __('contact.alternate_contact_number') . ':') !!}
                     <div class="input-group">
@@ -136,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group">
                     {!! Form::label('landline', __('contact.landline') . ':') !!}
                     <div class="input-group">
@@ -147,7 +153,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="clearfix"></div>
+
+            <!-- Row 2: Email and Assigned to -->
+            <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('email', __('business.email') . ':') !!}
                     <div class="input-group">
@@ -158,6 +167,20 @@
                     </div>
                 </div>
             </div>
+            <!-- User in create customer & supplier - Same row as email -->
+            @if(config('constants.enable_contact_assign') && $type !== 'lead')
+                <div class="col-md-6">
+                      <div class="form-group">
+                          {!! Form::label('assigned_to_users', __('lang_v1.assigned_to') . ':' ) !!}
+                          <div class="input-group">
+                              <span class="input-group-addon">
+                                  <i class="fa fa-user"></i>
+                              </span>
+                              {!! Form::select('assigned_to_users[]', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'assigned_to_users', 'multiple', 'style' => 'width: 100%;']); !!}
+                          </div>
+                      </div>
+                </div>
+            @endif
             <div class="clearfix"></div>
             <div class="col-sm-4 individual" style="display: none;">
                 <div class="form-group">
@@ -209,21 +232,6 @@
                       </div>
                   </div>
             </div>
-
-            <!-- User in create customer & supplier -->
-            @if(config('constants.enable_contact_assign') && $type !== 'lead')
-                <div class="col-md-6">
-                      <div class="form-group">
-                          {!! Form::label('assigned_to_users', __('lang_v1.assigned_to') . ':' ) !!}
-                          <div class="input-group">
-                              <span class="input-group-addon">
-                                  <i class="fa fa-user"></i>
-                              </span>
-                              {!! Form::select('assigned_to_users[]', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'assigned_to_users', 'multiple', 'style' => 'width: 100%;']); !!}
-                          </div>
-                      </div>
-                </div>
-            @endif
 
             <div class="clearfix"></div>
         </div>
@@ -595,3 +603,4 @@
   
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+

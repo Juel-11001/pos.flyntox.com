@@ -35,6 +35,50 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
 .dataTables_wrapper .dataTables_scroll {
   clear: both;
 }
+ /* Fix select2 dropdown mouse click issues */
+        .select2-container {
+            z-index: 999999 !important;
+        }
+        .select2-container--open {
+            z-index: 999999 !important;
+        }
+        .select2-dropdown {
+            z-index: 999999 !important;
+        }
+        .select2-container .select2-selection--single {
+            height: 44px;
+            line-height: 44px;
+        }
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            line-height: 44px;
+            padding-left: 12px;
+        }
+        .select2-container .select2-selection--single .select2-selection__arrow {
+            height: 44px;
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            right: 0;
+        }
+        .select2-container .select2-selection--single .select2-selection__arrow b {
+            border-color: #6c757d transparent transparent transparent;
+            border-width: 5px 5px 0 5px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            position: absolute;
+        }
+        .select2-results__option {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .select2-results__option--highlighted {
+            background-color: #24695c !important;
+            color: white !important;
+        }
 </style>
 <!-- Content Header (Page header) -->
 <section class="content-header no-print">
@@ -396,6 +440,53 @@ $(document).ready(function() {
     function() {
       purchase_table.ajax.reload();
     });
+
+  // Handle status change click
+  $(document).on('click', '.update_status', function(e) {
+    e.preventDefault();
+    $('#update_purchase_status_form').find('#status').val($(this).data('status'));
+    $('#update_purchase_status_form').find('#purchase_id').val($(this).data('purchase_id'));
+    $('#update_purchase_status_modal').modal('show');
+  });
+
+  // Handle status form submit
+  $(document).on('submit', '#update_purchase_status_form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var data = form.serialize();
+    
+    $.ajax({
+      method: 'POST',
+      url: $(this).attr('action'),
+      dataType: 'json',
+      data: data,
+      beforeSend: function(xhr) {
+        __disable_submit_button(form.find('button[type="submit"]'));
+      },
+      success: function(result) {
+        if (result.success === true) {
+          // Close modal with cleanup
+          var $modal = $('#update_purchase_status_modal');
+          $modal.modal('hide');
+          $modal.removeClass('show in');
+          $modal.addClass('hide');
+          $modal.css('display', 'none');
+          $('.modal-backdrop').remove();
+          $('body').removeClass('modal-open').css('overflow', '');
+          
+          toastr.success(result.msg);
+          purchase_table.ajax.reload();
+        } else {
+          toastr.error(result.msg);
+        }
+        form.find('button[type="submit"]').attr('disabled', false);
+      },
+      error: function() {
+        toastr.error('Something went wrong');
+        form.find('button[type="submit"]').attr('disabled', false);
+      }
+    });
+  });
 });
 </script>
 @endsection

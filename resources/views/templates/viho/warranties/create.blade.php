@@ -14,10 +14,16 @@
         {!! Form::label('description', __( 'lang_v1.description' ) . ':') !!}
           {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.description' ), 'rows' => 3 ]); !!}
       </div>
-      <strong>{!! Form::label('duration', __( 'lang_v1.duration' ) . ':') !!}*</strong>
       <div class="form-group">
-          {!! Form::number('duration', null, ['class' => 'form-control width-40 pull-left', 'placeholder' => __( 'lang_v1.duration' ), 'required' ]); !!}
-          {!! Form::select('duration_type', ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')], '', ['class' => 'form-control width-60 pull-left','placeholder' => __('messages.please_select'), 'required']); !!}
+          {!! Form::label('duration', __( 'lang_v1.duration' ) . ':*') !!}
+          <div class="row">
+              <div class="col-md-6">
+                  {!! Form::number('duration', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.duration' ), 'required' ]); !!}
+              </div>
+              <div class="col-md-6">
+                  {!! Form::select('duration_type', ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')], '', ['class' => 'form-control','placeholder' => __('messages.please_select'), 'required']); !!}
+              </div>
+          </div>
       </div>
     </div>
     <div class="modal-footer">

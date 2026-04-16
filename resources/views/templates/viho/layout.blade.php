@@ -37,6 +37,42 @@
             display: none !important;
         }
 
+        /* Toastr notification styles */
+        #toast-container {
+            position: fixed;
+            z-index: 999999;
+            top: 12px;
+            right: 12px;
+        }
+        .toast {
+            background-color: #030303;
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding: 15px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+        .toast:hover {
+            opacity: 1;
+        }
+        .toast-success {
+            background-color: #24695c;
+        }
+        .toast-error {
+            background-color: #dc3545;
+        }
+        .toast-warning {
+            background-color: #f39c12;
+        }
+        .toast-info {
+            background-color: #3498db;
+        }
+
         /* Embedded default header uses dark gradient; Viho header background is light. */
         .default-header-embedded .tw-border-b.tw-bg-gradient-to-r {
             background-image: none !important;
@@ -419,11 +455,37 @@
            Based on Viho Admin Template v2.0
            ============================================= */
 
-        /* Modal Container */
+        /* Modal Container - Auto Width */
         .modal-dialog {
             z-index: 999999 !important;
             margin: 30px auto !important;
             position: relative !important;
+            width: auto !important;
+            max-width: 600px !important;
+        }
+
+        /* Large modal for bigger content */
+        .modal-dialog.modal-lg {
+            max-width: 800px !important;
+        }
+
+        /* Small modal for compact forms */
+        .modal-dialog.modal-sm {
+            max-width: 400px !important;
+        }
+
+        /* Modal Content - Auto Height */
+        .modal-content {
+            z-index: 999999 !important;
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(36, 105, 92, 0.15);
+            position: relative !important;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh !important;
         }
 
         /* Modal Content - Card Style */
@@ -460,10 +522,11 @@
         }
 
         .modal-header .modal-title {
-            color: #fff;
+            color: #000000 !important;
             font-weight: 600;
             font-size: 18px;
             margin: 0;
+            text-shadow: none !important;
         }
 
         /* Close Button - Viho Style */
@@ -474,27 +537,39 @@
             right: 20px;
             width: 32px;
             height: 32px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.9) !important;
             border: none;
             border-radius: 6px;
-            color: #fff;
+            color: #000000 !important;
             font-size: 20px;
             line-height: 32px;
             text-align: center;
             cursor: pointer;
             opacity: 1;
             transition: all 0.3s ease;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .modal-header .close:hover,
         .modal-header .btn-close:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 1) !important;
             transform: rotate(90deg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .modal-header .close span {
-            color: #fff;
-            font-weight: 300;
+        .modal-header .close span,
+        .modal-header .close:focus,
+        .modal-header .btn-close:focus {
+            color: #000000 !important;
+            outline: none !important;
+        }
+
+        .modal-header .close svg,
+        .modal-header .btn-close svg {
+            fill: #000000 !important;
+            stroke: #000000 !important;
         }
 
         /* =============================================
@@ -503,11 +578,60 @@
         .modal-body {
             padding: 25px;
             background: #fff;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Auto height modal - body scrolls if needed */
+        .modal-dialog .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+        }
+
+        /* Custom scrollbar for modal body */
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #24695c;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #1a4b41;
         }
 
         /* Form Elements in Modal */
         .modal-body .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Only apply full width to standalone inputs not in grid */
+        .modal-body .form-group > input:not([class*="col-"]),
+        .modal-body .form-group > select:not([class*="col-"]),
+        .modal-body .form-group > textarea:not([class*="col-"]) {
+            width: 100% !important;
+        }
+
+        /* Allow Bootstrap grid to work naturally in modals */
+        .modal-body .row {
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+
+        .modal-body .row > [class*="col-"] {
+            padding-left: 15px;
+            padding-right: 15px;
         }
 
         .modal-body label {
@@ -535,6 +659,8 @@
         .modal-body .input-group {
             border-radius: 8px;
             overflow: hidden;
+            display: flex;
+            width: 100%;
         }
 
         .modal-body .input-group .input-group-addon,
@@ -543,10 +669,91 @@
             border: 1px solid #e6edef;
             color: #24695c;
             padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            min-width: 45px;
+            justify-content: center;
+        }
+
+        .modal-body .input-group .form-control,
+        .modal-body .input-group select {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Select2 styles are handled per-modal in create.blade.php */
+
+        /* Fix Input Group Addon Icons - Match Input Height */
+        .modal-body .input-group-addon,
+        .modal-body .input-group-text {
+            min-width: 45px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+        }
+
+        .modal-body .input-group-addon i,
+        .modal-body .input-group-text i {
+            font-size: 16px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Ensure all inputs have same height */
+        .modal-body .input-group .form-control,
+        .modal-body .input-group select {
+            height: 44px;
+        }
+
+        /* Fix regular select dropdown in modals */
+        .modal-body select.form-control {
+            height: 44px;
+            line-height: normal;
+            padding: 10px 12px;
+            -webkit-appearance: menulist;
+            -moz-appearance: menulist;
+            appearance: menulist;
+            color: #242934;
+            font-size: 14px;
+        }
+
+        .modal-body select.form-control option {
+            color: #242934;
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .modal-body select.form-control option:first-child {
+            color: #6c757d;
+        }
+
+        /* Select2 dropdown styles are handled per-modal */
+
+        /* Fix radio/checkbox inline layout */
+        .modal-body .form-group .radio-group {
+            display: flex;
+            align-items: center;
+            min-height: 42px;
+            gap: 15px;
+        }
+
+        .modal-body .radio-inline,
+        .modal-body .checkbox-inline {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 0;
+        }
+
+        .modal-body .radio-inline input,
+        .modal-body .checkbox-inline input {
+            margin-right: 5px;
         }
 
         /* =============================================
-           MODAL FOOTER
+           MODAL FOOTER - Always Visible
            ============================================= */
         .modal-footer {
             background: #f8fafb;
@@ -555,6 +762,48 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Ensure footer stays visible in fixed height modal */
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+        }
+
+        /* Auto height modal - ensure footer visible */
+        .modal-dialog .modal-content {
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh !important;
+        }
+
+        .modal-dialog .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+        }
+
+        .modal-dialog .modal-footer {
+            position: sticky;
+            bottom: 0;
+            background: #f8fafb;
+            border-top: 1px solid #e6edef;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
         }
 
         /* =============================================
@@ -659,26 +908,68 @@
         /* Force all modal footer buttons to same style */
         .modal-footer [class*="btn"],
         .modal-footer [class*="tw-dw-btn"],
-        .modal-footer button {
+        .modal-footer button,
+        .modal-footer .btn,
+        .modal-footer .btn-primary,
+        .modal-footer .btn-secondary,
+        .modal-footer .btn-success,
+        .modal-footer .btn-danger,
+        .modal-footer .btn-warning,
+        .modal-footer .btn-info,
+        .modal-footer .btn-default,
+        .modal-footer button[data-dismiss="modal"],
+        .modal-footer button[type="submit"],
+        .modal-footer button[type="button"] {
             background: linear-gradient(135deg, #24695c 0%, #2e8777 100%) !important;
             background-color: #24695c !important;
             color: #fff !important;
             border: none !important;
             box-shadow: 0 4px 12px rgba(36, 105, 92, 0.3) !important;
             border-radius: 8px !important;
-            padding: 10px 24px !important;
-            font-weight: 500 !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
             font-size: 14px !important;
+            min-width: 100px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            text-transform: capitalize !important;
         }
 
         .modal-footer [class*="btn"]:hover,
         .modal-footer [class*="tw-dw-btn"]:hover,
-        .modal-footer button:hover {
+        .modal-footer button:hover,
+        .modal-footer .btn:hover,
+        .modal-footer .btn-primary:hover,
+        .modal-footer .btn-secondary:hover,
+        .modal-footer .btn-success:hover,
+        .modal-footer .btn-danger:hover,
+        .modal-footer .btn-warning:hover,
+        .modal-footer .btn-info:hover,
+        .modal-footer .btn-default:hover,
+        .modal-footer button[data-dismiss="modal"]:hover,
+        .modal-footer button[type="submit"]:hover,
+        .modal-footer button[type="button"]:hover {
             background: linear-gradient(135deg, #1a4b41 0%, #24695c 100%) !important;
             background-color: #1a4b41 !important;
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 16px rgba(36, 105, 92, 0.4) !important;
             color: #fff !important;
+        }
+
+        /* Close button in footer */
+        .modal-footer .btn-secondary,
+        .modal-footer button[data-dismiss="modal"] {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+            background-color: #6c757d !important;
+        }
+
+        .modal-footer .btn-secondary:hover,
+        .modal-footer button[data-dismiss="modal"]:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+            background-color: #495057 !important;
         }
 
         /* =============================================
@@ -701,6 +992,10 @@
             max-width: 400px;
         }
 
+        .modal-dialog.modal-md {
+            max-width: 600px;
+        }
+
         .modal-dialog.modal-lg {
             max-width: 800px;
         }
@@ -709,38 +1004,118 @@
             max-width: 1140px;
         }
 
+        /* Auto size for modals with many fields */
+        .modal-dialog.modal-auto-size {
+            max-width: 90vw;
+            margin: 30px auto;
+        }
+
+        /* Modal with many fields - scrollable content */
+        .modal-dialog.modal-scrollable {
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-dialog.modal-scrollable .modal-content {
+            flex: 1;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-dialog.modal-scrollable .modal-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+
         /* =============================================
-           RESPONSIVE MODAL
+           RESPONSIVE MODAL - Auto Height
            ============================================= */
         @media (max-width: 767px) {
             .modal-dialog {
-                margin: 15px;
-                max-width: calc(100% - 30px) !important;
+                margin: 10px;
+                max-width: calc(100% - 20px) !important;
+                width: calc(100% - 20px) !important;
+            }
+
+            .modal-content {
+                max-height: calc(100vh - 100px) !important;
             }
 
             .modal-header {
                 padding: 15px 20px;
             }
 
+            .modal-header .modal-title {
+                font-size: 16px;
+            }
+
             .modal-body {
                 padding: 20px;
+                max-height: calc(100vh - 200px);
             }
 
             .modal-footer {
                 padding: 15px 20px;
-                flex-direction: column;
-                gap: 8px;
+                flex-direction: row !important;
+                gap: 10px;
+                position: relative !important;
+                bottom: auto !important;
             }
 
-            .modal-footer .btn {
-                width: 100%;
-                padding: 12px 20px;
+            .modal-footer .btn,
+            .modal-footer button {
+                width: auto !important;
+                flex: 1;
+                min-width: 120px !important;
+                padding: 12px 20px !important;
             }
         }
 
         @media (min-width: 768px) and (max-width: 991px) {
             .modal-dialog {
-                max-width: 500px;
+                width: 700px !important;
+                max-width: 95vw !important;
+            }
+
+            .modal-content {
+                max-height: 85vh !important;
+            }
+
+            .modal-body {
+                max-height: calc(85vh - 130px);
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .modal-dialog {
+                width: 820px !important;
+                max-width: 95vw !important;
+            }
+
+            .modal-content {
+                max-height: 85vh !important;
+            }
+
+            .modal-body {
+                max-height: calc(85vh - 130px);
+            }
+        }
+
+        /* Large screens - Auto Height */
+        @media (min-width: 1200px) {
+            .modal-dialog {
+                width: 820px !important;
+                max-width: 95vw !important;
+            }
+
+            .modal-content {
+                max-height: 90vh !important;
+            }
+
+            .modal-body {
+                max-height: calc(90vh - 130px);
             }
         }
 
@@ -1288,6 +1663,9 @@
     <script src="{{ $viho_asset }}/js/script.js"></script>
     <script src="{{ asset('js/viho-app.js') }}"></script>
 
+    <!-- Toastr notification container -->
+    <div id="toast-container" class="toast-top-right"></div>
+
     <script>
         (function () {
             if (typeof window.jQuery === 'undefined') return;
@@ -1323,6 +1701,71 @@
                 });
             });
         })();
+    </script>
+
+    <!-- Auto Height Modal Script 820px Width -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto height modal: 820px width, auto height
+            const modals = document.querySelectorAll('.modal');
+            
+            modals.forEach(function(modal) {
+                // When modal is shown
+                modal.addEventListener('show.bs.modal', function() {
+                    const modalDialog = this.querySelector('.modal-dialog');
+                    const modalContent = this.querySelector('.modal-content');
+                    const modalBody = this.querySelector('.modal-body');
+                    
+                    if (modalDialog && modalContent) {
+                        // Set width
+                        modalDialog.style.width = '820px';
+                        modalDialog.style.maxWidth = '95vw';
+                        
+                        // Remove fixed height, let content determine size
+                        modalContent.style.maxHeight = '90vh';
+                        
+                        // Ensure body scrolls if needed
+                        if (modalBody) {
+                            modalBody.style.maxHeight = 'calc(90vh - 130px)'; // 130px for header + footer
+                        }
+                    }
+                });
+                
+                // Handle dynamic content after modal is fully shown
+                modal.addEventListener('shown.bs.modal', function() {
+                    const modalDialog = this.querySelector('.modal-dialog');
+                    const modalContent = this.querySelector('.modal-content');
+                    const modalBody = this.querySelector('.modal-body');
+                    
+                    if (modalDialog && modalContent && modalBody) {
+                        // Recalculate after content is fully rendered
+                        setTimeout(function() {
+                            const windowHeight = window.innerHeight;
+                            const headerHeight = this.querySelector('.modal-header')?.scrollHeight || 70;
+                            const footerHeight = this.querySelector('.modal-footer')?.scrollHeight || 60;
+                            
+                            // Adjust max-height based on screen size
+                            let contentMaxHeight = '90vh';
+                            let bodyMaxHeight = 'calc(90vh - 130px)';
+                            
+                            if (windowHeight < 600) {
+                                contentMaxHeight = 'calc(100vh - 100px)';
+                                bodyMaxHeight = 'calc(100vh - 200px)';
+                            } else if (windowHeight < 768) {
+                                contentMaxHeight = 'calc(100vh - 120px)';
+                                bodyMaxHeight = 'calc(100vh - 200px)';
+                            } else if (windowHeight < 992) {
+                                contentMaxHeight = '85vh';
+                                bodyMaxHeight = 'calc(85vh - 130px)';
+                            }
+                            
+                            modalContent.style.maxHeight = contentMaxHeight;
+                            modalBody.style.maxHeight = bodyMaxHeight;
+                        }, 100);
+                    }
+                }.bind(modal));
+            });
+        });
     </script>
 
     @yield('javascript')
