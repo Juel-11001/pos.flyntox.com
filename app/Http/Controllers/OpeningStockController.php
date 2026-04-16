@@ -108,8 +108,12 @@ class OpeningStockController extends Controller
             $enable_expiry = request()->session()->get('business.enable_product_expiry');
             $enable_lot = request()->session()->get('business.enable_lot_number');
 
+            // Check if request is from Viho template
+            $is_ai_template = request()->is('ai-template/*') || (strpos(request()->headers->get('referer', ''), '/ai-template') !== false);
+            $view_prefix = $is_ai_template ? 'templates.viho.opening_stock.' : 'opening_stock.';
+
             if (request()->ajax()) {
-                return view('opening_stock.ajax_add')
+                return view($view_prefix . 'ajax_add')
                     ->with(compact(
                         'product',
                         'locations',
@@ -119,7 +123,7 @@ class OpeningStockController extends Controller
                     ));
             }
 
-            return view('opening_stock.add')
+            return view($view_prefix . 'add')
                     ->with(compact(
                         'product',
                         'locations',

@@ -1,16 +1,17 @@
 <div class="row">
 	<div class="col-sm-12">
 		@forelse($locations as $key => $value)
-		<div class="box box-solid">
-			<div class="box-header">
-	            <h3 class="box-title">@lang('sale.location'): {{$value}}</h3>
-	        </div>
-			<div class="box-body">
-				<div class="row tw-overflow-scroll">
+		<div class="card" style="border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-radius: 8px; margin-bottom: 20px; background: white;">
+			<div class="card-header" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 12px 20px; border-radius: 8px 8px 0 0;">
+            <h5 style="margin: 0; font-weight: 600;"><i class="fa fa-map-marker-alt"></i> @lang('sale.location'): {{$value}}</h5>
+        </div>
+			<div class="card-body" style="padding: 20px;">
+				<div class="row">
 					<div class="col-sm-12">
-						<table class="table table-condensed table-bordered text-center table-responsive table-striped add_opening_stock_table">
+						<div class="table-responsive" style="border-radius: 6px; overflow: hidden;">
+						<table class="table table-bordered text-center table-striped add_opening_stock_table" style="margin-bottom: 0;">
 								<thead>
-								<tr class="bg-green">
+								<tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
 									<th>@lang( 'product.product_name' )</th>
 									<th>@lang( 'lang_v1.quantity_left' )</th>
 									<th>@lang( 'purchase.unit_cost_before_tax' )</th>
@@ -23,7 +24,7 @@
 									<th>@lang( 'purchase.subtotal_before_tax' )</th>
 									<th>@lang( 'lang_v1.date' )</th>
 									<th>@lang( 'brand.note' )</th>
-									<th>&nbsp;</th>
+									<th style="width: 50px;"><i class="fa fa-cogs"></i></th>
 								</tr>
 								</thead>
 								<tbody>
@@ -165,7 +166,11 @@
 								<tfoot>
 								<tr>
 									<td colspan="@if($enable_expiry == 1 && $product->enable_stock == 1 && $enable_lot == 1) 5 @elseif(($enable_expiry == 1 && $product->enable_stock == 1) || $enable_lot == 1) @else 3 @endif"></td>
-									<td><strong>@lang( 'lang_v1.total_amount_exc_tax' ): </strong> <span id="total_subtotal">{{@num_format($subtotal)}}</span>
+									<td colspan="@if($enable_expiry == 1 && $product->enable_stock == 1 && $enable_lot == 1) 5 @elseif(($enable_expiry == 1 && $product->enable_stock == 1) || $enable_lot == 1) @else 3 @endif" style="background: #f8f9fa; font-weight: 600;">
+										<div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+											<span style="color: #666;">@lang( 'lang_v1.total_amount_exc_tax' ):</span>
+											<span id="total_subtotal" style="font-size: 18px; color: #667eea; font-weight: 700;">{{@num_format($subtotal)}}</span>
+										</div>
 									<input type="hidden" id="total_subtotal_hidden" value=0>
 									</td>
 								</tr>
@@ -177,7 +182,11 @@
 			</div>
 		</div> <!--box end-->
 		@empty
-    		<h3>@lang( 'lang_v1.product_not_assigned_to_any_location' )</h3>
+    		<div class="alert alert-warning" style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; text-align: center;">
+				<i class="fa fa-exclamation-triangle" style="font-size: 24px; color: #ffc107; margin-bottom: 10px;"></i>
+				<h5 style="margin: 0; color: #856404;">@lang( 'lang_v1.product_not_assigned_to_any_location' )</h5>
+				<p style="margin: 10px 0 0; color: #856404; font-size: 14px;">Please assign this product to a location first.</p>
+			</div>
 		@endforelse
 	</div>
 </div>

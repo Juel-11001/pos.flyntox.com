@@ -352,6 +352,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         // Import Opening Stock (Viho)
         Route::resource('import-opening-stock', ImportOpeningStockController::class);
 
+        // Opening Stock (Viho)
+        Route::get('/opening-stock/add/{product_id}', [OpeningStockController::class, 'add']);
+        Route::post('/opening-stock/save', [OpeningStockController::class, 'save']);
+
         // Account / Payment Account (Viho)
         Route::prefix('account')->name('account.')->group(function () {
             Route::resource('', AccountController::class)->names([

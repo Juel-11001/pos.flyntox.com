@@ -380,9 +380,9 @@
 </div>
 
 @if ($is_woocommerce)
-@include('product.partials.toggle_woocommerce_sync_modal')
+@include('templates.viho.product.partials.toggle_woocommerce_sync_modal')
 @endif
-@include('product.partials.edit_product_location_modal')
+@include('templates.viho.product.partials.edit_product_location_modal')
 
 @endsection
 
@@ -856,6 +856,62 @@ $(document).ready(function() {
       });
     });
   @endif
+
+  // Add/Remove Product Location handlers
+  $(document)
+    .off('click.vihoProducts', '.update_product_location')
+    .on('click.vihoProducts', '.update_product_location', function(e) {
+      e.preventDefault();
+      var selected_rows = getSelectedRows();
+      if (selected_rows.length > 0) {
+        $('#products_to_update_location').val(selected_rows);
+        var type = $(this).data('type');
+        $('#update_type').val(type);
+        
+        if (type === 'add') {
+          $('.add_to_location_title').removeClass('hide');
+          $('.remove_from_location_title').addClass('hide');
+        } else {
+          $('.add_to_location_title').addClass('hide');
+          $('.remove_from_location_title').removeClass('hide');
+        }
+        
+        $('#edit_product_location_modal').modal('show');
+      } else {
+        swal(@json(__('lang_v1.no_row_selected')));
+      }
+    });
+
+  // Handle product location form submit
+  $(document)
+    .off('submit.vihoProducts', 'form#edit_product_location_form')
+    .on('submit.vihoProducts', 'form#edit_product_location_form', function(e) {
+      e.preventDefault();
+      var form = $(this);
+      var url = form.attr('action');
+      var method = form.attr('method');
+      var data = form.serialize();
+      
+      $.ajax({
+        method: method,
+        dataType: 'json',
+        url: url,
+        data: data,
+        success: function(result) {
+          if (result.success) {
+            $('#edit_product_location_modal').modal('hide');
+            toastr.success(result.msg);
+            product_table.ajax.reload();
+            form.find('#products_to_update_location').val('');
+          } else {
+            toastr.error(result.msg);
+          }
+        },
+        error: function() {
+          toastr.error('Something went wrong');
+        }
+      });
+    });
 });
 
 $(document)
