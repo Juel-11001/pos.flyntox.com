@@ -118,8 +118,7 @@
                             @if (!empty($view_type) && $view_type == 'payments') active
                             @else
                                 '' @endif">
-                            <a href="#payments_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-money-bill"
-                                    aria-hidden="true"></i> @lang('sale.payments')</a>
+                            <a href="#payments_tab" data-toggle="tab" aria-expanded="true">@lang('sale.payments')</a>
                         </li>
 
                         @if (in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
@@ -991,7 +990,7 @@
             });
         });
     </script>
-    @include('sale_pos.partials.subscriptions_table_javascript', ['contact_id' => $contact->id])
+    @include('templates.viho.sale_pos.partials.subscriptions_table_javascript', ['contact_id' => $contact->id])
 @endsection
 
 @push('styles')

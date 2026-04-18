@@ -102,5 +102,47 @@ $(document).on('change', '#price_calculation_type', function() {
     $('.selling_price_group-field').removeClass('hide');
   }
 })
+
+// Fix customer group action buttons to match user manage style
+var fixCustomerGroupButtons = function() {
+  $('#customer_groups_table button, #customer_groups_table a').each(function() {
+    var $btn = $(this);
+    var isEdit = $btn.hasClass('edit_customer_group_button');
+    var isDelete = $btn.hasClass('delete_customer_group_button');
+    
+    if (isEdit || isDelete) {
+      // Replace classes with user-manage style
+      $btn.removeClass('tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary tw-dw-btn-error tw-m-0.5');
+      $btn.addClass('btn btn-xs d-inline-flex align-items-center justify-content-center');
+      
+      if (isEdit) {
+        $btn.addClass('btn-primary');
+        $btn.attr('title', '{{ __("messages.edit") }}');
+        // Replace glyphicon with feather
+        $btn.html('<i data-feather="edit-2" style="width: 14px; height: 14px;"></i>');
+      } else if (isDelete) {
+        $btn.addClass('btn-danger');
+        $btn.attr('title', '{{ __("messages.delete") }}');
+        // Replace glyphicon with feather
+        $btn.html('<i data-feather="trash-2" style="width: 14px; height: 14px;"></i>');
+      }
+    }
+  });
+  
+  // Re-initialize feather icons
+  if (typeof feather !== 'undefined') {
+    feather.replace();
+  }
+};
+
+$(document).ready(function() {
+  // Apply on initial load
+  setTimeout(fixCustomerGroupButtons, 500);
+  
+  // Apply on DataTable draw
+  $('#customer_groups_table').on('draw.dt', function() {
+    fixCustomerGroupButtons();
+  });
+});
 </script>
 @endsection

@@ -42,7 +42,7 @@
             <div class="col-sm-12">
                 <a href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, 'getPayContactDue'], [$contact->id]) }}?type=purchase"
                     class="pay_purchase_due tw-dw-btn tw-dw-btn-sm pull-right tw-m-2 viho-contact-action-btn">
-                    <i class="fa fa-money" aria-hidden="true"></i> @lang('contact.pay_due_amount')
+                    @lang('contact.pay_due_amount')
                 </a>
             </div>
         @endif
