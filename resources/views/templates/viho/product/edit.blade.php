@@ -361,9 +361,9 @@
         <div class="col-sm-12">
           <div class="text-center">
             <div class="btn-group">
-              @if($selling_price_group_count)
+              {{-- @if($selling_price_group_count)
                 <button type="submit" value="submit_n_add_selling_prices" class="tw-dw-btn tw-dw-btn-warning tw-text-white tw-dw-btn-lg submit_product_form">@lang('lang_v1.save_n_add_selling_price_group_prices')</button>
-              @endif
+              @endif --}}
 
               @can('product.opening_stock')
               <button type="submit" @if(empty($product->enable_stock)) disabled="true" @endif id="opening_stock_button"  value="update_n_edit_opening_stock" class="tw-dw-btn tw-text-white tw-dw-btn-lg bg-purple submit_product_form">@lang('lang_v1.update_n_edit_opening_stock')</button>

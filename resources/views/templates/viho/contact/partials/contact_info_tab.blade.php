@@ -1,15 +1,20 @@
 <span id="view_contact_page"></span>
+@php
+    $purchase_due = (float) ($contact->total_purchase ?? 0) - (float) ($contact->purchase_paid ?? 0);
+    $opening_balance_due = (float) ($contact->opening_balance ?? 0) - (float) ($contact->opening_balance_paid ?? 0);
+    $show_pay_due_button = in_array($contact->type, ['supplier', 'both']) && ($purchase_due > 0 || $opening_balance_due > 0);
+@endphp
 <div class="row">
     <div class="col-md-12">
         <div class="col-sm-3">
-            @include('contact.contact_basic_info')
+            @include('templates.viho.contact.contact_basic_info')
         </div>
         <div class="col-sm-3 mt-56">
-            @include('contact.contact_more_info')
+            @include('templates.viho.contact.contact_more_info')
         </div>
         @if( $contact->type != 'customer')
             <div class="col-sm-3 mt-56">
-                @include('contact.contact_tax_info')
+                @include('templates.viho.contact.contact_tax_info')
             </div>
         @endif
         {{--
@@ -32,16 +37,17 @@
         @endif
         --}}
 
-        @if( $contact->type == 'supplier' || $contact->type == 'both')
+        @if($show_pay_due_button)
             <div class="clearfix"></div>
             <div class="col-sm-12">
-                @if(($contact->total_purchase - $contact->purchase_paid) > 0)
-                    <a href="{{action([\App\Http\Controllers\TransactionPaymentController::class, 'getPayContactDue'], [$contact->id])}}?type=purchase" class="pay_purchase_due tw-dw-btn tw-dw-btn-primary tw-text-white tw-dw-btn-sm pull-right"><i class="fas fa-money-bill" aria-hidden="true"></i> @lang("contact.pay_due_amount")</a>
-                @endif
+                <a href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, 'getPayContactDue'], [$contact->id]) }}?type=purchase"
+                    class="pay_purchase_due tw-dw-btn tw-dw-btn-sm pull-right tw-m-2 viho-contact-action-btn">
+                    <i class="fa fa-money" aria-hidden="true"></i> @lang('contact.pay_due_amount')
+                </a>
             </div>
         @endif
         <div class="col-sm-12">
-            <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white tw-dw-btn-sm pull-right tw-m-2" id="open_discount_modal_btn">@lang('lang_v1.add_discount')</button>
+            <button type="button" class="tw-dw-btn tw-dw-btn-sm pull-right tw-m-2 viho-contact-action-btn" id="open_discount_modal_btn">@lang('lang_v1.add_discount')</button>
         </div>
     </div>
 </div>

@@ -62,7 +62,7 @@ class AdminSidebarMenu
             <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
             <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
             <path d="M10 12h4v4h-4z" />
-          </svg>', 'active' => request()->segment(1) == 'home'])->order(5);
+          </svg>', 'active' => request()->segment(1) == 'home' || (request()->segment(1) == 'ai-template' && request()->segment(2) == 'home')])->order(5);
 
             //User management dropdown
             if (auth()->user()->can('user.view') || auth()->user()->can('user.create') || auth()->user()->can('roles.view')) {

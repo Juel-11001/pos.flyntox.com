@@ -1,6 +1,6 @@
 <!-- <strong>{{ $contact->name }}</strong><br><br> -->
 <h3 class="profile-username">
-    <i class="fas fa-user-tie"></i>
+    <i class="fa fa-user"></i>
     {{ $contact->full_name_with_business }}
     <small>
         @if($contact->type == 'both')

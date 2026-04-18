@@ -148,12 +148,12 @@
 
 						@if(!empty($is_admin) && !empty($data['transaction_id']) && $data['transaction_type'] == 'ledger_discount')
 							<br>
-							<div class="btn-group">
-								<button type="button" class="btn btn-xs btn-primary edit_discount_btn" data-discount-id="{{$data['transaction_id']}}" title="Edit">
-									<i class="fas fa-edit"></i>
+							<div class="viho-ledger-discount-actions">
+								<button type="button" class="btn btn-xs viho-ledger-discount-btn viho-ledger-discount-btn--edit btn-modal" data-href="{{action([\App\Http\Controllers\LedgerDiscountController::class, 'edit'], ['ledger_discount' => $data['transaction_id']])}}" data-container="#edit_ledger_discount_modal" title="Edit">
+									<i class="fa fa-pencil"></i>
 								</button>
-								<button type="button" class="btn btn-xs btn-danger delete_discount_btn" data-discount-id="{{$data['transaction_id']}}" title="Delete">
-									<i class="fas fa-trash"></i>
+								<button type="button" class="btn btn-xs viho-ledger-discount-btn viho-ledger-discount-btn--delete delete_discount_btn" data-discount-id="{{$data['transaction_id']}}" data-href="{{action([\App\Http\Controllers\LedgerDiscountController::class, 'destroy'], ['ledger_discount' => $data['transaction_id']])}}" title="Delete">
+									<i class="fa fa-trash"></i>
 								</button>
 							</div>
 						@endif

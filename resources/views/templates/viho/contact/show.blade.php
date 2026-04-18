@@ -63,7 +63,7 @@
                             @if (!empty($view_type) && $view_type == 'ledger') active
                             @else
                                 '' @endif">
-                            <a href="#ledger_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-scroll"
+                            <a href="#ledger_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-book"
                                     aria-hidden="true"></i> @lang('lang_v1.ledger')</a>
                         </li>
                         @if (in_array($contact->type, ['both', 'supplier']))
@@ -542,176 +542,268 @@
                 sell_table.ajax.reload();
             });
 
-            //Date picker
-            $('#discount_date').datetimepicker({
-                format: moment_date_format + ' ' + moment_time_format,
-                ignoreReadonly: true,
-            });
+            function syncLedgerModalBodyState() {
+                $('body').css('overflow', $('.modal.show:visible').length ? 'hidden' : 'auto');
+            }
 
-            $(document).on('submit', 'form#add_discount_form, form#edit_discount_form', function(e) {
-                e.preventDefault();
-                var form = $(this);
-                var data = form.serialize();
+            function showLedgerModal(selector) {
+                $(selector).css({
+                    display: 'block',
+                    visibility: 'visible',
+                    opacity: '1',
+                }).addClass('show');
+                syncLedgerModalBodyState();
+            }
 
-                $.ajax({
-                    method: 'POST',
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    success: function(result) {
-                        if (result.success === true) {
-                            $('div#add_discount_modal').modal('hide');
-                            $('div#edit_ledger_discount_modal').modal('hide');
-                            toastr.success(result.msg);
-                            form[0].reset();
-                            form.find('button[type="submit"]').removeAttr('disabled');
-                            get_contact_ledger();
-                        } else {
-                            toastr.error(result.msg);
+            function hideLedgerModal(selector, clearContent) {
+                var $modal = $(selector);
+
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var modalInstance = bootstrap.Modal.getInstance($modal[0]);
+                        if (modalInstance) {
+                            modalInstance.hide();
                         }
-                    },
-                });
-            });
+                    } else if ($.fn.modal) {
+                        $modal.modal('hide');
+                    }
+                } catch (e) {
+                    // Use CSS fallback below if bootstrap modal API is unavailable.
+                }
 
-            $(document).on('click', 'button.delete_ledger_discount', function() {
-                swal({
-                    title: LANG.sure,
-                    icon: 'warning',
-                    buttons: true,
-                    dangerMode: true,
-                }).then(willDelete => {
-                    if (willDelete) {
-                        var href = $(this).data('href');
-                        var data = $(this).serialize();
+                $modal.css({
+                    display: 'none',
+                    visibility: 'hidden',
+                    opacity: '0',
+                }).removeClass('show');
+
+                if (clearContent === true) {
+                    $modal.empty();
+                }
+
+                if ($('.modal.show:visible').not($modal).length === 0) {
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+                }
+
+                syncLedgerModalBodyState();
+            }
+
+            function resetEditLedgerDiscountModal() {
+                var $modal = $('#edit_ledger_discount_modal');
+
+                if (!$modal.length) {
+                    return;
+                }
+
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var modalInstance = bootstrap.Modal.getInstance($modal[0]);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    } else if ($.fn.modal) {
+                        $modal.modal('hide');
+                    }
+                } catch (e) {
+                    // Fallback cleanup below is enough when bootstrap modal API is unavailable.
+                }
+
+                $modal.removeClass('show in').css({
+                    display: 'none',
+                    opacity: '0',
+                }).empty();
+
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css({
+                    overflow: '',
+                    'padding-right': '',
+                });
+            }
+
+            function initDiscountDatePicker($input) {
+                if (!$input.length) {
+                    return;
+                }
+
+                if ($input.data('DateTimePicker')) {
+                    $input.data('DateTimePicker').destroy();
+                }
+
+                $input.datetimepicker({
+                    format: moment_date_format + ' ' + moment_time_format,
+                    ignoreReadonly: true,
+                });
+            }
+
+            initDiscountDatePicker($('#discount_date'));
+
+            $(document)
+                .off('submit.vihoLedgerDiscount', 'form#add_discount_form, form#edit_discount_form')
+                .on('submit.vihoLedgerDiscount', 'form#add_discount_form, form#edit_discount_form', function(e) {
+                    e.preventDefault();
+
+                    var form = $(this);
+                    var submitBtn = form.find('button[type="submit"]');
+
+                    if (form.data('isSubmitting')) {
+                        return;
+                    }
+
+                    form.data('isSubmitting', true);
+                    submitBtn.prop('disabled', true);
+
+                    $.ajax({
+                        method: 'POST',
+                        url: form.attr('action'),
+                        dataType: 'json',
+                        data: form.serialize(),
+                        success: function(result) {
+                            if (result.success === true) {
+                                hideLedgerModal('#add_discount_modal');
+                                resetEditLedgerDiscountModal();
+
+                                if (form.attr('id') === 'add_discount_form' && form[0]) {
+                                    form[0].reset();
+                                    initDiscountDatePicker($('#discount_date'));
+                                }
+
+                                toastr.success(result.msg);
+                                get_contact_ledger();
+                            } else {
+                                toastr.error(result.msg);
+                            }
+                        },
+                        error: function() {
+                            toastr.error(LANG.something_went_wrong || 'Something went wrong');
+                        },
+                        complete: function() {
+                            form.data('isSubmitting', false);
+                            submitBtn.prop('disabled', false);
+                        },
+                    });
+                });
+
+            $(document)
+                .off('click.vihoOpenDiscount', '#open_discount_modal_btn')
+                .on('click.vihoOpenDiscount', '#open_discount_modal_btn', function(e) {
+                    e.preventDefault();
+
+                    if ($('#add_discount_form').length) {
+                        $('#add_discount_form')[0].reset();
+                    }
+
+                    initDiscountDatePicker($('#discount_date'));
+                    showLedgerModal('#add_discount_modal');
+                });
+
+            $(document)
+                .off(
+                    'click.vihoCloseDiscount',
+                    '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]'
+                )
+                .on(
+                    'click.vihoCloseDiscount',
+                    '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]',
+                    function(e) {
+                        e.preventDefault();
+
+                        var $modal = $(this).closest('.modal');
+                        hideLedgerModal('#' + $modal.attr('id'), $modal.attr('id') === 'edit_ledger_discount_modal');
+                    }
+                );
+
+            $(document)
+                .off('click.vihoDiscountBackdrop', '#add_discount_modal')
+                .on('click.vihoDiscountBackdrop', '#add_discount_modal', function(e) {
+                    if (e.target === this) {
+                        hideLedgerModal('#' + this.id);
+                    }
+                });
+
+            $(document)
+                .off('shown.bs.modal.vihoLedgerEdit', '#edit_ledger_discount_modal')
+                .on('shown.bs.modal.vihoLedgerEdit', '#edit_ledger_discount_modal', function() {
+                    initDiscountDatePicker($(this).find('#edit_discount_date'));
+                });
+
+            $(document)
+                .off('mousedown.vihoPrepareEditDiscount', '.viho-ledger-discount-btn--edit.btn-modal')
+                .on('mousedown.vihoPrepareEditDiscount', '.viho-ledger-discount-btn--edit.btn-modal', function() {
+                    $('#edit_ledger_discount_modal').empty().removeClass('show in').css({
+                        display: 'none',
+                        opacity: '0',
+                    });
+
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css({
+                        overflow: '',
+                        'padding-right': '',
+                    });
+                });
+
+            $(document)
+                .off(
+                    'click.vihoCleanupEditDiscount',
+                    '#edit_ledger_discount_modal .btn-close, #edit_ledger_discount_modal [data-bs-dismiss="modal"], #edit_ledger_discount_modal .close, #edit_ledger_discount_modal [data-dismiss="modal"]'
+                )
+                .on(
+                    'click.vihoCleanupEditDiscount',
+                    '#edit_ledger_discount_modal .btn-close, #edit_ledger_discount_modal [data-bs-dismiss="modal"], #edit_ledger_discount_modal .close, #edit_ledger_discount_modal [data-dismiss="modal"]',
+                    function() {
+                        setTimeout(resetEditLedgerDiscountModal, 0);
+                    }
+                );
+
+            $(document)
+                .off('click.vihoCleanupEditDiscountBackdrop', '#edit_ledger_discount_modal')
+                .on('click.vihoCleanupEditDiscountBackdrop', '#edit_ledger_discount_modal', function(e) {
+                    if (e.target === this) {
+                        setTimeout(resetEditLedgerDiscountModal, 0);
+                    }
+                });
+
+            $(document)
+                .off('click.vihoDeleteDiscount', '.delete_discount_btn, button.delete_ledger_discount')
+                .on('click.vihoDeleteDiscount', '.delete_discount_btn, button.delete_ledger_discount', function(e) {
+                    e.preventDefault();
+
+                    var href = $(this).data('href');
+                    var discountId = $(this).data('discount-id');
+
+                    if (!href && discountId) {
+                        href = '/ledger-discount/' + discountId;
+                    }
+
+                    swal({
+                        title: LANG.sure,
+                        icon: 'warning',
+                        buttons: true,
+                        dangerMode: true,
+                    }).then(function(willDelete) {
+                        if (!willDelete || !href) {
+                            return;
+                        }
 
                         $.ajax({
                             method: 'DELETE',
                             url: href,
                             dataType: 'json',
-                            data: data,
                             success: function(result) {
-                                if (result.success == true) {
+                                if (result.success === true) {
                                     toastr.success(result.msg);
+                                    resetEditLedgerDiscountModal();
                                     get_contact_ledger();
                                 } else {
                                     toastr.error(result.msg);
                                 }
                             },
+                            error: function() {
+                                toastr.error(LANG.something_went_wrong || 'Error deleting discount');
+                            },
                         });
-                    }
+                    });
                 });
-            });
-        });
-
-        $(document).on('shown.bs.modal', '#edit_ledger_discount_modal', function(e) {
-            $('#edit_ledger_discount_modal').find('#edit_discount_date').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm:ss'
-            });
-        })
-
-        // Fix discount modal button - clean functionality
-        $(document).on('click', '#open_discount_modal_btn', function(e) {
-            e.preventDefault();
-            
-            // Clear form
-            $('#add_discount_form')[0].reset();
-            
-            // Show modal
-            $('#add_discount_modal').css({
-                'display': 'block',
-                'visibility': 'visible',
-                'opacity': '1'
-            }).addClass('show');
-            
-            // Prevent body scroll
-            $('body').css('overflow', 'hidden');
-        });
-
-        // Handle modal close
-        $(document).on('click', '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]', function(e) {
-            e.preventDefault();
-            $('#add_discount_modal').css({
-                'display': 'none',
-                'visibility': 'hidden',
-                'opacity': '0'
-            }).removeClass('show');
-            
-            // Restore body scroll
-            $('body').css('overflow', 'auto');
-            
-            console.log('Modal hidden');
-        });
-
-        // Close modal when clicking outside
-        $(document).on('click', '#add_discount_modal', function(e) {
-            if (e.target === this) {
-                $('#add_discount_modal .btn-close').click();
-            }
-        });
-
-        // Edit discount functionality
-        $(document).on('click', '.edit_discount_btn', function(e) {
-            e.preventDefault();
-            var discountId = $(this).data('discount-id');
-            
-            $.ajax({
-                url: '/ledger-discount/' + discountId + '/edit',
-                method: 'GET',
-                success: function(response) {
-                    // Load edit modal content via AJAX
-                    $('#edit_ledger_discount_modal').html(response);
-                    
-                    // Show modal like create modal
-                    $('#edit_ledger_discount_modal').css({
-                        'display': 'block',
-                        'visibility': 'visible',
-                        'opacity': '1'
-                    }).addClass('show');
-                    
-                    // Prevent body scroll
-                    $('body').css('overflow', 'hidden');
-                },
-                error: function() {
-                    toastr.error('Error loading discount data');
-                }
-            });
-        });
-
-        // Delete discount functionality
-        $(document).on('click', '.delete_discount_btn', function(e) {
-            e.preventDefault();
-            var discountId = $(this).data('discount-id');
-            
-            if (confirm('Are you sure you want to delete this discount?')) {
-                $.ajax({
-                    url: '/ledger-discount/' + discountId,
-                    method: 'DELETE',
-                    success: function(response) {
-                        if (response.success) {
-                            toastr.success(response.msg);
-                            get_contact_ledger(); // Refresh ledger
-                        } else {
-                            toastr.error(response.msg);
-                        }
-                    },
-                    error: function() {
-                        toastr.error('Error deleting discount');
-                    }
-                });
-            }
-        });
-
-        // Handle edit modal close
-        $(document).on('click', '#edit_discount_modal .btn-close, #edit_discount_modal [data-bs-dismiss="modal"]', function(e) {
-            e.preventDefault();
-            $('#edit_discount_modal').css({
-                'display': 'none',
-                'visibility': 'hidden',
-                'opacity': '0'
-            }).removeClass('show');
-            
-            // Restore body scroll
-            $('body').css('overflow', 'auto');
         });
 
         $("input.transaction_types, input#show_payments").on('ifChanged', function(e) {
@@ -901,3 +993,124 @@
     </script>
     @include('sale_pos.partials.subscriptions_table_javascript', ['contact_id' => $contact->id])
 @endsection
+
+@push('styles')
+    <style>
+        .viho-template-active .profile-username > i.fa {
+            margin-right: 10px;
+            color: #24695c;
+        }
+
+        .viho-template-active .viho-contact-action-btn {
+            background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+            border: none !important;
+            border-radius: 999px !important;
+            box-shadow: 0 10px 24px rgba(36, 105, 92, 0.18);
+            color: #fff !important;
+            font-weight: 600;
+        }
+
+        .viho-template-active .viho-contact-action-btn:hover,
+        .viho-template-active .viho-contact-action-btn:focus {
+            background: linear-gradient(135deg, #1f5a4f 0%, #18473e 100%) !important;
+            color: #fff !important;
+        }
+
+        .viho-template-active .viho-contact-action-btn i {
+            color: #fff !important;
+            margin-right: 6px;
+        }
+
+        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link {
+            background: rgba(36, 105, 92, 0.08);
+            border-radius: 999px;
+            color: #24695c !important;
+            font-weight: 600;
+            margin: 8px 6px 0;
+        }
+
+        .viho-template-active .nav-tabs-custom .nav-tabs > li.active > a.viho-ledger-tab-link,
+        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link:hover,
+        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link:focus {
+            background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+            border-color: transparent !important;
+            color: #fff !important;
+        }
+
+        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link i {
+            margin-right: 6px;
+        }
+
+        .viho-template-active .viho-ledger-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .viho-template-active .viho-ledger-format-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .viho-template-active .viho-ledger-format-group .btn {
+            border-radius: 999px;
+            flex: 0 0 calc(50% - 4px);
+            margin-left: 0;
+            max-width: calc(50% - 4px);
+            text-align: center;
+        }
+
+        .viho-template-active .viho-ledger-actions {
+            padding-top: 26px;
+        }
+
+        .viho-template-active .viho-ledger-actions .btn {
+            margin-left: 6px;
+        }
+
+        .viho-template-active .viho-ledger-discount-actions {
+            display: inline-flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .viho-template-active .viho-ledger-discount-btn {
+            align-items: center;
+            border: none !important;
+            border-radius: 999px !important;
+            color: #fff !important;
+            display: inline-flex;
+            height: 28px;
+            justify-content: center;
+            min-width: 28px;
+            padding: 0 10px;
+        }
+
+        .viho-template-active .viho-ledger-discount-btn i {
+            color: #fff !important;
+        }
+
+        .viho-template-active .viho-ledger-discount-btn--edit {
+            background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+        }
+
+        .viho-template-active .viho-ledger-discount-btn--delete {
+            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important;
+        }
+
+        @media (max-width: 991px) {
+            .viho-template-active .viho-ledger-actions {
+                padding-top: 0;
+                text-align: left;
+            }
+
+            .viho-template-active .viho-ledger-actions .btn {
+                margin-left: 0;
+                margin-right: 6px;
+                margin-top: 4px;
+            }
+        }
+    </style>
+@endpush

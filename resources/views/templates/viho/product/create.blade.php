@@ -268,10 +268,10 @@
       <input type="hidden" name="submit_type" id="submit_type">
       <div class="text-center">
         <div class="btn-group d-flex flex-wrap justify-content-center gap-2">
-          @if($selling_price_group_count)
+          {{-- @if($selling_price_group_count)
           <button type="submit" value="submit_n_add_selling_prices"
             class="tw-dw-btn tw-dw-btn-warning tw-dw-btn-md text-white submit_product_form">@lang('lang_v1.save_n_add_selling_price_group_prices')</button>
-          @endif
+          @endif --}}
 
           @can('product.opening_stock')
           <button id="opening_stock_button" @if(!empty($duplicate_product) && $duplicate_product->enable_stock == 0)

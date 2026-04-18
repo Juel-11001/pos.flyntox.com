@@ -403,6 +403,26 @@ $(document).on('shown.bs.modal', '.contact_modal', function(e) {
 
 <script type="text/javascript">
 $(document).ready(function() {
+  var patchVihoSupplierActionIcons = function() {
+    if ($('#contact_type').val() !== 'supplier') {
+      return;
+    }
+
+    $('#contact_table .dropdown-menu a').each(function() {
+      var $link = $(this);
+      var href = $link.attr('href') || '';
+      var linkText = $.trim($link.text()).toLowerCase();
+
+      if ($link.hasClass('pay_purchase_due') || linkText === "{{ strtolower(__('lang_v1.pay')) }}") {
+        $link.find('i').remove();
+        $link.prepend('<i class="fa fa-money" aria-hidden="true"></i>');
+      } else if (href.indexOf('view=ledger') !== -1 || linkText === "{{ strtolower(__('lang_v1.ledger')) }}") {
+        $link.find('i').remove();
+        $link.prepend('<i class="fa fa-book" aria-hidden="true"></i>');
+      }
+    });
+  };
+
   var destroyContactTable = function() {
     if (!window.jQuery || !$.fn || !$.fn.DataTable) {
       return;
@@ -590,6 +610,7 @@ $(document).ready(function() {
     columns: columns,
     fnDrawCallback: function(oSettings) {
       __currency_convert_recursively($('#contact_table'));
+      patchVihoSupplierActionIcons();
     },
     "footerCallback": function(row, data, start, end, display) {
       var footer_contact_due = 0;
@@ -622,8 +643,10 @@ $(document).ready(function() {
       };
 
       relocate();
+      patchVihoSupplierActionIcons();
       this.api().on('draw.dt', function() {
         relocate();
+        patchVihoSupplierActionIcons();
       });
     }
   });

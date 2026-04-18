@@ -53,6 +53,41 @@
         color: #24695C !important;
     }
 
+    /* Sidebar menu active states */
+    .viho-template-active .side-bar .nav-menu .nav-link.active,
+    .viho-template-active .side-bar .nav-menu .nav-link.active:hover {
+        background: rgba(36, 105, 92, 0.12) !important;
+        color: #24695C !important;
+        border-radius: 8px;
+    }
+
+    .viho-template-active .side-bar .nav-menu .nav-link.active svg,
+    .viho-template-active .side-bar .nav-menu .nav-link.active i {
+        color: #24695C !important;
+    }
+
+    .viho-template-active .side-bar .nav-menu .nav-submenu li a.active,
+    .viho-template-active .side-bar .nav-menu .nav-submenu li a.active:hover {
+        background: rgba(36, 105, 92, 0.08) !important;
+        color: #24695C !important;
+        border-radius: 6px;
+    }
+
+    .viho-template-active .side-bar .nav-menu .menu-content {
+        display: none;
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .viho-template-active .side-bar .nav-menu .menu-title.active ~ .menu-content {
+        display: block !important;
+        max-height: 500px;
+        opacity: 1;
+        visibility: visible;
+    }
+
     .viho-template-active .viho-main-layout {
         background: #f5f6fb !important;
     }

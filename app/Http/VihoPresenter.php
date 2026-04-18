@@ -23,7 +23,7 @@ class VihoPresenter extends Presenter
 
         $url = $item->getUrl();
 
-        return '<li'.$active.'><a class="nav-link menu-title link-nav" href="'.$url.'" '.$item->getAttributes().'>'
+        return '<li><a class="nav-link menu-title link-nav'.$active.'" href="'.$url.'" '.$item->getAttributes().'>'
             .$this->formatIcon($item->icon)
             .'<span>'.$item->title.'</span></a></li>'.PHP_EOL;
     }
@@ -32,7 +32,7 @@ class VihoPresenter extends Presenter
     {
         $active = $item->hasActiveOnChild() ? ' active' : '';
 
-        $html = '<li class="dropdown'.$active.'"><a class="nav-link menu-title" href="javascript:void(0)" '.$item->getAttributes().'>'
+        $html = '<li class="dropdown"><a class="nav-link menu-title'.$active.'" href="javascript:void(0)" '.$item->getAttributes().'>'
             .$this->formatIcon($item->icon)
             .'<span>'.$item->title.'</span></a>';
 

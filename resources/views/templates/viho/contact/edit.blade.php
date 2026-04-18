@@ -15,6 +15,8 @@
       $lead_users = [];
       $assigned_to_users = $contact->userHavingAccess->pluck('id');
     }
+    $is_lead_form = ($contact->type === 'lead');
+    $current_contact_mode = !empty($contact->contact_type) ? $contact->contact_type : (in_array($contact->type, ['supplier', 'both']) ? 'business' : 'individual');
   @endphp
 
     {!! Form::open(['url' => $url, 'method' => 'PUT', 'id' => 'contact_edit_form']) !!}
@@ -35,17 +37,17 @@
                   <span class="input-group-addon">
                       <i class="fa fa-user"></i>
                   </span>
-                  {!! Form::select('type', $types, $contact->type, ['class' => 'form-control', 'id' => 'contact_type','placeholder' => __('messages.please_select'), 'required']); !!}
+                  {!! Form::select('type', $types, $contact->type, ['class' => 'form-control', 'id' => 'contact_type','placeholder' => __('messages.please_select'), 'required', 'onchange' => "var form=this.form;if(!form)return;var target=(['supplier','both'].indexOf(this.value)!==-1)?'business':'individual';var radio=form.querySelector('input[name=\"contact_type_radio\"][value=\"'+target+'\"]');if(radio){radio.checked=true;radio.dispatchEvent(new Event('change',{bubbles:true}));}"]); !!}
               </div>
           </div>
         </div>
         <div class="col-md-4 mt-15">
             <label class="radio-inline">
-                <input type="radio" name="contact_type_radio" @if($contact->contact_type == 'individual') checked @endif id="inlineRadio1" value="individual">
+                <input type="radio" name="contact_type_radio" @if($current_contact_mode == 'individual') checked @endif id="inlineRadio1" value="individual" onchange="var form=this.form;if(!form)return;form.querySelectorAll('.individual').forEach(function(el){el.style.display='';});form.querySelectorAll('.business').forEach(function(el){el.style.display='none';});var input=form.querySelector('input[name=&quot;first_name&quot;]');if(input){input.required=true;}">
                 @lang('lang_v1.individual')
             </label>
             <label class="radio-inline">
-                <input type="radio" name="contact_type_radio" @if($contact->contact_type == 'business') checked @endif id="inlineRadio2" value="business">
+                <input type="radio" name="contact_type_radio" @if($current_contact_mode == 'business') checked @endif id="inlineRadio2" value="business" onchange="var form=this.form;if(!form)return;form.querySelectorAll('.individual').forEach(function(el){el.style.display='none';});form.querySelectorAll('.business').forEach(function(el){el.style.display='';});var input=form.querySelector('input[name=&quot;first_name&quot;]');if(input){input.required=false;}">
                 @lang('business.business')
             </label>
         </div>
@@ -76,7 +78,7 @@
           </div>
         </div>
         <div class="clearfix customer_fields"></div>
-        <div class="col-md-4 business" @if($contact->contact_type == 'individual' || empty($contact->contact_type)) style="display: none;"  @endif>
+        <div class="col-md-4 business" @if($current_contact_mode == 'individual') style="display: none;"  @endif>
           <div class="form-group">
               {!! Form::label('supplier_business_name', __('business.business_name') . ':') !!}
               <div class="input-group">
@@ -89,25 +91,25 @@
           </div>
         </div>
         <div class="clearfix"></div>
-        <div class="col-md-3 individual"  @if($contact->contact_type == 'business' || empty($contact->contact_type)) style="display: none;"  @endif>
+        <div class="col-md-3 individual"  @if($current_contact_mode == 'business') style="display: none;"  @endif>
                 <div class="form-group">
                     {!! Form::label('prefix', __( 'business.prefix' ) . ':') !!}
                     {!! Form::text('prefix', $contact->prefix, ['class' => 'form-control', 'placeholder' => __( 'business.prefix_placeholder' ) ]); !!}
                 </div>
             </div>
-            <div class="col-md-3 individual" @if($contact->contact_type == 'business' || empty($contact->contact_type)) style="display: none;"  @endif>
+            <div class="col-md-3 individual" @if($current_contact_mode == 'business') style="display: none;"  @endif>
                 <div class="form-group">
                     {!! Form::label('first_name', __( 'business.first_name' ) . ':*') !!}
-                    {!! Form::text('first_name', $contact->first_name, ['class' => 'form-control', 'required', 'placeholder' => __( 'business.first_name' ) ]); !!}
+                    {!! Form::text('first_name', $contact->first_name, ['class' => 'form-control', 'placeholder' => __( 'business.first_name' ) ] + ($current_contact_mode === 'individual' ? ['required' => true] : [])); !!}
                 </div>
             </div>
-            <div class="col-md-3 individual" @if($contact->contact_type == 'business' || empty($contact->contact_type)) style="display: none;"  @endif>
+            <div class="col-md-3 individual" @if($current_contact_mode == 'business') style="display: none;"  @endif>
                 <div class="form-group">
                     {!! Form::label('middle_name', __( 'lang_v1.middle_name' ) . ':') !!}
                     {!! Form::text('middle_name', $contact->middle_name, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.middle_name' ) ]); !!}
                 </div>
             </div>
-            <div class="col-md-3 individual" @if($contact->contact_type == 'business' || empty($contact->contact_type)) style="display: none;"  @endif>
+            <div class="col-md-3 individual" @if($current_contact_mode == 'business') style="display: none;"  @endif>
                 <div class="form-group">
                     {!! Form::label('last_name', __( 'business.last_name' ) . ':') !!}
                     {!! Form::text('last_name', $contact->last_name, ['class' => 'form-control', 'placeholder' => __( 'business.last_name' ) ]); !!}
@@ -174,7 +176,7 @@
         </div>
         
         <!-- lead additional field -->
-        <div class="col-md-4 lead_additional_div">
+        <div class="col-md-4 lead_additional_div" @if(!$is_lead_form) style="display: none;" @endif>
           <div class="form-group">
               {!! Form::label('crm_source', __('lang_v1.source') . ':' ) !!}
               <div class="input-group">
@@ -185,7 +187,7 @@
               </div>
           </div>
         </div>
-        <div class="col-md-4 lead_additional_div">
+        <div class="col-md-4 lead_additional_div" @if(!$is_lead_form) style="display: none;" @endif>
           <div class="form-group">
               {!! Form::label('crm_life_stage', __('lang_v1.life_stage') . ':' ) !!}
               <div class="input-group">
@@ -196,21 +198,21 @@
               </div>
           </div>
         </div>
-        <div class="col-md-6 lead_additional_div">
+        <div class="col-md-6 lead_additional_div" @if(!$is_lead_form) style="display: none;" @endif>
           <div class="form-group">
               {!! Form::label('user_id', __('lang_v1.assigned_to') . ':*' ) !!}
               <div class="input-group">
                   <span class="input-group-addon">
                       <i class="fa fa-user"></i>
                   </span>
-                  {!! Form::select('user_id[]', $users, $lead_users , ['class' => 'form-control select2', 'id' => 'user_id', 'multiple', 'required', 'style' => 'width: 100%;']); !!}
+                  {!! Form::select('user_id[]', $users, $lead_users , ['class' => 'form-control select2', 'id' => 'user_id', 'multiple', 'style' => 'width: 100%;'] + ($is_lead_form ? ['required' => true] : [])); !!}
               </div>
           </div>
         </div>
 
         @if(config('constants.enable_contact_assign') && $contact->type !== 'lead')
           <!-- User in create customer & supplier -->
-          <div class="col-md-6">
+          <div class="col-md-6 contact_assign_div" @if($is_lead_form) style="display: none;" @endif>
                 <div class="form-group">
                     {!! Form::label('assigned_to_users', __('lang_v1.assigned_to') . ':' ) !!}
                     <div class="input-group">
@@ -595,3 +597,44 @@
 
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+<script>
+    (function($) {
+        var $form = $('#contact_edit_form');
+
+        if (!$form.length) {
+            return;
+        }
+
+        function syncVihoContactTypeFields() {
+            var selectedType = $form.find('#contact_type').val();
+            var preferredMode = ['supplier', 'both'].indexOf($form.find('#contact_type').val()) !== -1 ? 'business' : 'individual';
+            var $selectedMode = $form.find('input[name="contact_type_radio"]:checked');
+
+            if (!$selectedMode.length) {
+                $form.find('input[name="contact_type_radio"][value="' + preferredMode + '"]').prop('checked', true);
+                $selectedMode = $form.find('input[name="contact_type_radio"]:checked');
+            }
+
+            var isIndividual = ($selectedMode.val() || preferredMode) === 'individual';
+
+            $form.find('div.individual')[isIndividual ? 'show' : 'hide']();
+            $form.find('div.business')[isIndividual ? 'hide' : 'show']();
+            $form.find('input[name="first_name"]').prop('required', isIndividual);
+
+            var isLead = selectedType === 'lead';
+            $form.find('.lead_additional_div')[isLead ? 'show' : 'hide']();
+            $form.find('.contact_assign_div')[isLead ? 'hide' : 'show']();
+            $form.find('select[name="user_id[]"]').prop('required', isLead);
+        }
+
+        $form.find('input[name="contact_type_radio"]')
+            .off('change.vihoContactTypeFix')
+            .on('change.vihoContactTypeFix', syncVihoContactTypeFields);
+
+        $form.find('#contact_type')
+            .off('change.vihoContactTypeFix')
+            .on('change.vihoContactTypeFix', syncVihoContactTypeFields);
+
+        syncVihoContactTypeFields();
+    })(jQuery);
+</script>
