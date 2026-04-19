@@ -865,4 +865,49 @@
     .viho-template-active .dt-buttons {
         margin-bottom: 10px !important;
     }
+
+    @media print {
+        /*
+         * Viho-only receipt print mode:
+         * mimic default template print flow by hiding Viho shell
+         * and printing only the receipt section.
+         */
+        body.viho-printing-receipt .page-wrapper,
+        body.viho-printing-receipt .main-nav,
+        body.viho-printing-receipt .sidebar-user,
+        body.viho-printing-receipt .main-navbar,
+        body.viho-printing-receipt .right-arrow,
+        body.viho-printing-receipt .left-arrow,
+        body.viho-printing-receipt .scrolltop,
+        body.viho-printing-receipt #toast-container {
+            display: none !important;
+        }
+
+        body.viho-printing-receipt {
+            background: #fff !important;
+        }
+
+        body.viho-printing-receipt #receipt_section,
+        body.viho-printing-receipt #receipt_section.print_section,
+        body.viho-printing-receipt section#receipt_section.invoice {
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            float: none !important;
+        }
+
+        body.viho-printing-receipt #receipt_section .table-responsive {
+            overflow: visible !important;
+        }
+
+        body.viho-printing-receipt #receipt_section table {
+            width: 100% !important;
+        }
+
+        body.viho-printing-receipt .no-print {
+            display: none !important;
+        }
+    }
 </style>

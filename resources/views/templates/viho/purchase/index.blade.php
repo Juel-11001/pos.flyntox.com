@@ -201,7 +201,6 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
 
 </section>
 
-<section id="receipt_section" class="print_section"></section>
 @stop
 
 @section('javascript')

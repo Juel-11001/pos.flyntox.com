@@ -11,6 +11,39 @@
   table.fixedHeader-floating {
     display: none;
   }
+
+  /*
+    Receipt/details printing:
+    When JS adds `body.viho-printing-receipt`, print ONLY `.print_section`
+    (e.g. `#receipt_section`) and hide the rest of the app chrome.
+  */
+  body.viho-template-active.viho-printing-receipt * {
+    visibility: hidden !important;
+  }
+  body.viho-template-active.viho-printing-receipt .print_section,
+  body.viho-template-active.viho-printing-receipt .print_section * {
+    visibility: visible !important;
+  }
+  body.viho-template-active.viho-printing-receipt .print_section {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+  body.viho-template-active.viho-printing-receipt .no-print {
+    display: none !important;
+  }
+
+  /* Hide sidebar/header wrappers that may still occupy space */
+  body.viho-template-active.viho-printing-receipt .page-wrapper .page-main-header,
+  body.viho-template-active.viho-printing-receipt .page-wrapper .page-body-wrapper .page-header,
+  body.viho-template-active.viho-printing-receipt .page-wrapper .page-sidebar,
+  body.viho-template-active.viho-printing-receipt .page-wrapper .sidebar-wrapper,
+  body.viho-template-active.viho-printing-receipt .page-wrapper .page-body-wrapper .page-sidebar,
+  body.viho-template-active.viho-printing-receipt .page-wrapper .page-body-wrapper .sidebar-wrapper {
+    display: none !important;
+    visibility: hidden !important;
+  }
 }
 .invoice-table {
   margin-top: 16px;

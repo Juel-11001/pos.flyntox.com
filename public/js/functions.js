@@ -383,6 +383,17 @@ function __sum_stock(table, class_name, label_direction = 'right') {
 }
 
 function __print_receipt(section_id = null) {
+    // Viho-only: hide app chrome (sidebar/header) during receipt printing.
+    // Kept scoped so default template remains unaffected.
+    var $body = $('body');
+    var is_viho_template = (typeof window.template !== 'undefined' && window.template === 'viho');
+    if (is_viho_template) {
+        $body.addClass('viho-printing-receipt');
+        window.onafterprint = function() {
+            $body.removeClass('viho-printing-receipt');
+        };
+    }
+
     if (section_id) {
         var imgs = document.getElementById(section_id).getElementsByTagName("img");
     } else {
