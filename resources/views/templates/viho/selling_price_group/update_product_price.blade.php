@@ -34,7 +34,7 @@
   <div class="row">
     <div class="col-sm-6">
       <a href="{{action([\App\Http\Controllers\SellingPriceGroupController::class, 'export'])}}"
-        class="tw-dw-btn tw-dw-btn-primary text-white">@lang('lang_v1.export_product_prices')</a>
+        class="btn btn-primary">@lang('lang_v1.export_product_prices')</a>
     </div>
     <div class="col-sm-12 col-lg-6 col-xl-4">
       {!! Form::open(['url' => action([\App\Http\Controllers\SellingPriceGroupController::class, 'import']), 'method' =>
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div class="form-group">
-        <button type="submit" class="tw-dw-btn tw-dw-btn-primary btn-md text-white">@lang('messages.submit')</button>
+        <button type="submit" class="btn btn-primary btn-md">@lang('messages.submit')</button>
       </div>
       {!! Form::close() !!}
     </div>

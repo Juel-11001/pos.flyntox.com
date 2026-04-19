@@ -585,10 +585,33 @@ $(document).ready(function() {
         removeLabel: LANG.remove,
         previewSettings: {
             image: { width: 'auto', height: 'auto', 'max-width': '100%', 'max-height': '100%' },
+    }
+});
+
+$(document).on('click', 'a.view-product', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: $(this).attr('href'),
+        dataType: 'html',
+        success: function(result) {
+            $('#view_product_modal')
+                .html(result)
+                .modal('show');
+            __currency_convert_recursively($('#view_product_modal'));
         },
-        mainClass: 'product-image-fileinput',
-    };
-    $('#upload_image').fileinput(img_fileinput_setting);
+    });
+});
+var img_fileinput_setting = {
+    showUpload: false,
+    showPreview: true,
+    browseLabel: LANG.file_browse_label,
+    removeLabel: LANG.remove,
+    previewSettings: {
+        image: { width: 'auto', height: 'auto', 'max-width': '100%', 'max-height': '100%' },
+    },
+    mainClass: 'product-image-fileinput',
+};
+$('#upload_image').fileinput(img_fileinput_setting);
 
     if ($('textarea#product_description').length > 0) {
         tinymce.init({

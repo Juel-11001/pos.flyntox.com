@@ -51,10 +51,20 @@ class VariationTemplateController extends Controller
                         ? route('ai-template.variation-templates.destroy', [$row->id])
                         : route('variation-templates.destroy', [$row->id]);
 
-                    $edit_btn = '<button data-href="'.$edit_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary edit_variation_button"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-                    $delete_btn = '';
-                    if (empty($row->total_pv)) {
-                        $delete_btn = '&nbsp;<button data-href="'.$delete_url.'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_variation_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                    if ($is_ai_template) {
+                        // Viho template - icon-only buttons
+                        $edit_btn = '<button data-href="'.$edit_url.'" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center edit_variation_button" title="'.__('messages.edit').'" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="glyphicon glyphicon-edit" style="font-size: 13px;"></i></button>';
+                        $delete_btn = '';
+                        if (empty($row->total_pv)) {
+                            $delete_btn = '<button data-href="'.$delete_url.'" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center delete_variation_button" title="'.__('messages.delete').'" style="padding: 4px 10px; background-color: #dc3545; border-color: #dc3545; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="glyphicon glyphicon-trash" style="font-size: 13px;"></i></button>';
+                        }
+                    } else {
+                        // Default template - keep original design
+                        $edit_btn = '<button data-href="'.$edit_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary edit_variation_button"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                        $delete_btn = '';
+                        if (empty($row->total_pv)) {
+                            $delete_btn = '&nbsp;<button data-href="'.$delete_url.'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_variation_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                        }
                     }
 
                     return $edit_btn.$delete_btn;

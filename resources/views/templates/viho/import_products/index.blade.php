@@ -38,14 +38,14 @@
         </div>
         <div class="col-sm-12 col-md-6 col-xl-4">
           <br>
-          <button type="submit" class="tw-dw-btn tw-dw-btn-primary text-white">@lang('messages.submit')</button>
+          <button type="submit" class="btn btn-primary text-white">@lang('messages.submit')</button>
         </div>
       </div>
       {!! Form::close() !!}
       <br><br>
       <div class="row">
         <div class="col-sm-12 col-md-6 col-xl-4">
-          <a href="{{ asset('files/import_products_csv_template.xls') }}" class="tw-dw-btn tw-dw-btn-success text-white"
+          <a href="{{ asset('files/import_products_csv_template.xls') }}" class="btn btn-success"
             download><i class="fa fa-download"></i> @lang('lang_v1.download_template_file')</a>
         </div>
       </div>

@@ -149,7 +149,9 @@
             <div class="col-sm-8">
               <div class="form-group">
                 {!! Form::label('product_description', __('lang_v1.product_description') . ':') !!}
-                  {!! Form::textarea('product_description', $product->product_description, ['class' => 'form-control']); !!}
+                <div style="border: 1px solid #d2d6de; border-radius: 4px; overflow: hidden;">
+                  {!! Form::textarea('product_description', $product->product_description, ['class' => 'form-control summernote', 'id' => 'product_description', 'rows' => 5, 'style' => 'border: none; resize: vertical; min-height: 120px;']); !!}
+                </div>
               </div>
             </div>
             <div class="col-sm-4">
@@ -360,18 +362,32 @@
     <input type="hidden" name="submit_type" id="submit_type">
         <div class="col-sm-12">
           <div class="text-center">
-            <div class="btn-group">
+            <div class="btn-group d-flex flex-wrap justify-content-center gap-2" style="gap: 12px;">
               {{-- @if($selling_price_group_count)
-                <button type="submit" value="submit_n_add_selling_prices" class="tw-dw-btn tw-dw-btn-warning tw-text-white tw-dw-btn-lg submit_product_form">@lang('lang_v1.save_n_add_selling_price_group_prices')</button>
+                <button type="submit" value="submit_n_add_selling_prices" class="tw-dw-btn tw-dw-btn-warning tw-text-white tw-dw-btn-lg submit_product_form">
+                  <i class="fa fa-tags"></i> @lang('lang_v1.save_n_add_selling_price_group_prices')
+                </button>
               @endif --}}
 
               @can('product.opening_stock')
-              <button type="submit" @if(empty($product->enable_stock)) disabled="true" @endif id="opening_stock_button"  value="update_n_edit_opening_stock" class="tw-dw-btn tw-text-white tw-dw-btn-lg bg-purple submit_product_form">@lang('lang_v1.update_n_edit_opening_stock')</button>
+              <button type="submit" @if(empty($product->enable_stock)) disabled="true" @endif id="opening_stock_button" value="update_n_edit_opening_stock"
+                class="tw-dw-btn tw-dw-btn-md text-white submit_product_form"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                <i class="fa fa-database"></i> @lang('lang_v1.update_n_edit_opening_stock')
+              </button>
               @endif
 
-              <button type="submit" value="save_n_add_another" class="tw-dw-btn tw-text-white tw-dw-btn-lg bg-maroon submit_product_form">@lang('lang_v1.update_n_add_another')</button>
+              <button type="submit" value="save_n_add_another"
+                class="tw-dw-btn tw-dw-btn-md text-white submit_product_form"
+                style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4); transition: all 0.3s ease;">
+                <i class="fa fa-plus-circle"></i> @lang('lang_v1.update_n_add_another')
+              </button>
 
-              <button type="submit" value="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white tw-dw-btn-lg submit_product_form">@lang('messages.update')</button>
+              <button type="submit" value="submit"
+                class="tw-dw-btn tw-dw-btn-md text-white submit_product_form"
+                style="background: linear-gradient(135deg, #24695c 0%, #2d8a7a 100%); border: none; box-shadow: 0 4px 12px rgba(36, 105, 92, 0.4); transition: all 0.3s ease;">
+                <i class="fa fa-save"></i> @lang('messages.update')
+              </button>
             </div>
           </div>
         </div>
@@ -383,9 +399,23 @@
 @endsection
 
 @section('javascript')
+  <!-- Summernote CSS & JS -->
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+
   <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
   <script type="text/javascript">
-    $(document).ready( function(){
+    $(document).ready(function() {
+      // Initialize Summernote for Product Description
+      $('#product_description').summernote({
+        height: 200,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert', ['link']]
+        ]
+      });
+
       __page_leave_confirmation('#product_add_form');
     });
   </script>

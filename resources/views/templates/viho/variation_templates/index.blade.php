@@ -149,9 +149,69 @@
                         if ($info.length) $('#variation_dt_info').empty().append($info);
                         if ($paginate.length) $('#variation_dt_paginate').empty().append($paginate);
                     }
+                    // Convert ALL action buttons to icon-only style
+                    var convertButtons = function() {
+                        // Find ALL buttons in Action column (last column)
+                        $('#variation_table tbody tr').each(function() {
+                            var $row = $(this);
+                            var $actionCell = $row.find('td:last-child');
+                            
+                            $actionCell.find('button').each(function() {
+                                var $btn = $(this);
+                                var btnText = $btn.text().trim().toLowerCase();
+                                var isEdit = btnText.includes('edit') || $btn.find('i').hasClass('glyphicon-edit') || $btn.find('i').hasClass('fa-edit');
+                                var isDelete = btnText.includes('delete') || btnText.includes('trash') || $btn.find('i').hasClass('glyphicon-trash') || $btn.find('i').hasClass('fa-trash');
+                                
+                                // Skip if already converted
+                                if ($btn.hasClass('icon-only-done')) return;
+                                $btn.addClass('icon-only-done');
+                                
+                                // Remove ALL old classes and add new
+                                $btn.removeClass();
+                                $btn.addClass('btn btn-xs d-inline-flex align-items-center justify-content-center icon-only-done');
+                                
+                                // Set button colors
+                                if (isEdit || (!isDelete && $btn.index() === 0)) {
+                                    // First button = Edit (green)
+                                    $btn.addClass('btn-success');
+                                    $btn.css({
+                                        'padding': '4px 10px',
+                                        'margin-right': '5px',
+                                        'background-color': '#24695c',
+                                        'border-color': '#24695c',
+                                        'color': '#fff',
+                                        'min-width': '32px',
+                                        'min-height': '32px',
+                                        'border-radius': '4px'
+                                    });
+                                    // Replace with icon only
+                                    $btn.html('<i class="glyphicon glyphicon-edit" style="font-size: 13px;"></i>');
+                                } else if (isDelete || $btn.index() === 1) {
+                                    // Second button = Delete (red)
+                                    $btn.addClass('btn-danger');
+                                    $btn.css({
+                                        'padding': '4px 10px',
+                                        'background-color': '#dc3545',
+                                        'border-color': '#dc3545',
+                                        'color': '#fff',
+                                        'min-width': '32px',
+                                        'min-height': '32px',
+                                        'border-radius': '4px'
+                                    });
+                                    // Replace with icon only
+                                    $btn.html('<i class="glyphicon glyphicon-trash" style="font-size: 13px;"></i>');
+                                }
+                            });
+                        });
+                    };
+                    
                     relocate();
+                    // Delay to ensure buttons are rendered
+                    setTimeout(convertButtons, 100);
+                    
                     this.api().on('draw.dt', function () {
                         relocate();
+                        setTimeout(convertButtons, 100);
                         if (typeof feather !== 'undefined') {
                             feather.replace();
                         }

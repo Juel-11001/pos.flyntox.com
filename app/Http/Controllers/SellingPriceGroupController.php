@@ -75,11 +75,20 @@ class SellingPriceGroupController extends Controller
                         ? url('ai-template/selling-price-group/activate-deactivate/'.$row->id)
                         : url('selling-price-group/activate-deactivate/'.$row->id);
 
-                    $edit_btn = '<button data-href="'.$edit_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".view_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
-                    $delete_btn = '&nbsp;<button data-href="'.$delete_url.'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_spg_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
-                    $toggle_class = $row->is_active ? 'tw-dw-btn-error' : 'tw-dw-btn-success';
-                    $toggle_text = $row->is_active ? __('messages.deactivate') : __('messages.activate');
-                    $toggle_btn = '&nbsp;<button data-href="'.$activate_url.'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs '.$toggle_class.' activate_deactivate_spg"><i class="fas fa-power-off"></i> '.$toggle_text.'</button>';
+                    if ($is_ai_template) {
+                        // Viho template - icon-only buttons
+                        $edit_btn = '<button data-href="'.$edit_url.'" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_modal" title="'.__('messages.edit').'" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="glyphicon glyphicon-edit" style="font-size: 13px;"></i></button>';
+                        $delete_btn = '<button data-href="'.$delete_url.'" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center delete_spg_button" title="'.__('messages.delete').'" style="padding: 4px 10px; margin-right: 5px; background-color: #dc3545; border-color: #dc3545; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="glyphicon glyphicon-trash" style="font-size: 13px;"></i></button>';
+                        $toggle_bg = $row->is_active ? '#dc3545' : '#24695c';
+                        $toggle_btn = '<button data-href="'.$activate_url.'" class="btn btn-xs d-inline-flex align-items-center justify-content-center activate_deactivate_spg" title="'.($row->is_active ? __('messages.deactivate') : __('messages.activate')).'" style="padding: 4px 10px; background-color: '.$toggle_bg.'; border-color: '.$toggle_bg.'; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fas fa-power-off" style="font-size: 13px;"></i></button>';
+                    } else {
+                        // Default template - keep original design
+                        $edit_btn = '<button data-href="'.$edit_url.'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".view_modal"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</button>';
+                        $delete_btn = '&nbsp;<button data-href="'.$delete_url.'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_spg_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                        $toggle_class = $row->is_active ? 'tw-dw-btn-error' : 'tw-dw-btn-success';
+                        $toggle_text = $row->is_active ? __('messages.deactivate') : __('messages.activate');
+                        $toggle_btn = '&nbsp;<button data-href="'.$activate_url.'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs '.$toggle_class.' activate_deactivate_spg"><i class="fas fa-power-off"></i> '.$toggle_text.'</button>';
+                    }
 
                     return $edit_btn.$delete_btn.$toggle_btn;
                 })
