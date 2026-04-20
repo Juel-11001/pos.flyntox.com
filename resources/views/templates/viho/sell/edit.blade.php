@@ -861,41 +861,5 @@
 @stop
 
 @section('javascript')
-	<script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
-	<script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
-	<script src="{{ asset('js/opening_stock.js?v=' . $asset_v) }}"></script>
-	<!-- Call restaurant module if defined -->
-    @if(in_array('tables' ,$enabled_modules) || in_array('modifiers' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
-    	<script src="{{ asset('js/restaurant.js?v=' . $asset_v) }}"></script>
-    @endif
-    <script type="text/javascript">
-    	$(document).ready( function(){
-    		$('#shipping_documents').fileinput({
-		        showUpload: false,
-		        showPreview: false,
-		        browseLabel: LANG.file_browse_label,
-		        removeLabel: LANG.remove,
-		    });
-
-		    $('#is_export').on('change', function () {
-	            if ($(this).is(':checked')) {
-	                $('div.export_div').show();
-	            } else {
-	                $('div.export_div').hide();
-	            }
-	        });
-
-	        $('#status').change(function(){
-    			if ($(this).val() == 'final') {
-    				$('#payment_rows_div').removeClass('hide');
-    			} else {
-    				$('#payment_rows_div').addClass('hide');
-    			}
-    		});
-    		$('.paid_on').datetimepicker({
-                format: moment_date_format + ' ' + moment_time_format,
-                ignoreReadonly: true,
-            });
-    	});
-    </script>
+	@include('templates.viho.sell.partials.sell_js')
 @endsection

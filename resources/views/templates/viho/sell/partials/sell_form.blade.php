@@ -1,4 +1,16 @@
-﻿    <section class="content no-print">
+<style>
+/* Fix Select2 inside input-group for Viho */
+.input-group > .select2-container--default {
+    flex: 1 1 auto;
+    width: 1% !important;
+}
+.input-group > .select2-container--default .select2-selection--single {
+    height: 100% !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+</style>
+<section class="content no-print">
       <input type="hidden" id="amount_rounding_method" value="{{ $pos_settings['amount_rounding_method'] ?? '' }}">
       @if (!empty($pos_settings['allow_overselling']))
       <input type="hidden" id="is_overselling_allowed">
@@ -9,21 +21,18 @@
       @if (count($business_locations) > 0)
       <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-4">
-          <div class="form-group">
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-map-marker"></i>
+          <div class="form-group mb-4">
+            <div class="input-group flex-nowrap">
+              <span class="input-group-text">
+                <i class="fa fa-map-marker text-primary"></i>
               </span>
               {!! Form::select(
               'select_location_id',
               $business_locations,
               $default_location->id ?? null,
-              ['class' => 'form-control input-sm', 'id' => 'select_location_id', 'required', 'autofocus'],
+              ['class' => 'form-control select2', 'id' => 'select_location_id', 'required', 'autofocus', 'style' => 'width: 100%;'],
               $bl_attributes,
               ) !!}
-              <span class="input-group-addon">
-                @show_tooltip(__('tooltip.sale_location'))
-              </span>
             </div>
           </div>
         </div>
@@ -136,7 +145,7 @@
           </div>
           <div class="clearfix"></div>
           <div class="@if (!empty($commission_agent)) @else col-sm-12 col-md-6 col-xl-4 @endif">
-            <div class="form-group">
+            <div class="form-group mb-0">
               {!! Form::label('contact_id', __('contact.customer') . ':*') !!}
               <div class="input-group flex-nowrap">
                 <span class="input-group-addon">
@@ -647,6 +656,7 @@
                 $default_sales_tax],
                 $taxes['attributes'],
                 ) !!}
+              </div>
 
                 <input type="hidden" name="tax_calculation_amount" id="tax_calculation_amount"
                   value="@if (empty($edit)) {{ @num_format($business_details->tax_calculation_amount) }} @else {{ @num_format($transaction->tax?->amount) }} @endif"

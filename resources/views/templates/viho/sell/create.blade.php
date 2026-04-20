@@ -25,5 +25,5 @@
 </div>
 @endsection
 @section('javascript')
-@include('sell.partials.sell_js')
+@include('templates.viho.sell.partials.sell_js')
 @endsection

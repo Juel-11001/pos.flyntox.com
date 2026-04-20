@@ -57,6 +57,7 @@
 .paging_simple_numbers {
   margin-left: auto !important;
 }
+
 </style>
 <div class="container-fluid">
   <div class="page-header">
@@ -170,46 +171,47 @@
               </div>
               @endif
               @if(empty($only) || in_array('only_subscriptions', $only))
-              <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3" style="margin-bottom: 7px;">
-                <div class="form-group">
-                  <div class="checkbox">
-                    <label>
-                      <br>
-                      {!! Form::checkbox('only_subscriptions', 1, false,
-                      [ 'class' => 'input-icheck', 'id' => 'only_subscriptions']); !!} {{ __('lang_v1.subscriptions') }}
+              <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+                <div class="form-group mb-0">
+                  <label class="d-block">@lang('lang_v1.subscriptions')</label>
+                  <div class="media-body icon-state mt-2">
+                    <label class="switch">
+                      <input type="checkbox" id="only_subscriptions" name="only_subscriptions" value="1">
+                      <span class="switch-state"></span>
                     </label>
                   </div>
                 </div>
               </div>
               @endif
-            </div>
-          </div>
-          @if ($payment_types)
-          <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
-            <div class="form-group">
-              {!! Form::label('payment_method', __('lang_v1.payment_method') . ':') !!}
-              {!! Form::select('payment_method', $payment_types, null, [
-              'class' => 'form-control select2',
-              'style' => 'width:100%',
-              'placeholder' => __('lang_v1.all'),
-              ]) !!}
-            </div>
-          </div>
-          @endif
 
-          @if (!empty($sources))
-          <div class="col-md-3">
-            <div class="form-group">
-              {!! Form::label('sell_list_filter_source', __('lang_v1.sources') . ':') !!}
+              @if ($payment_types)
+              <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+                <div class="form-group">
+                  {!! Form::label('payment_method', __('lang_v1.payment_method') . ':') !!}
+                  {!! Form::select('payment_method', $payment_types, null, [
+                  'class' => 'form-control select2',
+                  'style' => 'width:100%',
+                  'placeholder' => __('lang_v1.all'),
+                  ]) !!}
+                </div>
+              </div>
+              @endif
 
-              {!! Form::select('sell_list_filter_source', $sources, null, [
-              'class' => 'form-control select2',
-              'style' => 'width:100%',
-              'placeholder' => __('lang_v1.all'),
-              ]) !!}
+              @if (!empty($sources))
+              <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+                <div class="form-group">
+                  {!! Form::label('sell_list_filter_source', __('lang_v1.sources') . ':') !!}
+
+                  {!! Form::select('sell_list_filter_source', $sources, null, [
+                  'class' => 'form-control select2',
+                  'style' => 'width:100%',
+                  'placeholder' => __('lang_v1.all'),
+                  ]) !!}
+                </div>
+              </div>
+              @endif
             </div>
           </div>
-          @endif
         </div>
       </div>
     </div>
@@ -624,14 +626,10 @@ $(document).ready(function() {
   });
 
   $(document).on('change',
-    '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs, #shipping_status, #sell_list_filter_source, #payment_method',
+    '#sell_list_filter_location_id, #sell_list_filter_customer_id, #sell_list_filter_payment_status, #created_by, #sales_cmsn_agnt, #service_staffs, #shipping_status, #sell_list_filter_source, #payment_method, #only_subscriptions',
     function() {
       sell_table.ajax.reload();
     });
-
-  $('#only_subscriptions').on('ifChanged', function(event) {
-    sell_table.ajax.reload();
-  });
 });
 </script>
 @endsection
