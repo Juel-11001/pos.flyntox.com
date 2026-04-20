@@ -411,9 +411,9 @@ function __print_receipt(section_id = null) {
         setTimeout(function() {
             window.print();
 
-            // setTimeout(function() {
-            //     $('#receipt_section').html('');
-            // }, 5000);
+            setTimeout(function() {
+                $('#receipt_section').html('');
+            }, 5000);
             
         }, 1000);
     }
@@ -424,9 +424,9 @@ function incrementImageCounter() {
     if ( img_counter === img_len ) {
         window.print();
         
-        // setTimeout(function() {
-        //     $('#receipt_section').html('');
-        // }, 5000);
+        setTimeout(function() {
+            $('#receipt_section').html('');
+        }, 5000);
     }
 }
 

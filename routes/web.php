@@ -388,6 +388,12 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         // Customer Groups (Viho)
         Route::resource('customer-group', CustomerGroupController::class);
 
+        // Cash Register (Viho)
+        Route::get('cash-register/register-details', [CashRegisterController::class, 'getRegisterDetails'])->name('cash-register.register-details');
+        Route::get('cash-register/close-register/{id?}', [CashRegisterController::class, 'getCloseRegister'])->name('cash-register.close-register');
+        Route::post('cash-register/close-register', [CashRegisterController::class, 'postCloseRegister'])->name('cash-register.close-register.post');
+        Route::resource('cash-register', CashRegisterController::class);
+
         // Warranties (Viho)
         Route::resource('warranties', WarrantyController::class);
 

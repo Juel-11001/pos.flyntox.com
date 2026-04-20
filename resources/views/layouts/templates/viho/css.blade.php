@@ -866,6 +866,13 @@
         margin-bottom: 10px !important;
     }
 
+    /* Hide receipt section and print elements on screen when not printing */
+    body:not(.viho-printing-receipt) #receipt_section, 
+    body:not(.viho-printing-receipt) .print_section, 
+    body:not(.viho-printing-receipt) .invoice {
+        display: none !important;
+    }
+
     @media print {
         /*
          * Viho-only receipt print mode:
