@@ -171,17 +171,8 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
           </div>
         </div>
         <div class="card-body">
-          <div class="row align-items-center mb-3" id="purchase_dt_top">
-            <div class="col-sm-12 col-md-3" id="purchase_dt_length"></div>
-            <div class="col-sm-12 col-md-6 text-center" id="purchase_dt_buttons"></div>
-            <div class="col-sm-12 col-md-3 text-md-end" id="purchase_dt_filter"></div>
-          </div>
           <div class="table-responsive">
             @include('templates.viho.purchase.partials.purchase_table')
-          </div>
-          <div class="row align-items-center mt-3" id="purchase_dt_bottom">
-            <div class="col-sm-12 col-md-5" id="purchase_dt_info"></div>
-            <div class="col-sm-12 col-md-7 text-md-end" id="purchase_dt_paginate"></div>
           </div>
         </div>
       </div>
@@ -252,9 +243,10 @@ $(document).ready(function() {
       [10, 25, 50, 100, -1],
       [10, 25, 50, 100, 'All']
     ],
-    dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-3'l><'col-sm-12 col-md-6 text-center'B><'col-sm-12 col-md-3 text-md-end'f>>" +
-      "<'row'<'col-sm-12'tr>>" +
-      "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 text-md-end'p>>",
+    dom: "<'row mb-3'<'col-sm-12 text-center'B>>" +
+         "<'row mb-2 align-items-center'<'col-sm-6'l><'col-sm-6 text-end'f>>" +
+         "<'row'<'col-sm-12'tr>>" +
+         "<'row align-items-center mt-3'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 text-end'p>>",
     buttons: [{
         extend: 'csv',
         className: 'btn btn-outline-primary btn-xs',
@@ -409,28 +401,7 @@ $(document).ready(function() {
       $(row).find('td:eq(5)').attr('class', 'clickable_td');
     },
     initComplete: function() {
-      var relocate = function() {
-        var $wrapper = $('#purchase_table_wrapper');
-        if ($wrapper.length < 1) return;
-
-        var $length = $wrapper.find('.dataTables_length');
-        var $buttons = $wrapper.find('.dt-buttons');
-        var $filter = $wrapper.find('.dataTables_filter');
-        var $info = $wrapper.find('.dataTables_info');
-        var $paginate = $wrapper.find('.dataTables_paginate');
-
-        if ($length.length) $('#purchase_dt_length').empty().append($length);
-        if ($buttons.length) $('#purchase_dt_buttons').empty().append($buttons);
-        if ($filter.length) $('#purchase_dt_filter').empty().append($filter);
-        if ($info.length) $('#purchase_dt_info').empty().append($info);
-        if ($paginate.length) $('#purchase_dt_paginate').empty().append($paginate);
-      };
-
-      relocate();
-      var api = this.api();
-      api.on('draw.dt', function() {
-        relocate();
-      });
+        __currency_convert_recursively($('#purchase_table'));
     }
   });
 
@@ -492,7 +463,60 @@ $(document).ready(function() {
 
 @push('styles')
 <style>
+/* DataTable Controls Styling */
+#purchase_dt_top, #purchase_dt_bottom {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px !important;
+    border: 1px solid #eef1f3;
+}
+
+.dataTables_length select {
+    padding: 6px 35px 6px 15px !important;
+    border-radius: 6px !important;
+    border: 1px solid #e6edef !important;
+    height: 38px !important;
+    display: inline-block !important;
+    background-color: #fff !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237366ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 14px !important;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.dataTables_filter input {
+    padding: 8px 15px !important;
+    border-radius: 6px !important;
+    border: 1px solid #e6edef !important;
+    height: 38px !important;
+    width: 250px !important;
+}
+
+.dataTables_filter label {
+    font-weight: 600 !important;
+    color: #444;
+}
+
+.dataTables_length label {
+    font-weight: 600 !important;
+    color: #444;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.dt-buttons.btn-group {
+    gap: 5px;
+}
+
+/* Ensure controls are visible and not clipped */
 #purchase_table_wrapper {
+  overflow: visible !important;
   width: 100% !important;
   display: block !important;
 }
@@ -501,48 +525,39 @@ $(document).ready(function() {
   width: 100% !important;
 }
 
-.dataTables_length select {
-  width: auto !important;
-  display: inline-block !important;
-  padding-right: 30px !important;
-  margin: 0 5px !important;
-  height: 30px !important;
-  font-size: 13px !important;
-  border-radius: 4px !important;
-}
-
-.dataTables_length label {
-  font-weight: 400 !important;
-  margin-bottom: 0 !important;
-}
-
 .dataTables_paginate {
   display: flex !important;
   justify-content: flex-end !important;
-  width: 100% !important;
 }
 
-.paging_simple_numbers {
-  margin-left: auto !important;
+/* Status & Payment Badge Styling */
+.status-label,
+.payment-status-label {
+    padding: 6px 12px !important;
+    border-radius: 50rem !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: inline-block !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+    transition: all 0.3s ease !important;
 }
 
-.dataTables_length label {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  font-weight: 400 !important;
-  margin-bottom: 0 !important;
-  white-space: nowrap !important;
+.status-label:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
 }
 
-.dataTables_length select {
-  width: auto !important;
-  height: 30px !important;
-  padding: 0 10px !important;
-  margin: 0 !important;
-  font-size: 13px !important;
-  border-radius: 4px !important;
-  display: inline-block !important;
-}
+/* Purchase Status Colors */
+.label-success.status-label { background-color: #24695c !important; color: #fff !important; }
+.label-info.status-label { background-color: #7366ff !important; color: #fff !important; }
+.label-warning.status-label { background-color: #f8d62b !important; color: #000 !important; }
+.label-danger.status-label { background-color: #d22d3d !important; color: #fff !important; }
+
+/* Payment Status Colors */
+.label-paid, .bg-light-green { background-color: rgba(36, 105, 92, 0.1) !important; color: #24695c !important; border: 1px solid rgba(36, 105, 92, 0.2) !important; }
+.label-due, .bg-light-red { background-color: rgba(210, 45, 61, 0.1) !important; color: #d22d3d !important; border: 1px solid rgba(210, 45, 61, 0.2) !important; }
+.label-partial, .bg-light-yellow { background-color: rgba(248, 214, 43, 0.1) !important; color: #856404 !important; border: 1px solid rgba(248, 214, 43, 0.2) !important; }
 </style>
 @endpush

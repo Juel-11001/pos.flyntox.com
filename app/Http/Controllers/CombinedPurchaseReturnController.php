@@ -36,6 +36,18 @@ class CombinedPurchaseReturnController extends Controller
         $this->transactionUtil = $transactionUtil;
     }
 
+    private function isAiTemplateRequest(): bool
+    {
+        return request()->is('ai-template/*');
+    }
+
+    private function viewPath(string $view): string
+    {
+        return $this->isAiTemplateRequest()
+            ? 'templates.viho.purchase_return.'.$view
+            : 'purchase_return.'.$view;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -60,7 +72,7 @@ class CombinedPurchaseReturnController extends Controller
                         ->ExcludeForTaxGroup()
                         ->get();
 
-        return view('purchase_return.create')
+        return view($this->viewPath('create'))
             ->with(compact('business_locations', 'taxes'));
     }
 
@@ -233,7 +245,7 @@ class CombinedPurchaseReturnController extends Controller
                         ->ExcludeForTaxGroup()
                         ->get();
 
-        return view('purchase_return.edit')
+        return view($this->viewPath('edit'))
             ->with(compact('business_locations', 'taxes', 'purchase_return', 'purchase_lines'));
     }
 

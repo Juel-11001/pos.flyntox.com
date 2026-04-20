@@ -100,6 +100,81 @@
             color: #111827 !important;
         }
 
+        .text-quantity-remaining {
+            color: #2b5fec !important;
+            font-weight: 700;
+        }
+
+        /* Global DataTable Control Styling */
+        /* .dataTables_length select {
+            padding: 6px 35px 6px 15px !important;
+            border-radius: 6px !important;
+            border: 1px solid #e6edef !important;
+            height: 38px !important;
+            display: inline-block !important;
+            background-color: #fff !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237366ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            background-size: 14px !important;
+            cursor: pointer;
+        }
+        .dataTables_filter input {
+            padding: 6px 15px !important;
+            border-radius: 6px !important;
+            border: 1px solid #e6edef !important;
+            height: 38px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+        } */
+
+        /* Enhanced DataTable Export Buttons */
+        /* .dt-buttons.btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .dt-buttons.btn-group .dt-button {
+            background-color: #fff !important;
+            border: 1px solid #e0e7ff !important;
+            color: #7366ff !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+            margin: 0 !important;
+        }
+        .dt-buttons.btn-group .dt-button:hover {
+            background-color: #7366ff !important;
+            color: #fff !important;
+            border-color: #7366ff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(115, 102, 255, 0.3) !important;
+        }
+        .dt-buttons.btn-group .dt-button i, 
+        .dt-buttons.btn-group .dt-button svg {
+            font-size: 14px !important;
+            transition: color 0.3s ease;
+        }
+        .dt-buttons.btn-group .dt-button:hover i,
+        .dt-buttons.btn-group .dt-button:hover svg {
+            color: #fff !important;
+        }  */
+
         .default-header-embedded svg,
         .default-header-embedded i {
             color: #111827 !important;

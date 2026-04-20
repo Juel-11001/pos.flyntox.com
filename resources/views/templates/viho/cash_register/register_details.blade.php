@@ -6,7 +6,7 @@
     </div>
 
     <div class="modal-body">
-      @include('cash_register.payment_details')
+      @include('templates.viho.cash_register.payment_details')
       <hr>
       @if(!empty($register_details->denominations))
         @php

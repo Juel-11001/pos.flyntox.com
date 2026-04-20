@@ -1011,7 +1011,34 @@
         .select2-container {
             width: 100% !important;
         }
+        .dataTables_length select {
+            padding: 6px 35px 6px 15px !important;
+            border-radius: 6px !important;
+            border: 1px solid #e6edef !important;
+            height: 38px !important;
+            display: inline-block !important;
+            background-color: #fff !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237366ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            background-size: 14px !important;
+            cursor: pointer;
+        }
+        .dataTables_filter input {
+            padding: 6px 15px !important;
+            border-radius: 6px !important;
+            border: 1px solid #e6edef !important;
+            height: 38px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+        }
     </style>
+    
 @endsection
 
 @section('javascript')
@@ -1026,6 +1053,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             sales_order_table = $('#sales_order_table').DataTable({
+                destroy: true,
                 processing: true,
                 serverSide: true,
                 fixedHeader: false,
@@ -1074,7 +1102,8 @@
                     {
                         data: 'so_qty_remaining',
                         name: 'so_qty_remaining',
-                        "searchable": false
+                        "searchable": false,
+                        className: 'text-quantity-remaining'
                     }
                 ]
             });
@@ -1137,6 +1166,7 @@
             @if (!empty($common_settings['enable_purchase_order']))
                 //Purchase table
                 purchase_order_table = $('#purchase_order_table').DataTable({
+                    destroy: true,
                     processing: true,
                     serverSide: true,
                     fixedHeader: false,
@@ -1182,7 +1212,9 @@
                         {
                             data: 'po_qty_remaining',
                             name: 'po_qty_remaining',
-                            "searchable": false
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-quantity-remaining'
                         }
                     ]
                 })

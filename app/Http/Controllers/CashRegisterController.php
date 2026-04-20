@@ -36,7 +36,8 @@ class CashRegisterController extends Controller
      */
     public function index()
     {
-        return view('cash_register.index');
+        $view = request()->segment(1) == 'ai-template' ? 'templates.viho.cash_register.index' : 'cash_register.index';
+        return view($view);
     }
 
     /**
@@ -51,12 +52,15 @@ class CashRegisterController extends Controller
 
         //Check if there is a open register, if yes then redirect to POS screen.
         if ($this->cashRegisterUtil->countOpenedRegister() != 0) {
-            return redirect()->action([\App\Http\Controllers\SellPosController::class, 'create'], ['sub_type' => $sub_type]);
+            $action = request()->segment(1) == 'ai-template' ? [\App\Http\Controllers\SellPosController::class, 'create'] : [\App\Http\Controllers\SellPosController::class, 'create'];
+            // Note: SellPosController handle template switching internally via routes
+            return redirect()->action($action, ['sub_type' => $sub_type]);
         }
         $business_id = request()->session()->get('user.business_id');
         $business_locations = BusinessLocation::forDropdown($business_id);
 
-        return view('cash_register.create')->with(compact('business_locations', 'sub_type'));
+        $view = request()->segment(1) == 'ai-template' ? 'templates.viho.cash_register.create' : 'cash_register.create';
+        return view($view)->with(compact('business_locations', 'sub_type'));
     }
 
     /**
@@ -122,7 +126,8 @@ class CashRegisterController extends Controller
 
         $payment_types = $this->cashRegisterUtil->payment_types(null, false, $business_id);
 
-        return view('cash_register.register_details')
+        $view = request()->segment(1) == 'ai-template' ? 'templates.viho.cash_register.register_details' : 'cash_register.register_details';
+        return view($view)
                     ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
     }
 
@@ -152,7 +157,8 @@ class CashRegisterController extends Controller
 
         $payment_types = $this->cashRegisterUtil->payment_types($register_details->location_id, true, $business_id);
 
-        return view('cash_register.register_details')
+        $view = request()->segment(1) == 'ai-template' ? 'templates.viho.cash_register.register_details' : 'cash_register.register_details';
+        return view($view)
                 ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
     }
 
@@ -183,7 +189,8 @@ class CashRegisterController extends Controller
 
         $pos_settings = ! empty(request()->session()->get('business.pos_settings')) ? json_decode(request()->session()->get('business.pos_settings'), true) : [];
 
-        return view('cash_register.close_register_modal')
+        $view = request()->segment(1) == 'ai-template' ? 'templates.viho.cash_register.close_register_modal' : 'cash_register.close_register_modal';
+        return view($view)
                     ->with(compact('register_details', 'details', 'payment_types', 'pos_settings'));
     }
 

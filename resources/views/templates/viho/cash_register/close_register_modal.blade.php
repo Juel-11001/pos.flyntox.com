@@ -10,7 +10,7 @@
 
     <div class="modal-body">
       @if(auth()->user()->can('view_cash_register'))
-        @include('cash_register.payment_details')
+        @include('templates.viho.cash_register.payment_details')
         <hr>
       @endif
       <div class="row">

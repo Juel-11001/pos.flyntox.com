@@ -256,7 +256,7 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
     <div class="col-sm-12 missing-product-warning">
     </div>
     <div class="col-sm-12 col-md-4 col-lg-3 text-center">
-      <button type="button" class="tw-dw-btn tw-dw-btn-primary text-white tw-dw-btn-sm" data-toggle="modal"
+      <button type="button" class="btn btn-primary text-white tw-dw-btn-sm" data-toggle="modal"
         data-target="#import_purchase_products_modal">@lang('product.import_products')</button>
     </div>
     <div class="col-sm-12 col-md-8 col-lg-6">
@@ -272,7 +272,7 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
     </div>
     <div class="col-sm-12 col-lg-3">
       <div class="form-group">
-        <button tabindex="-1" type="button" class="btn btn-link btn-modal"
+        <button tabindex="-1" type="button" class="btn btn-primary text-white tw-dw-btn-sm btn-modal"
           data-href="{{action([\App\Http\Controllers\ProductController::class, 'quickAdd'])}}"
           data-container=".quick_add_product_modal"><i class="fa fa-plus"></i> @lang( 'product.add_new_product' )
         </button>
@@ -543,7 +543,7 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
   </div>
   <div class="row">
     <div class="col-md-12 text-center">
-      <button type="button" class="tw-dw-btn tw-dw-btn-primary text-white tw-dw-btn-sm" id="toggle_additional_expense">
+      <button type="button" class="btn btn-primary text-white tw-dw-btn-sm" id="toggle_additional_expense">
         <i class="fas fa-plus"></i> @lang('lang_v1.add_additional_expenses') <i
           class="fas fa-chevron-down"></i></button>
     </div>
@@ -617,7 +617,7 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
         __('lang_v1.required_advance_balance_not_available')]); !!}
       </div>
     </div>
-    @include('sale_pos.partials.payment_row_form', ['row_index' => 0, 'show_date' => true, 'show_denomination' => true])
+    @include('templates.viho.sale_pos.partials.payment_row_form', ['row_index' => 0, 'show_date' => true, 'show_denomination' => true])
     <hr>
     <div class="row">
       <div class="col-sm-12">
@@ -628,7 +628,7 @@ $route_prefix = request()->is('ai-template/*') ? 'ai-template.' : '';
     <div class="row">
       <div class="col-sm-12 text-center">
         <button type="button" id="submit_purchase_form"
-          class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-md text-white">@lang('messages.save')</button>
+          class="btn btn-primary tw-dw-btn-md text-white">@lang('messages.save')</button>
       </div>
     </div>
   </div>

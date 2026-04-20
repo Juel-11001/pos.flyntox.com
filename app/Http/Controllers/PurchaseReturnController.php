@@ -127,10 +127,10 @@ class PurchaseReturnController extends Controller
                         ? route('ai-template.purchase-return.destroy', [$row->id])
                         : action([\App\Http\Controllers\PurchaseReturnController::class, 'destroy'], $row->id);
                     $html = '<div class="btn-group">
-                                    <button type="button" class="'.($is_viho ? 'btn btn-primary btn-xs d-inline-flex align-items-center justify-content-center' : 'tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max dropdown-toggle').'" 
+                                    <button type="button" class="'.($is_viho ? 'btn btn-primary btn-xs' : 'tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max dropdown-toggle').'" 
                                         data-toggle="dropdown" aria-expanded="false">'.
-                                        ($is_viho ? '<i class="fa fa-chevron-down" aria-hidden="true"></i>' : __('messages.actions') . '<span class="caret"></span>').'
-                                        <span class="sr-only">Toggle Dropdown
+                                        __('messages.actions').
+                                        '<span class="caret"></span><span class="sr-only">Toggle Dropdown
                                         </span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">';
@@ -145,10 +145,18 @@ class PurchaseReturnController extends Controller
                     }
 
                     if ($row->payment_status != 'paid') {
-                        $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]).'" class="add_payment_modal"><i class="fas fa-money-bill-alt"></i>'.__('purchase.add_payment').'</a></li>';
+                        if ($is_viho) {
+                            $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]).'" class="add_payment_modal"><i class="fas fa-money-bill"></i> '.__('purchase.add_payment').'</a></li>';
+                        } else {
+                            $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]).'" class="add_payment_modal"><i class="fas fa-money-bill-alt"></i>'.__('purchase.add_payment').'</a></li>';
+                        }
                     }
 
-                    $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]).'" class="view_payment_modal"><i class="fas fa-money-bill-alt"></i>'.__('purchase.view_payments').'</a></li>';
+                    if ($is_viho) {
+                        $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]).'" class="view_payment_modal"><i class="fas fa-money-bill"></i> '.__('purchase.view_payments').'</a></li>';
+                    } else {
+                        $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]).'" class="view_payment_modal"><i class="fas fa-money-bill-alt"></i>'.__('purchase.view_payments').'</a></li>';
+                    }
 
                     $html .= '<li><a href="'.$delete_url.'" class="delete_purchase_return" ><i class="fa fa-trash"></i>'.
                                 __('messages.delete').
@@ -240,7 +248,7 @@ class PurchaseReturnController extends Controller
             $purchase->purchase_lines[$key]->formatted_qty_available = $this->transactionUtil->num_f($qty_available);
         }
 
-        return view('purchase_return.add')
+        return view($this->viewPath('add'))
                     ->with(compact('purchase'));
     }
 
@@ -283,6 +291,8 @@ class PurchaseReturnController extends Controller
                 $purchase_line->quantity_returned = $return_quantity;
                 $purchase_line->save();
                 $return_total += $purchase_line->purchase_price_inc_tax * $purchase_line->quantity_returned;
+
+
 
                 //Decrease quantity in variation location details
                 if ($old_return_qty != $purchase_line->quantity_returned) {
@@ -404,7 +414,7 @@ class PurchaseReturnController extends Controller
            ->latest()
            ->get();
 
-        return view('purchase_return.show')
+        return view($this->viewPath('show'))
                 ->with(compact('purchase', 'purchase_taxes', 'activities'));
     }
 

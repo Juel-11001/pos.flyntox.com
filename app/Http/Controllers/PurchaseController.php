@@ -168,11 +168,13 @@ class PurchaseController extends Controller
                         auth()->user()->can('delete_purchase_payment')) {
                         $html .= '<li class="divider"></li>';
                         if ($row->payment_status != 'paid') {
-                            $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]).'" class="add_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true"></i>'.__('purchase.add_payment').'</a></li>';
+                            $add_payment_icon = $is_ai_template ? 'fas fa-money-bill' : 'fas fa-money-bill-alt';
+                            $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'addPayment'], [$row->id]).'" class="add_payment_modal"><i class="'.$add_payment_icon.'" aria-hidden="true"></i>'.__('purchase.add_payment').'</a></li>';
                         }
 
+                        $view_payments_icon = $is_ai_template ? 'fas fa-money-bill' : 'fas fa-money-bill-alt';
                         $html .= '<li><a href="'.action([\App\Http\Controllers\TransactionPaymentController::class, 'show'], [$row->id]).
-                        '" class="view_payment_modal"><i class="fas fa-money-bill-alt" aria-hidden="true" ></i>'.__('purchase.view_payments').'</a></li>';
+                        '" class="view_payment_modal"><i class="'.$view_payments_icon.'" aria-hidden="true" ></i>'.__('purchase.view_payments').'</a></li>';
                     }
 
                     if (auth()->user()->can('purchase.update')) {
