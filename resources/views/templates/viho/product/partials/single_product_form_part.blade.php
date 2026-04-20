@@ -49,7 +49,7 @@ $class = '';
         __('product.exc_of_tax'), 'id' => 'single_dsp', 'required']); !!}
 
         {!! Form::text('single_dsp_inc_tax', $default, ['class' => 'form-control input-sm hide input_number',
-        'placeholder' => __('product.inc_of_tax'), 'id' => 'single_dsp_inc_tax', 'required']); !!}
+        'placeholder' => __('product.inc_of_tax'), 'id' => 'single_dsp_inc_tax']); !!}
       </td>
       @if(empty($quick_add))
       <td>

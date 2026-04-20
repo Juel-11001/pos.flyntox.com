@@ -73,12 +73,22 @@
 @section('javascript')
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#al_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
-    $('#al_date_filter').val(
-      start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
-    );
-    activity_log_table.ajax.reload();
-  });
+  // Set default date range (last 30 days)
+  var startLast30 = moment().subtract(29, 'days');
+  var endLast = moment();
+
+  $('#al_date_filter').daterangepicker(
+    $.extend(true, {}, dateRangeSettings, {
+      startDate: startLast30,
+      endDate: endLast
+    }),
+    function(start, end) {
+      $('#al_date_filter').val(
+        start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+      );
+      activity_log_table.ajax.reload();
+    }
+  );
   $('#al_date_filter').on('cancel.daterangepicker', function(ev, picker) {
     $('#al_date_filter').val('');
     activity_log_table.ajax.reload();
@@ -92,11 +102,7 @@ $(document).ready(function() {
       [0, 'desc']
     ],
     "ajax": {
-      "url": {
-        {
-          route('reports/activity-log')
-        }
-      },
+      "url": "{{ route('ai-template.reports.activity-log') }}",
       "data": function(d) {
         var start_date = '';
         var end_date = '';
