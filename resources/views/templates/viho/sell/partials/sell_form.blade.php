@@ -11,17 +11,17 @@
         <div class="col-sm-12 col-md-6 col-lg-4">
           <div class="form-group">
             <div class="input-group">
-              <span class="input-group-addon">
+              <span class="input-group-addon d-flex align-items-center justify-content-center">
                 <i class="fa fa-map-marker"></i>
               </span>
               {!! Form::select(
               'select_location_id',
               $business_locations,
               $default_location->id ?? null,
-              ['class' => 'form-control input-sm', 'id' => 'select_location_id', 'required', 'autofocus'],
+              ['class' => 'form-select', 'id' => 'select_location_id', 'required', 'autofocus'],
               $bl_attributes,
               ) !!}
-              <span class="input-group-addon">
+              <span class="input-group-addon d-flex align-items-center justify-content-center">
                 @show_tooltip(__('tooltip.sale_location'))
               </span>
             </div>
@@ -61,8 +61,8 @@
           <div class="col-sm-4">
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon">
-                  <i class="fas fa-money-bill-alt"></i>
+                <span class="input-group-addon d-flex align-items-center justify-content-center">
+                  <i class="fas fa-money-bill"></i>
                 </span>
                 @php
                 reset($price_groups);
@@ -97,9 +97,9 @@
             @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
             <div class="col-sm-12 col-md-6 col-xl-4">
               <div class="form-group">
-                <div class="input-group">
-                  <span class="input-group-addon">
-                    <i class="fa fa-external-link-square-alt text-primary service_modal_btn"></i>
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-addon d-flex align-items-center justify-content-center">
+                    <i class="fa fa-external-link-square text-primary service_modal_btn"></i>
                   </span>
                   {!! Form::select('types_of_service_id', $types_of_service, null, [
                   'class' => 'form-control',
@@ -110,7 +110,7 @@
 
                   {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
 
-                  <span class="input-group-addon">
+                  <span class="input-group-addon d-flex align-items-center justify-content-center">
                     @show_tooltip(__('lang_v1.types_of_service_help'))
                   </span>
                 </div>
@@ -123,13 +123,15 @@
 
             @if (in_array('subscription', $enabled_modules))
             <div class="col-sm-12 col-md-6 col-xl-4">
-              <div class="checkbox">
+              <div class="checkbox d-flex align-items-center">
                 <label>
                   {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
                   @lang('lang_v1.subscribe')?
-                </label><button type="button" data-toggle="modal" data-target="#recurringInvoiceModal"
-                  class="btn btn-link"><i
-                    class="fa fa-external-link"></i></button>@show_tooltip(__('lang_v1.recurring_invoice_help'))
+                </label>
+                <button type="button" data-toggle="modal" data-target="#recurringInvoiceModal" class="btn btn-link">
+                  <i class="fa fa-external-link"></i>
+                </button>
+                @show_tooltip(__('lang_v1.recurring_invoice_help'))
               </div>
             </div>
             @endif
@@ -138,8 +140,8 @@
           <div class="@if (!empty($commission_agent)) @else col-sm-12 col-md-6 col-xl-4 @endif">
             <div class="form-group">
               {!! Form::label('contact_id', __('contact.customer') . ':*') !!}
-              <div class="input-group flex-nowrap">
-                <span class="input-group-addon">
+              <div class="input-group flex-nowrap row">
+                <span class="col-1 input-group-addon d-flex align-items-center justify-content-center">
                   <i class="fa fa-user"></i>
                 </span>
                 <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] }}">
@@ -153,16 +155,19 @@
                 <input type="hidden" id="default_selling_price_group"
                   value="{{ $walk_in_customer['selling_price_group_id'] ?? '' }}">
                 @endif
-                {!! Form::select('contact_id', [], null, [
-                'class' => 'form-control mousetrap',
-                'id' => 'customer_id',
-                'placeholder' => 'Enter Customer name / phone',
-                'required',
-                ]) !!}
-                <span class="input-group-btn">
-                  <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""><i
-                      class="fa fa-plus-circle text-primary fa-lg"></i></button>
-                </span>
+                  <div class='col-9' style='padding: 0;'>
+                    {!! Form::select('contact_id', [], null, [
+                    'class' => 'form-control mousetrap',
+                    'id' => 'customer_id',
+                    'placeholder' => 'Enter Customer name / phone',
+                    'required',
+                    ]) !!}
+                  </div>
+                  <span class="input-group-btn col-2 d-flex align-items-center" style='padding-left: 0;'>
+                    <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" style='border: 1px solid lightgray;' data-name=""><i
+                        class="fa fa-plus-circle text-primary fa-lg"></i>
+                    </button>
+                  </span>
               </div>
               <small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong>
                 <span></span></small>
@@ -188,29 +193,34 @@
 
           <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
-              <div class="multi-input">
+              <div class="multi-input row">
                 @php
                 $is_pay_term_required = !empty($pos_settings['is_pay_term_required']);
                 @endphp
-                {!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!}
-                @show_tooltip(__('tooltip.pay_term'))
-                <br />
-                {!! Form::number('pay_term_number', $walk_in_customer['pay_term_number'], [
-                'class' => 'form-control width-40 pull-left',
-                'placeholder' => __('contact.pay_term'),
-                'required' => $is_pay_term_required,
-                ]) !!}
+                <div class="d-flex align-items-center gap-2">
+                  <div>{!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!}</div>
+                  <div>@show_tooltip(__('tooltip.pay_term'))</div>
+                </div>
+                <div class='col-6' style='padding-right: 0;'>
+                  {!! Form::number('pay_term_number', $walk_in_customer['pay_term_number'], [
+                    'class' => 'form-control width-40 pull-left',
+                    'placeholder' => __('contact.pay_term'),
+                    'required' => $is_pay_term_required,
+                    ]) !!}
+                </div>
 
-                {!! Form::select(
-                'pay_term_type',
-                ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')],
-                $walk_in_customer['pay_term_type'],
-                [
-                'class' => 'form-control width-60 pull-left',
-                'placeholder' => __('messages.please_select'),
-                'required' => $is_pay_term_required,
-                ],
-                ) !!}
+                <div class='col-6' style='padding-left: 0'>
+                  {!! Form::select(
+                    'pay_term_type',
+                    ['months' => __('lang_v1.months'), 'days' => __('lang_v1.days')],
+                    $walk_in_customer['pay_term_type'],
+                    [
+                    'class' => 'form-control width-60 pull-left',
+                    'placeholder' => __('messages.please_select'),
+                    'required' => $is_pay_term_required,
+                    ],
+                    ) !!}
+                </div>
               </div>
             </div>
           </div>
@@ -234,7 +244,7 @@
             <div class="form-group">
               {!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
               <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-addon d-flex align-items-center justify-content-center flex-nowrap">
                   <i class="fa fa-calendar"></i>
                 </span>
                 {!! Form::text('transaction_date', $default_datetime, ['class' => 'form-control', 'readonly',
@@ -444,8 +454,9 @@
           @endcomponent
 
           @component('components.widget', ['class' => 'box-solid'])
-          <div class="row col-sm-12" <input type="hidden" name="sell_price_tax" id="sell_price_tax"
-            value="{{ $business_details->sell_price_tax }}">
+          <div class="row col-sm-12">
+            <input type="hidden" name="sell_price_tax" id="sell_price_tax"
+              value="{{ $business_details->sell_price_tax }}">
 
             <!-- Keeps count of product rows -->
             <input type="hidden" id="product_row_count" value="0">
@@ -517,7 +528,8 @@
                 <div class="input-group-btn">
                   <button type="button" class="btn btn-default bg-white btn-flat" data-toggle="modal"
                     data-target="#configure_search_modal" title="{{ __('lang_v1.configure_product_search') }}"><i
-                      class="fas fa-search-plus"></i></button>
+                      class="fas fa-search-plus"></i>
+                  </button>
                 </div>
                 {!! Form::text('search_product', null, [
                 'class' => 'form-control mousetrap',
@@ -541,7 +553,7 @@
             <div class="form-group">
               {!! Form::label('discount_type', __('sale.discount_type') . ':*') !!}
               <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-addon d-flex align-items-center justify-content-center">
                   <i class="fa fa-info"></i>
                 </span>
                 {!! Form::select(
@@ -580,7 +592,7 @@
             <div class="form-group">
               {!! Form::label('discount_amount', __('sale.discount_amount') . ':*') !!}
               <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-addon d-flex align-items-center justify-content-center">
                   <i class="fa fa-info"></i>
                 </span>
                 {!! Form::text('discount_amount', @num_format($sales_discount), [
@@ -636,7 +648,7 @@
             <div class="form-group">
               {!! Form::label('tax_rate_id', __('sale.order_tax') . ':*') !!}
               <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-addon d-flex align-items-center justify-content-center">
                   <i class="fa fa-info"></i>
                 </span>
                 {!! Form::select(
@@ -696,7 +708,7 @@
               <div class="form-group">
                 {!! Form::label('shipping_charges', __('sale.shipping_charges')) !!}
                 <div class="input-group">
-                  <span class="input-group-addon">
+                  <span class="input-group-addon d-flex align-items-center justify-content-center">
                     <i class="fa fa-info"></i>
                   </span>
                   {!! Form::text('shipping_charges', @num_format(0.0), [
@@ -1068,8 +1080,8 @@
               {!! Form::label('prefer_payment_method', __('lang_v1.prefer_payment_method') . ':') !!}
               @show_tooltip(__('lang_v1.this_will_be_shown_in_pdf'))
               <div class="input-group">
-                <span class="input-group-addon">
-                  <i class="fas fa-money-bill-alt"></i>
+                <span class="input-group-addon d-flex align-items-center justify-content-center flex-nowrap">
+                  <i class="fas fa-money-bill"></i>
                 </span>
                 {!! Form::select('prefer_payment_method', $payment_types, 'cash', [
                 'class' => 'form-control',
@@ -1137,8 +1149,8 @@
               <div class="form-group">
                 {!! Form::label('change_return_method', __('lang_v1.change_return_payment_method') . ':*') !!}
                 <div class="input-group">
-                  <span class="input-group-addon">
-                    <i class="fas fa-money-bill-alt"></i>
+                  <span class="input-group-addon d-flex align-items-center justify-content-center">
+                    <i class="fas fa-money-bill"></i>
                   </span>
                   @php
                   $_payment_method =
@@ -1165,8 +1177,8 @@
               <div class="form-group">
                 {!! Form::label('change_return_account', __('lang_v1.change_return_payment_account') . ':') !!}
                 <div class="input-group">
-                  <span class="input-group-addon">
-                    <i class="fas fa-money-bill-alt"></i>
+                  <span class="input-group-addon d-flex align-items-center justify-content-center">
+                    <i class="fas fa-money-bill"></i>
                   </span>
                   {!! Form::select(
                   'payment[change_return][account_id]',
