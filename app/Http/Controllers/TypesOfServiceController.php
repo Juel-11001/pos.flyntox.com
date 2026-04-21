@@ -72,9 +72,9 @@ class TypesOfServiceController extends Controller
                             ? route('ai-template.types-of-service.destroy', [$row->id])
                             : route('types-of-service.destroy', [$row->id]);
 
-                        return '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".type_of_service_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>
+                        return '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-sm tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".type_of_service_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>
                             &nbsp;
-                        <button data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_type_of_service"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                        <button data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-sm tw-dw-btn-error delete_type_of_service"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
                     }
                 )
                 ->editColumn('packing_charge', function ($row) {

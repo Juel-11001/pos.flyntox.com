@@ -96,12 +96,12 @@ class DiscountController extends Controller
                             return $html;
                         }
 
-                        $html = '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".discount_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>
+                        $html = '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-sm tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".discount_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>
                             &nbsp;
-                            <button data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_discount_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
+                            <button data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-sm tw-dw-btn-error delete_discount_button"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';
 
                         if ($row->is_active != 1) {
-                            $html .= '&nbsp;<button data-href="' . $activate_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-accent activate-discount"><i class="fa fa-circle-o"></i> ' . __('lang_v1.reactivate') . '</button>';
+                            $html .= '&nbsp;<button data-href="' . $activate_url . '" class="tw-dw-btn tw-dw-btn-sm tw-dw-btn-outline tw-dw-btn-accent activate-discount"><i class="fa fa-circle-o"></i> ' . __('lang_v1.reactivate') . '</button>';
                         }
 
                         return $html;
