@@ -158,6 +158,21 @@
 @endsection
 
 @section('javascript')
+<script>
+  // Destroy existing DataTables to prevent reinitialisation error
+  if ($.fn.DataTable.isDataTable('#sr_sales_report')) {
+    $('#sr_sales_report').DataTable().destroy();
+  }
+  if ($.fn.DataTable.isDataTable('#sr_expenses_report')) {
+    $('#sr_expenses_report').DataTable().destroy();
+  }
+  if ($.fn.DataTable.isDataTable('#sr_sales_with_commission_table')) {
+    $('#sr_sales_with_commission_table').DataTable().destroy();
+  }
+  if ($.fn.DataTable.isDataTable('#sr_sales_commission_report')) {
+    $('#sr_sales_commission_report').DataTable().destroy();
+  }
+</script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 @endsection

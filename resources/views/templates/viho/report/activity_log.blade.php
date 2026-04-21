@@ -94,6 +94,11 @@ $(document).ready(function() {
     activity_log_table.ajax.reload();
   });
 
+  // Check if DataTable is already initialized to prevent reinitialisation
+  if ($.fn.DataTable.isDataTable('#activity_log_table')) {
+    $('#activity_log_table').DataTable().destroy();
+  }
+  
   activity_log_table = $('#activity_log_table').DataTable({
     processing: true,
     serverSide: true,

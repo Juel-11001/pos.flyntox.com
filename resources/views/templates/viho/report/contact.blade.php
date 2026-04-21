@@ -107,5 +107,28 @@
 @endsection
 
 @section('javascript')
+<script>
+  // Clear any existing DataTable instance completely
+  (function() {
+    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#supplier_report_tbl')) {
+      $('#supplier_report_tbl').DataTable().clear().destroy();
+    }
+    $('#supplier_report_tbl').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+    $('#supplier_report_tbl').removeAttr('style').removeAttr('width');
+  })();
+</script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
+<script>
+  $(document).ready(function() {
+    var checkAndFix = function() {
+      if ($.fn.DataTable.isDataTable('#supplier_report_tbl')) {
+        $('#supplier_report_tbl').DataTable().clear().destroy();
+        $('#supplier_report_tbl').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+        $('#supplier_report_tbl').removeAttr('style').removeAttr('width');
+      }
+    };
+    checkAndFix();
+    setTimeout(checkAndFix, 500);
+  });
+</script>
 @endsection

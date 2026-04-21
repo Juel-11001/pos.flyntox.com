@@ -69,7 +69,30 @@
 @endsection
 
 @section('javascript')
-
+<script>
+  // Clear any existing DataTable instance completely
+  (function() {
+    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#cg_report_table')) {
+      $('#cg_report_table').DataTable().clear().destroy();
+    }
+    $('#cg_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+    $('#cg_report_table').removeAttr('style').removeAttr('width');
+  })();
+</script>
+<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
+<script>
+  $(document).ready(function() {
+    var checkAndFix = function() {
+      if ($.fn.DataTable.isDataTable('#cg_report_table')) {
+        $('#cg_report_table').DataTable().clear().destroy();
+        $('#cg_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+        $('#cg_report_table').removeAttr('style').removeAttr('width');
+      }
+    };
+    checkAndFix();
+    setTimeout(checkAndFix, 500);
+  });
+</script>
 <script type="text/javascript">
 $(document).ready(function() {
   if ($('#cg_date_range').length == 1) {

@@ -120,6 +120,29 @@
 <!-- /.content -->
 @stop
 @section('javascript')
+<script>
+  // Clear any existing DataTable instance completely
+  (function() {
+    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#stock_adjustment_table')) {
+      $('#stock_adjustment_table').DataTable().clear().destroy();
+    }
+    $('#stock_adjustment_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+    $('#stock_adjustment_table').removeAttr('style').removeAttr('width');
+  })();
+</script>
 <script src="{{ asset('js/stock_adjustment.js?v=' . $asset_v) }}"></script>
+<script>
+  $(document).ready(function() {
+    var checkAndFix = function() {
+      if ($.fn.DataTable.isDataTable('#stock_adjustment_table')) {
+        $('#stock_adjustment_table').DataTable().clear().destroy();
+        $('#stock_adjustment_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+        $('#stock_adjustment_table').removeAttr('style').removeAttr('width');
+      }
+    };
+    checkAndFix();
+    setTimeout(checkAndFix, 500);
+  });
+</script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 @endsection

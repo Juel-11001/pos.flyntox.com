@@ -116,6 +116,32 @@
 @endsection
 
 @section('javascript')
+<script>
+  // Clear any existing DataTable instance completely
+  (function() {
+    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#sell_payment_report_table')) {
+      $('#sell_payment_report_table').DataTable().clear().destroy();
+    }
+    // Remove DataTable generated elements
+    $('#sell_payment_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+    $('#sell_payment_report_table').removeAttr('style').removeAttr('width');
+  })();
+</script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
+<script>
+  // Final cleanup after page load
+  $(document).ready(function() {
+    var checkAndFix = function() {
+      if ($.fn.DataTable.isDataTable('#sell_payment_report_table')) {
+        $('#sell_payment_report_table').DataTable().clear().destroy();
+        $('#sell_payment_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+        $('#sell_payment_report_table').removeAttr('style').removeAttr('width');
+      }
+    };
+    checkAndFix();
+    // Run again after a short delay to catch any late initializations
+    setTimeout(checkAndFix, 500);
+  });
+</script>
 @endsection

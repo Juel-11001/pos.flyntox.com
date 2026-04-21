@@ -104,5 +104,22 @@
 @endsection
 
 @section('javascript')
+<script>
+  // Destroy existing DataTable BEFORE report.js loads
+  (function() {
+    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#register_report_table')) {
+      $('#register_report_table').DataTable().destroy();
+      $('#register_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
+    }
+  })();
+</script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
+<script>
+  // Also destroy after page fully loads as backup
+  $(document).ready(function() {
+    if ($.fn.DataTable.isDataTable('#register_report_table')) {
+      $('#register_report_table').DataTable().destroy();
+    }
+  });
+</script>
 @endsection
