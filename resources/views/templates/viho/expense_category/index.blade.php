@@ -146,25 +146,53 @@ $(document).ready(function() {
         text: '<i class="fa fa-file-pdf" aria-hidden="true"></i> Export PDF'
       }
     ],
-    ajax: '/ai-template/expense-categories',
+    ajax: '{{ route("ai-template.expense-categories.index") }}',
     columnDefs: [{
       targets: 2,
       orderable: false,
       searchable: false,
     }, ],
-    columns: [{
-        data: 'name',
-        name: 'name'
+    columns: [
+      {
+        data: function (row) {
+          // Support both object-based and array-based server payloads.
+          return (row && row.name !== undefined) ? row.name : (row && row[0] !== undefined ? row[0] : '');
+        },
+        name: 'name',
+        defaultContent: ''
       },
       {
-        data: 'code',
-        name: 'code'
+        data: function (row) {
+          return (row && row.code !== undefined) ? row.code : (row && row[1] !== undefined ? row[1] : '');
+        },
+        name: 'code',
+        defaultContent: ''
       },
       {
-        data: 'action',
-        name: 'action'
-      },
+        data: function (row) {
+          return (row && row.action !== undefined) ? row.action : (row && row[2] !== undefined ? row[2] : '');
+        },
+        name: 'action',
+        defaultContent: '',
+        render: function (data, type) {
+          // Some setups return HTML-escaped strings. Decode for display to render buttons/icons.
+          if (type !== 'display') return data;
+          if (data === null || data === undefined) return '';
+          return $('<textarea/>').html(data).text();
+        }
+      }
     ],
+    drawCallback: function () {
+      // Viho template doesn't ship Glyphicons; convert to FontAwesome for this page only.
+      $('#expense_category_table')
+        .find('i.glyphicon.glyphicon-edit')
+        .removeClass('glyphicon glyphicon-edit')
+        .addClass('fa fa-edit');
+      $('#expense_category_table')
+        .find('i.glyphicon.glyphicon-trash')
+        .removeClass('glyphicon glyphicon-trash')
+        .addClass('fa fa-trash');
+    },
     initComplete: function() {
       var relocate = function() {
         var $wrapper = $('#expense_category_table_wrapper');
@@ -192,6 +220,34 @@ $(document).ready(function() {
   });
 });
 
+// Create / update expense category (modal form)
+$(document).on('submit', 'form#expense_category_add_form', function(e) {
+  e.preventDefault();
+  var $form = $(this);
+  var data = $form.serialize();
+
+  $.ajax({
+    method: $form.attr('method') || 'POST',
+    url: $form.attr('action'),
+    dataType: 'json',
+    data: data,
+    success: function(result) {
+      if (result.success) {
+        $('div.expense_category_modal').modal('hide');
+        toastr.success(result.msg);
+        if (window.expense_category_table) {
+          expense_category_table.ajax.reload();
+        }
+      } else {
+        toastr.error(result.msg || LANG.something_went_wrong);
+      }
+    },
+    error: function() {
+      toastr.error(LANG.something_went_wrong);
+    }
+  });
+});
+
 $(document).on('click', 'button.delete_expense_category', function() {
   swal({
     title: LANG.sure,
@@ -208,11 +264,16 @@ $(document).on('click', 'button.delete_expense_category', function() {
         success: function(result) {
           if (result.success) {
             toastr.success(result.msg);
-            expense_category_table.ajax.reload();
+            if (window.expense_category_table) {
+              expense_category_table.ajax.reload();
+            }
           } else {
             toastr.error(result.msg);
           }
         },
+        error: function() {
+          toastr.error(LANG.something_went_wrong);
+        }
       });
     }
   });

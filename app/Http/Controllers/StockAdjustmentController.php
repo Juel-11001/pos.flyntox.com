@@ -113,10 +113,16 @@ class StockAdjustmentController extends Controller
                 $hide = 'hide';
             }
 
-            return Datatables::of($stock_adjustments)
-                ->addColumn('action', '<button type="button" data-href="{{action([\App\Http\Controllers\StockAdjustmentController::class, \'show\'], [$id]) }}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary btn-modal" data-container=".view_modal"><i class="fa fa-eye" aria-hidden="true"></i> @lang("messages.view")</button>
+            $is_ai_template = $this->isAiTemplateRequest();
+            $action_html = $is_ai_template
+                ? '<button type="button" data-href="{{action([\App\Http\Controllers\StockAdjustmentController::class, \'show\'], [$id]) }}" class="btn btn-primary btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_modal" title="@lang("messages.view")" style="padding: 4px 10px; margin-right: 10px; margin-bottom: 6px; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" aria-hidden="true" style="font-size: 13px;"></i></button>
+                   <button type="button" data-href="{{  action([\App\Http\Controllers\StockAdjustmentController::class, \'destroy\'], [$id]) }}" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center delete_stock_adjustment '.$hide.'" title="@lang("messages.delete")" style="padding: 4px 10px; margin-bottom: 6px; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-trash" aria-hidden="true" style="font-size: 13px;"></i></button>'
+                : '<button type="button" data-href="{{action([\App\Http\Controllers\StockAdjustmentController::class, \'show\'], [$id]) }}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary btn-modal" data-container=".view_modal"><i class="fa fa-eye" aria-hidden="true"></i> @lang("messages.view")</button>
                  &nbsp;
-                    <button type="button" data-href="{{  action([\App\Http\Controllers\StockAdjustmentController::class, \'destroy\'], [$id]) }}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error delete_stock_adjustment '.$hide.'"><i class="fa fa-trash" aria-hidden="true"></i> @lang("messages.delete")</button>')
+                    <button type="button" data-href="{{  action([\App\Http\Controllers\StockAdjustmentController::class, \'destroy\'], [$id]) }}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error delete_stock_adjustment '.$hide.'"><i class="fa fa-trash" aria-hidden="true"></i> @lang("messages.delete")</button>';
+
+            return Datatables::of($stock_adjustments)
+                ->addColumn('action', $action_html)
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',

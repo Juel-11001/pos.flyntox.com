@@ -55,6 +55,14 @@ class ExpenseCategoryController extends Controller
                             ? route('ai-template.expense-categories.destroy', [$row->id])
                             : route('expense-categories.destroy', [$row->id]);
 
+                        if ($is_viho) {
+                            // Viho template - icon-only buttons (FontAwesome)
+                            $edit_btn = '<button data-href="' . $edit_url . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".expense_category_modal" title="' . __('messages.edit') . '" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-edit" style="font-size: 13px;"></i></button>';
+                            $delete_btn = '<button data-href="' . $delete_url . '" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center delete_expense_category" title="' . __('messages.delete') . '" style="padding: 4px 10px; background-color: #d22d3d; border-color: #d22d3d; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-trash" style="font-size: 13px;"></i></button>';
+                            return $edit_btn . $delete_btn;
+                        }
+
+                        // Default template - keep text buttons
                         return '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".expense_category_modal"><i class="glyphicon glyphicon-edit"></i>  ' . __('messages.edit') . '</button>
                             &nbsp;
                             <button data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_expense_category"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';

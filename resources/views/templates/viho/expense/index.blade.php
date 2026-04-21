@@ -95,36 +95,76 @@ if ($.fn.DataTable && $.fn.DataTable.isDataTable('#expense_table')) {
   } catch (e) {}
 }
 
-// Initialize DataTable with correct URL for ai-template
-fnDrawCallback: function(oSettings) {
-    __currency_convert_recursively($('#expense_table'));
-  },
-  initComplete: function() {
-    var relocate = function() {
-      var $wrapper = $('#expense_table_wrapper');
-      if ($wrapper.length < 1) return;
+  // Initialize DataTable for Viho (ai-template)
+  expense_table = $('#expense_table').DataTable({
+    processing: true,
+    serverSide: true,
+    fixedHeader: false,
+    aaSorting: [[1, 'desc']],
+    ajax: {
+      url: '{{ route("ai-template.expenses.index") }}',
+      data: function(d) {
+        // Keep parity with backend expectations when filters are present
+        d.expense_for = $('select#expense_for').val();
+        d.created_by = $('select#created_by').val();
+        d.contact_id = $('select#expense_contact_filter').val();
+        d.location_id = $('select#location_id').val();
+        d.expense_category_id = $('select#expense_category_id').val();
+        d.expense_sub_category_id = $('select#expense_sub_category_id_filter').val();
+        d.payment_status = $('select#expense_payment_status').val();
+        if ($('input#expense_date_range').length && $('input#expense_date_range').data('daterangepicker')) {
+          d.start_date = $('input#expense_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          d.end_date = $('input#expense_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        }
+      }
+    },
+    columns: [
+      { data: 'action', name: 'action', orderable: false, searchable: false },
+      { data: 'transaction_date', name: 'transaction_date' },
+      { data: 'ref_no', name: 'ref_no' },
+      { data: 'recur_details', name: 'recur_details', orderable: false, searchable: false },
+      { data: 'category', name: 'ec.name' },
+      { data: 'sub_category', name: 'esc.name' },
+      { data: 'location_name', name: 'bl.name' },
+      { data: 'payment_status', name: 'payment_status', orderable: false },
+      { data: 'tax', name: 'tr.name' },
+      { data: 'final_total', name: 'final_total' },
+      { data: 'payment_due', name: 'payment_due' },
+      { data: 'expense_for', name: 'expense_for' },
+      { data: 'contact_name', name: 'c.name' },
+      { data: 'additional_notes', name: 'additional_notes' },
+      { data: 'added_by', name: 'usr.first_name' }
+    ],
+    fnDrawCallback: function() {
+      __currency_convert_recursively($('#expense_table'));
+    },
+    initComplete: function() {
+      var relocate = function() {
+        var $wrapper = $('#expense_table_wrapper');
+        if ($wrapper.length < 1) return;
 
-      var $length = $wrapper.find('.dataTables_length');
-      var $filter = $wrapper.find('.dataTables_filter');
-      var $info = $wrapper.find('.dataTables_info');
-      var $paginate = $wrapper.find('.dataTables_paginate');
+        var $length = $wrapper.find('.dataTables_length');
+        var $filter = $wrapper.find('.dataTables_filter');
+        var $info = $wrapper.find('.dataTables_info');
+        var $paginate = $wrapper.find('.dataTables_paginate');
 
-      if ($length.length) $('#expense_dt_length').empty().append($length);
-      if ($filter.length) $('#expense_dt_filter').empty().append($filter);
-      if ($info.length) $('#expense_dt_info').empty().append($info);
-      if ($paginate.length) $('#expense_dt_paginate').empty().append($paginate);
-    };
+        if ($length.length) $('#expense_dt_length').empty().append($length);
+        if ($filter.length) $('#expense_dt_filter').empty().append($filter);
+        if ($info.length) $('#expense_dt_info').empty().append($info);
+        if ($paginate.length) $('#expense_dt_paginate').empty().append($paginate);
+      };
 
-    relocate();
-    var api = this.api();
-    api.on('draw.dt', function() {
       relocate();
-    });
-  }
-});
+      var api = this.api();
+      api.on('draw.dt', function() {
+        relocate();
+      });
+    }
+  });
 });
 
-$(document).on('click', 'button.delete_expense', function() {
+$(document).on('click', 'a.delete_expense, button.delete_expense', function(e) {
+  e.preventDefault();
   swal({
     title: LANG.sure,
     icon: 'warning',
