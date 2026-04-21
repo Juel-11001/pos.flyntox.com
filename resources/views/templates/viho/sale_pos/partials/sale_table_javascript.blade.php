@@ -66,7 +66,7 @@
             scrollX: true,
             scrollCollapse: true,
             "ajax": {
-                "url": "/sells",
+                "url": "{{ route('ai-template.sells.index') }}",
                 "data": function (d) {
                     if ($('#sell_list_filter_date_range').val()) {
                         var start = $('#sell_list_filter_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');

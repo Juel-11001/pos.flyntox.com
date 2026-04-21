@@ -72,7 +72,7 @@ class DiscountController extends Controller
                 ->addColumn(
                     'action',
                     function ($row) {
-                        $is_viho = $this->isAiTemplateRequest() || request()->is('ai-template/*');
+                        $is_viho = $this->isAiTemplateRequest() || request()->is('ai-template/*') || request()->segment(1) === 'ai-template';
                         $edit_url = $is_viho
                             ? route('ai-template.discount.edit', [$row->id])
                             : route('discount.edit', [$row->id]);
@@ -82,6 +82,19 @@ class DiscountController extends Controller
                         $activate_url = $is_viho
                             ? route('ai-template.discount.activate', [$row->id])
                             : route('discount.activate', [$row->id]);
+
+                        if ($is_viho) {
+                            // Viho template - icon-only buttons (FontAwesome) - improved styling
+                            $edit_btn = '<button data-href="' . $edit_url . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".discount_modal" title="' . __('messages.edit') . '" style="padding: 6px 12px; margin-right: 8px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fa fa-edit" style="font-size: 14px;"></i></button>';
+                            $delete_btn = '<button data-href="' . $delete_url . '" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center delete_discount_button" title="' . __('messages.delete') . '" style="padding: 6px 12px; margin-right: 8px; background-color: #d22d3d; border-color: #d22d3d; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fa fa-trash" style="font-size: 14px;"></i></button>';
+                            $html = $edit_btn . $delete_btn;
+
+                            if ($row->is_active != 1) {
+                                $html .= '<button data-href="' . $activate_url . '" class="btn btn-warning btn-xs d-inline-flex align-items-center justify-content-center activate-discount" title="' . __('lang_v1.reactivate') . '" style="padding: 4px 10px; margin-bottom: 6px; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-refresh" style="font-size: 13px;"></i></button>';
+                            }
+
+                            return $html;
+                        }
 
                         $html = '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".discount_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>
                             &nbsp;

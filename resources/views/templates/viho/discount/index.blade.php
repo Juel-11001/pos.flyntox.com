@@ -144,8 +144,30 @@
                     { data: 'category', name: 'c.name' },
                     { data: 'products', name: 'products', orderable: false, searchable: false },
                     { data: 'location', name: 'l.name' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type) {
+                            // Decode escaped HTML so icons/buttons render (Viho only).
+                            if (type !== 'display') return data;
+                            if (data === null || data === undefined) return '';
+                            return $('<textarea/>').html(data).text();
+                        }
+                    }
                 ],
+                drawCallback: function () {
+                    // If any legacy glyphicons slip in, convert them for Viho.
+                    $('#discounts_table')
+                        .find('i.glyphicon.glyphicon-edit')
+                        .removeClass('glyphicon glyphicon-edit')
+                        .addClass('fa fa-edit');
+                    $('#discounts_table')
+                        .find('i.glyphicon.glyphicon-trash')
+                        .removeClass('glyphicon glyphicon-trash')
+                        .addClass('fa fa-trash');
+                },
                 initComplete: function() {
                     var relocate = function() {
                         var $wrapper = $('#discounts_table_wrapper');
