@@ -114,10 +114,39 @@ class AccountController extends Controller
                 ->groupBy('accounts.id');
 
             $route_name_prefix = $this->isAiTemplateRequest() ? 'ai-template.' : '';
+            $is_viho = $this->isAiTemplateRequest() || request()->is('ai-template/*') || request()->segment(1) === 'ai-template';
             return DataTables::of($accounts)
                             ->addColumn(
                                 'action',
-                                function ($row) use ($route_name_prefix) {
+                                function ($row) use ($route_name_prefix, $is_viho) {
+                                    if ($is_viho) {
+                                        // Viho template - icon-only buttons (FontAwesome)
+                                        $edit_btn = '<button data-href="' . route($route_name_prefix . 'account.edit', [$row->id]) . '" data-container=".account_model" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" title="' . __('messages.edit') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fa fa-edit" style="font-size: 14px;"></i></button>';
+                                        $account_book_btn = '<a href="' . route($route_name_prefix . 'account.show', [$row->id]) . '" class="btn btn-warning btn-xs d-inline-flex align-items-center justify-content-center" title="' . __('account.account_book') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #f39c12; border-color: #f39c12; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fa fa-book" style="font-size: 14px;"></i></a>';
+                                        $html = $edit_btn . $account_book_btn;
+
+                                        if ($row->is_closed == 0) {
+                                            if (Route::has($route_name_prefix . 'account.fund-transfer')) {
+                                                $html .= '<button data-href="' . route($route_name_prefix . 'account.fund-transfer', [$row->id]) . '" class="btn btn-info btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_modal" title="' . __('account.fund_transfer') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #00c0ef; border-color: #00c0ef; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fas fa-calculator" style="font-size: 14px;"></i></button>';
+                                            }
+
+                                            if (Route::has($route_name_prefix . 'account.deposit')) {
+                                                $html .= '<button data-href="' . route($route_name_prefix . 'account.deposit', [$row->id]) . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_modal" title="' . __('account.deposit') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #00a65a; border-color: #00a65a; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fas fa-money-bill-alt" style="font-size: 14px;"></i></button>';
+                                            }
+
+                                            if (Route::has($route_name_prefix . 'account.close')) {
+                                                $html .= '<button data-url="' . route($route_name_prefix . 'account.close', [$row->id]) . '" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center close_account" title="' . __('messages.close') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #d22d3d; border-color: #d22d3d; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fa fa-power-off" style="font-size: 14px;"></i></button>';
+                                            }
+                                        } else if ($row->is_closed == 1) {
+                                            if (Route::has($route_name_prefix . 'account.activate')) {
+                                                $html .= '<button data-url="' . route($route_name_prefix . 'account.activate', [$row->id]) . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center activate_account" title="' . __('messages.activate') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #00a65a; border-color: #00a65a; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fa fa-power-off" style="font-size: 14px;"></i></button>';
+                                            }
+                                        }
+
+                                        return $html;
+                                    }
+
+                                    // Default template - text buttons
                                     $html = '<button data-href="' . route($route_name_prefix . 'account.edit', [$row->id]) . '" data-container=".account_model" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</button>
                                     <a href="' . route($route_name_prefix . 'account.show', [$row->id]) . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-warning btn-xs"><i class="fa fa-book"></i> ' . __("account.account_book") . '</a>&nbsp;';
 
