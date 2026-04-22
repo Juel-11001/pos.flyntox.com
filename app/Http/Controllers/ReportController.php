@@ -385,6 +385,7 @@ class ReportController extends Controller
             $show_manufacturing_data = 0;
         }
         if ($request->ajax()) {
+            $is_ai_template = $this->isAiTemplateRequest();
             $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
                 'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', ]);
 
@@ -404,11 +405,14 @@ class ReportController extends Controller
             }
 
             $datatable = Datatables::of($products)
-                ->editColumn('stock', function ($row) {
+                ->editColumn('stock', function ($row) use ($is_ai_template) {
                     if ($row->enable_stock) {
                         $stock = $row->stock ? $row->stock : 0;
 
-                        return  '<span class="current_stock" data-is_quantity="true" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>'.' '.$row->unit;
+                        $stock_html = '<span class="current_stock" data-is_quantity="true" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>';
+                        $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                        return $stock_html.' '.$unit_html;
                     } else {
                         return '--';
                     }
@@ -418,7 +422,14 @@ class ReportController extends Controller
 
                     return $name;
                 })
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use ($is_ai_template) {
+                    $history_url = action([\App\Http\Controllers\ProductController::class, 'productStockHistory'], [$row->product_id]).
+                    '?location_id='.$row->location_id.'&variation_id='.$row->variation_id;
+
+                    if ($is_ai_template) {
+                        return '<a class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-w-max viho-stock-action-link" href="'.$history_url.'"><i class="fas fa-history"></i> '.__('lang_v1.product_stock_history').'</a>';
+                    }
+
                     return '<a class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max " href="'.action([\App\Http\Controllers\ProductController::class, 'productStockHistory'], [$row->product_id]).
                     '?location_id='.$row->location_id.'&variation_id='.$row->variation_id.
                     '"><i class="fas fa-history"></i> '.__('lang_v1.product_stock_history').'</a>';
@@ -431,39 +442,56 @@ class ReportController extends Controller
 
                     return $variation;
                 })
-                ->editColumn('total_sold', function ($row) {
+                ->editColumn('total_sold', function ($row) use ($is_ai_template) {
                     $total_sold = 0;
                     if ($row->total_sold) {
                         $total_sold = (float) $row->total_sold;
                     }
 
-                    return '<span data-is_quantity="true" class="total_sold" data-orig-value="'.$total_sold.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_sold, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span data-is_quantity="true" class="total_sold" data-orig-value="'.$total_sold.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_sold, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 })
-                ->editColumn('total_transfered', function ($row) {
+                ->editColumn('total_transfered', function ($row) use ($is_ai_template) {
                     $total_transfered = 0;
                     if ($row->total_transfered) {
                         $total_transfered = (float) $row->total_transfered;
                     }
 
-                    return '<span class="total_transfered" data-is_quantity="true" data-orig-value="'.$total_transfered.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_transfered, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span class="total_transfered" data-is_quantity="true" data-orig-value="'.$total_transfered.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_transfered, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 })
 
-                ->editColumn('total_adjusted', function ($row) {
+                ->editColumn('total_adjusted', function ($row) use ($is_ai_template) {
                     $total_adjusted = 0;
                     if ($row->total_adjusted) {
                         $total_adjusted = (float) $row->total_adjusted;
                     }
 
-                    return '<span data-is_quantity="true" class="total_adjusted" data-orig-value="'.$total_adjusted.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_adjusted, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span data-is_quantity="true" class="total_adjusted" data-orig-value="'.$total_adjusted.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_adjusted, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 })
-                ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group) {
+                ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group, $is_ai_template) {
                     $html = '';
                     if (auth()->user()->can('access_default_selling_price')) {
-                        $html .= $this->transactionUtil->num_f($row->unit_price, true);
+                        if ($is_ai_template) {
+                            $html .= '<span class="viho-selling-price-text">'.$this->transactionUtil->num_f($row->unit_price, true).'</span>';
+                        } else {
+                            $html .= $this->transactionUtil->num_f($row->unit_price, true);
+                        }
                     }
 
                     if ($allowed_selling_price_group) {
-                        $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary tw-w-max btn-modal no-print" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                        if ($is_ai_template) {
+                            $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-w-max btn-modal no-print viho-group-price-link" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                        } else {
+                            $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary tw-w-max btn-modal no-print" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                        }
                     }
 
                     return $html;
@@ -505,13 +533,16 @@ class ReportController extends Controller
                 'potential_profit', 'action', ];
 
             if ($show_manufacturing_data) {
-                $datatable->editColumn('total_mfg_stock', function ($row) {
+                $datatable->editColumn('total_mfg_stock', function ($row) use ($is_ai_template) {
                     $total_mfg_stock = 0;
                     if ($row->total_mfg_stock) {
                         $total_mfg_stock = (float) $row->total_mfg_stock;
                     }
 
-                    return '<span data-is_quantity="true" class="total_mfg_stock"  data-orig-value="'.$total_mfg_stock.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_mfg_stock, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span data-is_quantity="true" class="total_mfg_stock"  data-orig-value="'.$total_mfg_stock.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_mfg_stock, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 });
                 $raw_columns[] = 'total_mfg_stock';
             }

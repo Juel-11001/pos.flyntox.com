@@ -2,6 +2,44 @@
 @section('title', __('report.stock_report'))
 
 @section('content')
+<style>
+  #stock_report_table .viho-stock-action-link {
+    border-color: rgba(36, 105, 92, 0.28);
+    background: rgba(36, 105, 92, 0.08);
+    color: #24695c;
+  }
+
+  #stock_report_table .viho-stock-action-link:hover,
+  #stock_report_table .viho-stock-action-link:focus {
+    border-color: #24695c;
+    background: rgba(36, 105, 92, 0.14);
+    color: #24695c;
+  }
+
+  #stock_report_table .viho-stock-unit-text {
+    color: #24695c;
+    font-weight: 700;
+  }
+
+  #stock_report_table .viho-selling-price-text {
+    color: #24695c;
+    font-weight: 800;
+  }
+
+  #stock_report_table .viho-group-price-link {
+    margin-left: 6px;
+    border-color: rgba(36, 105, 92, 0.28);
+    background: rgba(36, 105, 92, 0.08);
+    color: #24695c;
+  }
+
+  #stock_report_table .viho-group-price-link:hover,
+  #stock_report_table .viho-group-price-link:focus {
+    border-color: #24695c;
+    background: rgba(36, 105, 92, 0.14);
+    color: #24695c;
+  }
+</style>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
