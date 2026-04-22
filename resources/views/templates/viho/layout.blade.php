@@ -246,6 +246,85 @@
             margin: 0 auto;
         }
 
+        /* Sidebar Integrated Header & Toggle */
+        .main-nav {
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 1000 !important;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            top: 0 !important;
+            height: 100vh !important;
+            position: fixed !important;
+        }
+
+        .main-nav .main-header-left {
+            width: 100% !important;
+            height: 80px;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 20px !important;
+            background: #fff;
+            border-bottom: 1px solid #f2f4f6;
+            flex-shrink: 0;
+        }
+
+        /* Sidebar Toggle - Expanded State (300px) */
+        #pageWrapper:not(.close_icon) .page-body-wrapper .page-body {
+            margin-left: 300px !important;
+            transition: all 0.3s ease;
+        }
+        #pageWrapper:not(.close_icon) .main-nav {
+            width: 300px !important;
+            left: 0 !important;
+            transition: all 0.3s ease;
+        }
+        #pageWrapper:not(.close_icon) .page-main-header {
+            margin-left: 300px !important;
+            width: calc(100% - 300px) !important;
+            transition: all 0.3s ease;
+        }
+
+        /* Persistent Toggle Button Logic */
+        .header-toggle-only {
+            width: 60px !important;
+            display: none !important; /* Hidden by default when sidebar is open */
+            padding: 0 !important;
+            justify-content: center !important;
+            background: transparent !important;
+            border-right: none !important;
+        }
+
+        #pageWrapper.close_icon .header-toggle-only {
+            display: flex !important; /* Show when sidebar is closed */
+        }
+
+        .toggle-sidebar {
+            cursor: pointer;
+            z-index: 1100 !important;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-sidebar:hover {
+            color: #24695c !important;
+        }
+
+        /* Sidebar Toggle - Collapsed State */
+        #pageWrapper.close_icon .page-body-wrapper .page-body {
+            margin-left: 0 !important;
+            transition: all 0.3s ease;
+        }
+        #pageWrapper.close_icon .main-nav {
+            transform: translateX(-300px);
+            transition: all 0.3s ease;
+        }
+        #pageWrapper.close_icon .page-main-header {
+            margin-left: 0 !important;
+            width: 100% !important;
+            transition: all 0.3s ease;
+        }
+
         /* DataTables (Viho pages): keep length control on one line. */
         div[id$="_dt_length"] .dataTables_length label {
             display: flex;
@@ -1617,17 +1696,8 @@
         <!-- Page Header Start-->
         <div class="page-main-header">
             <div class="main-header-right row m-0">
-                <div class="main-header-left">
-                    <div class="logo-wrapper">
-                        <a href="{{ route('home') }}"><img class="img-fluid"
-                                src="{{ $viho_asset }}/images/logo/logo.png" alt=""></a>
-                    </div>
-                    <div class="dark-logo-wrapper">
-                        <a href="{{ route('home') }}"><img class="img-fluid"
-                                src="{{ $viho_asset }}/images/logo/dark-logo.png" alt=""></a>
-                    </div>
-                    <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center"
-                            id="sidebar-toggle"></i></div>
+                <div class="main-header-left header-toggle-only">
+                    <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center"></i></div>
                 </div>
                 <div class="left-menu-header col-auto">
                     <ul>
@@ -1652,6 +1722,18 @@
 
         <div class="page-body-wrapper sidebar-icon">
             <header class="main-nav">
+                <div class="main-header-left">
+                    <div class="logo-wrapper">
+                        <a href="{{ route('home') }}"><img class="img-fluid"
+                                src="{{ $viho_asset }}/images/logo/logo.png" alt=""></a>
+                    </div>
+                    <div class="dark-logo-wrapper">
+                        <a href="{{ route('home') }}"><img class="img-fluid"
+                                src="{{ $viho_asset }}/images/logo/dark-logo.png" alt=""></a>
+                    </div>
+                    <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center"
+                            id="sidebar-toggle"></i></div>
+                </div>
                 <div class="sidebar-user text-center">
                     <a class="setting-primary" href="javascript:void(0)"><i data-feather="settings"></i></a>
                     <img class="img-90 rounded-circle" src="{{ $viho_asset }}/images/dashboard/1.png" alt="">
@@ -1762,6 +1844,11 @@
                 if ($.fn && typeof $.fn.dropdown === 'function') {
                     $('.dropdown-toggle[data-toggle="dropdown"]').dropdown();
                 }
+
+                $(document).on('click', '.toggle-sidebar', function() {
+                    $('#pageWrapper').toggleClass('close_icon');
+                    $('.page-main-header').toggleClass('close_icon');
+                });
 
                 $(document).on('click', '#mainnav .nav-menu > li.dropdown > a.menu-title', function (e) {
                     e.preventDefault();

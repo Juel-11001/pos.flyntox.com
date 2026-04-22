@@ -20,6 +20,22 @@ class NotificationController extends Controller
     protected $transactionUtil;
 
     /**
+     * Check if request is for Viho template
+     */
+    protected function isAiTemplateRequest()
+    {
+        return request()->segment(1) === 'ai-template';
+    }
+
+    /**
+     * Get the view path for Viho template
+     */
+    protected function viewPath($view = 'show_template')
+    {
+        return 'templates.viho.notification.' . $view;
+    }
+
+    /**
      * Constructor
      *
      * @param  NotificationUtil  $notificationUtil, TransactionUtil $transactionUtil
@@ -84,7 +100,8 @@ class NotificationController extends Controller
         $ledger_format = request()->input('format');
         $location_id = request()->input('location_id');
 
-        return view('notification.show_template')
+        $view = $this->isAiTemplateRequest() ? $this->viewPath('show_template') : 'notification.show_template';
+        return view($view)
                 ->with(compact('notification_template', 'transaction', 'tags', 'template_name', 'contact', 'start_date', 'end_date', 'ledger_format', 'location_id'));
     }
 
@@ -113,7 +130,7 @@ class NotificationController extends Controller
             $emails_array = array_map('trim', explode(',', $data['to_email']));
 
             $transaction_id = $request->input('transaction_id');
-            $business_id = request()->session()->get('business.id');
+            $business_id = request()->session()->get('user.business_id');
 
             $transaction = ! empty($transaction_id) ? Transaction::find($transaction_id) : null;
 
@@ -140,9 +157,9 @@ class NotificationController extends Controller
                 $data['whatsapp_text'] = $tag_replaced_data['whatsapp_text'];
             }
 
-            $data['email_settings'] = request()->session()->get('business.email_settings');
+            $data['email_settings'] = request()->session()->get('business.email_settings') ?? request()->session()->get('user.business.email_settings');
 
-            $data['sms_settings'] = request()->session()->get('business.sms_settings');
+            $data['sms_settings'] = request()->session()->get('business.sms_settings') ?? request()->session()->get('user.business.sms_settings');
 
             $notification_type = $request->input('notification_type');
 

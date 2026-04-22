@@ -19,18 +19,18 @@
             <strong>@lang('lang_v1.available_tags'):</strong> 
             @include('notification_template.partials.tags', ['tags' => $tags])
         </div>
-        <div class="box-group" id="accordion">
+        <div class="box-group" id="notification_modal_accordion">
             {{-- email --}}
-            <div class="panel box box-solid">
-              <div class="box-header with-border">
-                <h4 class="box-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#email_collapse" aria-expanded="true">
+            <div class="card mb-2">
+              <div class="card-header p-2">
+                <h5 class="mb-0">
+                  <button type="button" class="btn btn-link p-0 text-decoration-none accordion-toggle-btn" data-target="#email_collapse">
                    @lang('lang_v1.send_email')
-                  </a>
-                </h4>
+                  </button>
+                </h5>
               </div>
-              <div id="email_collapse" class="panel-collapse collapse in" aria-expanded="true">
-                <div class="box-body">
+              <div id="email_collapse" class="collapse show" aria-expanded="true">
+                <div class="card-body p-2">
                     @if($notification_template['template_for'] == 'send_ledger')
                         <div class="form-group">
                             {!! Form::label('ledger_format', __('lang_v1.ledger_format').':') !!}
@@ -78,16 +78,16 @@
             </div>
             {{-- sms /whatsapp--}}
             @if($notification_template['template_for'] != 'send_ledger')
-                <div class="panel box box-solid">
-                  <div class="box-header with-border">
-                    <h5 class="box-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#sms_collapse" class="collapsed" aria-expanded="false">
+                <div class="card mb-2">
+                  <div class="card-header p-2">
+                    <h5 class="mb-0">
+                      <button type="button" class="btn btn-link p-0 text-decoration-none collapsed accordion-toggle-btn" data-target="#sms_collapse">
                         @lang('lang_v1.send_sms_whatsapp_notification')
-                      </a>
+                      </button>
                     </h5>
                   </div>
-                  <div id="sms_collapse" class="panel-collapse collapse" aria-expanded="false">
-                    <div class="box-body">
+                  <div id="sms_collapse" class="collapse" aria-expanded="false">
+                    <div class="card-body p-2">
                         <div class="form-group @if($notification_template['template_for'] == 'send_ledger') hide @endif">
                             <label>
                               {!! Form::checkbox('notification_type[]', 'sms', false, ['class' => 'input-icheck notification_type']); !!} @lang('lang_v1.send_sms')
@@ -146,11 +146,34 @@
   //    });
   // });
 
-  if (_.isNull(tinyMCE.activeEditor)) {
-        tinymce.init({
-            selector: 'textarea#email_body',
-        });
-    }
+  if (typeof tinymce !== 'undefined') {
+      tinymce.remove('textarea#email_body');
+      tinymce.init({
+          selector: 'textarea#email_body',
+          height: 300,
+          menubar: false,
+          plugins: [
+              'advlist autolink lists link image charmap print preview anchor',
+              'searchreplace visualblocks code fullscreen',
+              'insertdatetime media table paste code help wordcount'
+          ],
+          toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+      });
+  }
+
+  $(document).off('click', '.accordion-toggle-btn').on('click', '.accordion-toggle-btn', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var target = $(this).data('target');
+      $(target).toggleClass('show');
+      
+      // Update button state for styling
+      if ($(target).hasClass('show')) {
+          $(this).removeClass('collapsed').attr('aria-expanded', 'true');
+      } else {
+          $(this).addClass('collapsed').attr('aria-expanded', 'false');
+      }
+  });
     
   $(document).ready(function(){
     //initialize iCheck

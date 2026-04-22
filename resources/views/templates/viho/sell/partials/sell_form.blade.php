@@ -1,4 +1,4 @@
-﻿    <section class="content no-print">
+    <section class="content no-print">
       <input type="hidden" id="amount_rounding_method" value="{{ $pos_settings['amount_rounding_method'] ?? '' }}">
       @if (!empty($pos_settings['allow_overselling']))
       <input type="hidden" id="is_overselling_allowed">
@@ -1096,7 +1096,7 @@
               @show_tooltip(__('lang_v1.this_will_be_shown_in_pdf'))
               <div class="input-group">
                 <span class="input-group-addon">
-                  <i class="fas fa-money-bill-alt"></i>
+                  <i class="fas fa-money-bill"></i>
                 </span>
                 {!! Form::select('prefer_payment_account', $accounts, null, [
                 'class' => 'form-control',

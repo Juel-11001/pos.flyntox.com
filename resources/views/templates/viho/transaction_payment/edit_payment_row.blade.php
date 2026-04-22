@@ -161,7 +161,7 @@
               {!! Form::label("account_id" , __('lang_v1.payment_account') . ':') !!}
               <div class="input-group">
                 <span class="input-group-addon">
-                  <i class="fas fa-money-bill-alt"></i>
+                  <i class="fas fa-money-bill"></i>
                 </span>
                 {!! Form::select("account_id", $accounts, !empty($payment_line->account_id) ? $payment_line->account_id : '' , ['class' => 'form-control select2', 'id' => "account_id", 'style' => 'width:100%;']); !!}
               </div>
