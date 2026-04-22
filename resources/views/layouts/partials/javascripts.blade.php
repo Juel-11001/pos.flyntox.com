@@ -226,15 +226,12 @@
                 dataType: 'json',
                 data: {
                     template_key: templateKey,
+                    current_path: window.location.pathname + window.location.search,
                 },
                 success: function(result) {
                     if (result && result.success === 1) {
                         toastr.success(result.msg || 'Template updated.');
-                        if (templateKey === 'viho') {
-                            window.location = "{{ url('/ai-template/home') }}";
-                        } else {
-                            window.location = "{{ url('/home') }}";
-                        }
+                        window.location = result.redirect_url || "{{ url('/home') }}";
                     } else {
                         toastr.error((result && result.msg) ? result.msg : 'Unable to update template.');
                         $btn.prop('disabled', false);

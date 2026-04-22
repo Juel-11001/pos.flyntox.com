@@ -235,14 +235,24 @@
             }
 
             $btn.prop('disabled', true);
-            $.post(updateUrl, { template: templateKey }, function(resp) {
-                if (resp && resp.success) {
-                    window.location.reload();
-                } else {
+            $.ajax({
+                url: updateUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    template_key: templateKey,
+                    current_path: window.location.pathname + window.location.search,
+                },
+                success: function(resp) {
+                    if (resp && (resp.success === 1 || resp.success === true || resp.success === 'true')) {
+                        window.location = resp.redirect_url || "{{ url('/home') }}";
+                    } else {
+                        $btn.prop('disabled', false);
+                    }
+                },
+                error: function() {
                     $btn.prop('disabled', false);
                 }
-            }).fail(function() {
-                $btn.prop('disabled', false);
             });
         });
     });
