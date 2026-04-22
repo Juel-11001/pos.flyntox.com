@@ -19,10 +19,9 @@
       </div>
 
         <div class="form-group">
-            <div class="checkbox">
-              <label>
-                 {!! Form::checkbox('add_as_sub_cat', 1, false,[ 'class' => 'toggler', 'data-toggle_id' => 'parent_cat_div' ]); !!} @lang( 'lang_v1.add_as_sub_cat' )
-              </label>
+            <div class="checkbox checkbox-primary">
+              {!! Form::checkbox('add_as_sub_cat', 1, false,[ 'class' => 'toggler', 'data-toggle_id' => 'parent_cat_div', 'id' => 'add_as_sub_cat' ]); !!}
+              {!! Form::label('add_as_sub_cat', __( 'lang_v1.add_as_sub_cat' )) !!}
             </div>
         </div>
         <div class="form-group hide" id="parent_cat_div">

@@ -17,10 +17,10 @@
       <div class="form-group">
           {!! Form::label('duration', __( 'lang_v1.duration' ) . ':*') !!}
           <div class="row">
-              <div class="col-md-6">
+              <div class="col-6 col-xs-6">
                   {!! Form::number('duration', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.duration' ), 'required' ]); !!}
               </div>
-              <div class="col-md-6">
+              <div class="col-6 col-xs-6">
                   {!! Form::select('duration_type', ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')], '', ['class' => 'form-control','placeholder' => __('messages.please_select'), 'required']); !!}
               </div>
           </div>
