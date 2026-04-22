@@ -16,17 +16,19 @@
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                   <div class="form-group">
-                        {!! Form::label('heading', __('lang_v1.heading') . ':*' )!!}
-                        {!! Form::text('heading', null, ['class' => 'form-control', 'required' ]) !!}
-                   </div>
+                    <div class="form-group">
+                        {!! Form::label('heading', __('lang_v1.heading') . ':*')!!}
+                        {!! Form::text('heading', null, ['class' => 'form-control', 'required']) !!}
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('description', __('lang_v1.description') . ':') !!}
-                        {!! Form::textarea('description', null, ['class' => 'form-control ', 'id' => 'docs_note_description']); !!}
+                        <div class="border">
+                            {!! Form::textarea('description', null, ['class' => 'form-control border', 'id' => 'docs_note_description', 'rows' => 4]) !!}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,10 +46,13 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="is_private" value="1"> @lang('lang_v1.is_private')
-                                <i class="fa fa-info-circle" data-toggle="tooltip" title="@lang('lang_v1.note_will_be_visible_to_u_only')"></i>
+                        <div class="form-check">
+                            <input type="hidden" name="is_private" value="0">
+                            <input type="checkbox" name="is_private" id="is_private" value="1" class="form-check-input">
+                            <label for="is_private" class="form-check-label">
+                                @lang('lang_v1.is_private')
+                                <i class="fa fa-info-circle" data-toggle="tooltip"
+                                    title="@lang('lang_v1.note_will_be_visible_to_u_only')"></i>
                             </label>
                         </div>
                     </div>
@@ -58,7 +63,7 @@
             <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">
                 @lang('messages.save')
             </button>
-             <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">
+            <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">
                 @lang('messages.close')
             </button>
         </div>

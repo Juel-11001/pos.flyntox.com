@@ -3,1113 +3,1117 @@
 
 @section('content')
 
-    <!-- Main content -->
-    <section class="content no-print">
-        <div class="row no-print">
-            <div class="col-md-4">
-                <h3>@lang('contact.view_contact')</h3>
-            </div>
-            <div class="col-md-4 col-xs-12 mt-15 pull-right">
-                {!! Form::select('contact_id', $contact_dropdown, $contact->id, [
-                    'class' => 'form-control select2',
-                    'id' => 'contact_id',
-                ]) !!}
-            </div>
+<!-- Main content -->
+<section class="content no-print">
+  <div class="row no-print">
+    <div class="col-md-4">
+      <h3>@lang('contact.view_contact')</h3>
+    </div>
+    <div class="col-md-4 col-xs-12 mt-15 pull-right">
+      {!! Form::select('contact_id', $contact_dropdown, $contact->id, [
+      'class' => 'form-control select2',
+      'id' => 'contact_id',
+      ]) !!}
+    </div>
+  </div>
+  <div class="hide print_table_part">
+    <style type="text/css">
+    .info_col {
+      width: 25%;
+      float: left;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    </style>
+    <div style="width: 100%;">
+      <div class="info_col">
+        @include('templates.viho.contact.contact_basic_info')
+      </div>
+      <div class="info_col">
+        @include('templates.viho.contact.contact_more_info')
+      </div>
+      @if ($contact->type != 'customer')
+      <div class="info_col">
+        @include('templates.viho.contact.contact_tax_info')
+      </div>
+      @endif
+      <div class="info_col">
+        @include('templates.viho.contact.contact_payment_info')
+      </div>
+    </div>
+  </div>
+  <input type="hidden" id="sell_list_filter_customer_id" value="{{ $contact->id }}">
+  <input type="hidden" id="purchase_list_filter_supplier_id" value="{{ $contact->id }}">
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-solid">
+        <div class="box-body">
+          @include('templates.viho.contact.partials.contact_info_tab')
         </div>
-        <div class="hide print_table_part">
-            <style type="text/css">
-                .info_col {
-                    width: 25%;
-                    float: left;
-                    padding-left: 10px;
-                    padding-right: 10px;
-                }
-            </style>
-            <div style="width: 100%;">
-                <div class="info_col">
-                    @include('templates.viho.contact.contact_basic_info')
-                </div>
-                <div class="info_col">
-                    @include('templates.viho.contact.contact_more_info')
-                </div>
-                @if ($contact->type != 'customer')
-                    <div class="info_col">
-                        @include('templates.viho.contact.contact_tax_info')
-                    </div>
-                @endif
-                <div class="info_col">
-                    @include('templates.viho.contact.contact_payment_info')
-                </div>
-            </div>
-        </div>
-        <input type="hidden" id="sell_list_filter_customer_id" value="{{ $contact->id }}">
-        <input type="hidden" id="purchase_list_filter_supplier_id" value="{{ $contact->id }}">
-        <br>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box box-solid">
-                    <div class="box-body">
-                        @include('templates.viho.contact.partials.contact_info_tab')
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="nav-tabs-custom">
-                    <ul class="nav nav-tabs">
-                        <li
-                            class="
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+          <li class="
                             @if (!empty($view_type) && $view_type == 'ledger') active
                             @else
                                 '' @endif">
-                            <a href="#ledger_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-book"
-                                    aria-hidden="true"></i> @lang('lang_v1.ledger')</a>
-                        </li>
-                        @if (in_array($contact->type, ['both', 'supplier']))
-                            <li
-                                class="
+            <a href="#ledger_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-book" aria-hidden="true"></i>
+              @lang('lang_v1.ledger')</a>
+          </li>
+          @if (in_array($contact->type, ['both', 'supplier']))
+          <li class="
                             @if (!empty($view_type) && $view_type == 'purchase') active
                             @else
                                 '' @endif">
-                                <a href="#purchases_tab" data-toggle="tab" id="purchases-link" aria-expanded="true"><i
-                                        class="fas fa-arrow-circle-down" aria-hidden="true"></i> @lang('purchase.purchases')</a>
-                            </li>
-                            <li
-                                class="
+            <a href="#purchases_tab" data-toggle="tab" id="purchases-link" aria-expanded="true"><i
+                class="fas fa-arrow-circle-down" aria-hidden="true"></i> @lang('purchase.purchases')</a>
+          </li>
+          <li class="
                             @if (!empty($view_type) && $view_type == 'stock_report') active
                             @else
                                 '' @endif">
-                                <a href="#stock_report_tab" data-toggle="tab" aria-expanded="true"><i
-                                        class="fas fa-hourglass-half" aria-hidden="true"></i> @lang('report.stock_report')</a>
-                            </li>
-                        @endif
-                        @if (in_array($contact->type, ['both', 'customer']))
-                            <li
-                                class="
+            <a href="#stock_report_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-hourglass-half"
+                aria-hidden="true"></i> @lang('report.stock_report')</a>
+          </li>
+          @endif
+          @if (in_array($contact->type, ['both', 'customer']))
+          <li class="
                             @if (!empty($view_type) && $view_type == 'sales') active
                             @else
                                 '' @endif">
-                                <a href="#sales_tab" data-toggle="tab" aria-expanded="true"><i
-                                        class="fas fa-arrow-circle-up" aria-hidden="true"></i> @lang('sale.sells')</a>
-                            </li>
-                            @if (in_array('subscription', $enabled_modules))
-                                <li
-                                    class="
+            <a href="#sales_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-arrow-circle-up"
+                aria-hidden="true"></i> @lang('sale.sells')</a>
+          </li>
+          @if (in_array('subscription', $enabled_modules))
+          <li class="
                                 @if (!empty($view_type) && $view_type == 'subscriptions') active
                                 @else
                                     '' @endif">
-                                    <a href="#subscriptions_tab" data-toggle="tab" aria-expanded="true"><i
-                                            class="fas fa-recycle" aria-hidden="true"></i> @lang('lang_v1.subscriptions')</a>
-                                </li>
-                            @endif
-                        @endif
-                        <li
-                            class="
+            <a href="#subscriptions_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-recycle"
+                aria-hidden="true"></i> @lang('lang_v1.subscriptions')</a>
+          </li>
+          @endif
+          @endif
+          <li class="
                             @if (!empty($view_type) && $view_type == 'documents_and_notes') active
                             @else
                                 '' @endif
                             ">
-                            <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i
-                                    class="fas fa-paperclip" aria-hidden="true"></i> @lang('lang_v1.documents_and_notes')</a>
-                        </li>
-                        <li
-                            class="
+            <a href="#documents_and_notes_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-paperclip"
+                aria-hidden="true"></i> @lang('lang_v1.documents_and_notes')</a>
+          </li>
+          <li class="
                             @if (!empty($view_type) && $view_type == 'payments') active
                             @else
                                 '' @endif">
-                            <a href="#payments_tab" data-toggle="tab" aria-expanded="true">@lang('sale.payments')</a>
-                        </li>
+            <a href="#payments_tab" data-toggle="tab" aria-expanded="true">@lang('sale.payments')</a>
+          </li>
 
-                        @if (in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
-                            <li
-                                class="
+          @if (in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
+          <li class="
                             @if (!empty($view_type) && $view_type == 'reward_point') active
                             @else
                                 '' @endif">
-                                <a href="#reward_point_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-gift"
-                                        aria-hidden="true"></i>
-                                    {{ session('business.rp_name') ?? __('lang_v1.reward_points') }}</a>
-                            </li>
-                        @endif
+            <a href="#reward_point_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-gift"
+                aria-hidden="true"></i>
+              {{ session('business.rp_name') ?? __('lang_v1.reward_points') }}</a>
+          </li>
+          @endif
 
-                        <li
-                            class="
+          <li class="
                         @if (!empty($view_type) && $view_type == 'activities') active
                         @else
                             '' @endif">
-                            <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
-                                    aria-hidden="true"></i> @lang('lang_v1.activities')</a>
-                        </li>
+            <a href="#activities_tab" data-toggle="tab" aria-expanded="true"><i class="fas fa-pen-square"
+                aria-hidden="true"></i> @lang('lang_v1.activities')</a>
+          </li>
 
-                        @if (!empty($contact_view_tabs))
-                            @foreach ($contact_view_tabs as $key => $tabs)
-                                @foreach ($tabs as $index => $value)
-                                    @if (!empty($value['tab_menu_path']))
-                                        @php
-                                            $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
-                                        @endphp
-                                        @include($value['tab_menu_path'], $tab_data)
-                                    @endif
-                                @endforeach
-                            @endforeach
-                        @endif
+          @if (!empty($contact_view_tabs))
+          @foreach ($contact_view_tabs as $key => $tabs)
+          @foreach ($tabs as $index => $value)
+          @if (!empty($value['tab_menu_path']))
+          @php
+          $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
+          @endphp
+          @include($value['tab_menu_path'], $tab_data)
+          @endif
+          @endforeach
+          @endforeach
+          @endif
 
-                    </ul>
+        </ul>
 
-                    <div class="tab-content">
-                        <div class="tab-pane
+        <div class="tab-content">
+          <div class="tab-pane
                                 @if (!empty($view_type) && $view_type == 'ledger') active
                                 @else
-                                    '' @endif"
-                            id="ledger_tab">
-                            @include('templates.viho.contact.partials.ledger_tab')
-                        </div>
-                        @if (in_array($contact->type, ['both', 'supplier']))
-                            <div class="tab-pane
+                                    '' @endif" id="ledger_tab">
+            @include('templates.viho.contact.partials.ledger_tab')
+          </div>
+          @if (in_array($contact->type, ['both', 'supplier']))
+          <div class="tab-pane
                             @if (!empty($view_type) && $view_type == 'purchase') active
                             @else
-                                '' @endif"
-                                id="purchases_tab">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            {!! Form::label('purchase_list_filter_date_range', __('report.date_range') . ':') !!}
-                                            {!! Form::text('purchase_list_filter_date_range', null, [
-                                                'placeholder' => __('lang_v1.select_a_date_range'),
-                                                'class' => 'form-control',
-                                                'readonly',
-                                            ]) !!}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        @include('purchase.partials.purchase_table')
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane 
+                                '' @endif" id="purchases_tab">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  {!! Form::label('purchase_list_filter_date_range', __('report.date_range') . ':') !!}
+                  {!! Form::text('purchase_list_filter_date_range', null, [
+                  'placeholder' => __('lang_v1.select_a_date_range'),
+                  'class' => 'form-control',
+                  'readonly',
+                  ]) !!}
+                </div>
+              </div>
+              <div class="col-md-12">
+                @include('purchase.partials.purchase_table')
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane 
                             @if (!empty($view_type) && $view_type == 'stock_report') active
                             @else
-                                '' @endif"
-                                id="stock_report_tab">
-                                @include('templates.viho.contact.partials.stock_report_tab')
-                            </div>
-                        @endif
-                        @if (in_array($contact->type, ['both', 'customer']))
-                            <div class="tab-pane 
+                                '' @endif" id="stock_report_tab">
+            @include('templates.viho.contact.partials.stock_report_tab')
+          </div>
+          @endif
+          @if (in_array($contact->type, ['both', 'customer']))
+          <div class="tab-pane 
                             @if (!empty($view_type) && $view_type == 'sales') active
                             @else
-                                '' @endif"
-                                id="sales_tab">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        @component('components.widget')
-                                            @include('sell.partials.sell_list_filters', [
-                                                'only' => [
-                                                    'sell_list_filter_payment_status',
-                                                    'sell_list_filter_date_range',
-                                                    'only_subscriptions',
-                                                ],
-                                            ])
-                                        @endcomponent
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        @include('sale_pos.partials.sales_table')
-                                    </div>
-                                </div>
-                            </div>
-                            @if (in_array('subscription', $enabled_modules))
-                                @include('templates.viho.contact.partials.subscriptions')
-                            @endif
-                        @endif
-                        <div class="tab-pane
+                                '' @endif" id="sales_tab">
+            <div class="row">
+              <div class="col-md-12">
+                @component('components.widget')
+                @include('sell.partials.sell_list_filters', [
+                'only' => [
+                'sell_list_filter_payment_status',
+                'sell_list_filter_date_range',
+                'only_subscriptions',
+                ],
+                ])
+                @endcomponent
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                @include('sale_pos.partials.sales_table')
+              </div>
+            </div>
+          </div>
+          @if (in_array('subscription', $enabled_modules))
+          @include('templates.viho.contact.partials.subscriptions')
+          @endif
+          @endif
+          <div class="tab-pane
                             @if (!empty($view_type) && $view_type == 'documents_and_notes') active
                             @else
-                                '' @endif"
-                            id="documents_and_notes_tab">
-                            @include('templates.viho.contact.partials.documents_and_notes_tab')
-                        </div>
-                        <div class="tab-pane 
+                                '' @endif" id="documents_and_notes_tab">
+            @include('templates.viho.contact.partials.documents_and_notes_tab')
+          </div>
+          <div class="tab-pane 
                         @if (!empty($view_type) && $view_type == 'payments') active
                         @else
-                            '' @endif"
-                            id="payments_tab">
-                            <div id="contact_payments_div" style="height: 500px;overflow-y: scroll;"></div>
-                        </div>
-                        @if (in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
-                            <div class="tab-pane
+                            '' @endif" id="payments_tab">
+            <div id="contact_payments_div" style="height: 500px;overflow-y: scroll;"></div>
+          </div>
+          @if (in_array($contact->type, ['customer', 'both']) && session('business.enable_rp'))
+          <div class="tab-pane
                             @if (!empty($view_type) && $view_type == 'reward_point') active
                             @else
-                                '' @endif"
-                                id="reward_point_tab">
-                                <br>
-                                <div class="row">
-                                    @if ($reward_enabled)
-                                        <div class="col-md-3">
-                                            <div class="info-box bg-yellow">
-                                                <span class="info-box-icon"><i class="fa fa-gift"></i></span>
+                                '' @endif" id="reward_point_tab">
+            <br>
+            <div class="row">
+              @if ($reward_enabled)
+              <div class="col-md-3">
+                <div class="info-box bg-yellow">
+                  <span class="info-box-icon"><i class="fa fa-gift"></i></span>
 
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text">{{ session('business.rp_name') }}</span>
-                                                    <span class="info-box-number">{{ $contact->total_rp ?? 0 }}</span>
-                                                </div>
-                                                <!-- /.info-box-content -->
-                                            </div>
-                                        </div>
-                                    @endif
-                                    <div class="col-md-12">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-striped" id="rp_log_table"
-                                                width="100%">
-                                                <thead>
-                                                    <tr>
-                                                        <th>@lang('messages.date')</th>
-                                                        <th>@lang('sale.invoice_no')</th>
-                                                        <th>@lang('lang_v1.earned')</th>
-                                                        <th>@lang('lang_v1.redeemed')</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-
-                        <div class="tab-pane" id="activities_tab">
-                            @include('activity_log.activities')
-                        </div>
-
-                        @if (!empty($contact_view_tabs))
-                            @foreach ($contact_view_tabs as $key => $tabs)
-                                @foreach ($tabs as $index => $value)
-                                    @if (!empty($value['tab_content_path']))
-                                        @php
-                                            $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
-                                        @endphp
-                                        @include($value['tab_content_path'], $tab_data)
-                                    @endif
-                                @endforeach
-                            @endforeach
-                        @endif
-                    </div>
+                  <div class="info-box-content">
+                    <span class="info-box-text">{{ session('business.rp_name') }}</span>
+                    <span class="info-box-number">{{ $contact->total_rp ?? 0 }}</span>
+                  </div>
+                  <!-- /.info-box-content -->
                 </div>
+              </div>
+              @endif
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped" id="rp_log_table" width="100%">
+                    <thead>
+                      <tr>
+                        <th>@lang('messages.date')</th>
+                        <th>@lang('sale.invoice_no')</th>
+                        <th>@lang('lang_v1.earned')</th>
+                        <th>@lang('lang_v1.redeemed')</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
             </div>
-        </div>
-    </section>
-    <!-- /.content -->
-    <div class="modal fade modal-bookmark payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    </div>
-    <div class="modal fade modal-bookmark edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    </div>
-    <div class="modal fade modal-bookmark pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-    </div>
-    <div class="modal fade" id="edit_ledger_discount_modal" tabindex="-1" role="dialog"
-        aria-labelledby="gridSystemModalLabel">
-    </div>
-    @include('templates.viho.ledger_discount.create')
+          </div>
+          @endif
 
-    <!-- Updated Viho Template Modal -->
-    <div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addContactModalLabel">Add a New Contact</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="contactType" class="form-label">Contact Type*</label>
-                                    <select class="form-select" id="contactType">
-                                        <option value="individual">Individual</option>
-                                        <option value="business">Business</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="contactId" class="form-label">Contact ID</label>
-                                    <input type="text" class="form-control" id="contactId" placeholder="Leave empty to autogenerate">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="mobile" class="form-label">Mobile*</label>
-                                    <input type="text" class="form-control" id="mobile" placeholder="Mobile">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Email">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="alternateContact" class="form-label">Alternate Contact Number</label>
-                                    <input type="text" class="form-control" id="alternateContact" placeholder="Alternate Contact">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="landline" class="form-label">Landline</label>
-                                    <input type="text" class="form-control" id="landline" placeholder="Landline">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="assignedTo" class="form-label">Assigned To</label>
-                                    <input type="text" class="form-control" id="assignedTo" placeholder="Assigned To">
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <style>
-                        .viho-template-active .modal-content .modal-footer .btn,
-                        .viho-template-active .modal-content .modal-footer button,
-                        .viho-template-active .modal-content .modal-footer .btn *,
-                        .viho-template-active .modal-content .modal-footer button * {
-                            color: #ffffff !important;
-                        }
-                    </style>
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="button">Save</button>
-                </div>
+          <div class="tab-pane" id="activities_tab">
+            @include('activity_log.activities')
+          </div>
+
+          @if (!empty($contact_view_tabs))
+          @foreach ($contact_view_tabs as $key => $tabs)
+          @foreach ($tabs as $index => $value)
+          @if (!empty($value['tab_content_path']))
+          @php
+          $tab_data = !empty($value['tab_data']) ? $value['tab_data'] : [];
+          @endphp
+          @include($value['tab_content_path'], $tab_data)
+          @endif
+          @endforeach
+          @endforeach
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /.content -->
+<div class="modal fade modal-bookmark payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+</div>
+<div class="modal fade modal-bookmark edit_payment_modal" tabindex="-1" role="dialog"
+  aria-labelledby="gridSystemModalLabel">
+</div>
+<div class="modal fade modal-bookmark pay_contact_due_modal" tabindex="-1" role="dialog"
+  aria-labelledby="gridSystemModalLabel">
+</div>
+<div class="modal fade" id="edit_ledger_discount_modal" tabindex="-1" role="dialog"
+  aria-labelledby="gridSystemModalLabel">
+</div>
+@include('templates.viho.ledger_discount.create')
+
+<!-- Updated Viho Template Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addContactModalLabel">Add a New Contact</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="contactType" class="form-label">Contact Type*</label>
+                <select class="form-select" id="contactType">
+                  <option value="individual">Individual</option>
+                  <option value="business">Business</option>
+                </select>
+              </div>
             </div>
-        </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="contactId" class="form-label">Contact ID</label>
+                <input type="text" class="form-control" id="contactId" placeholder="Leave empty to autogenerate">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="mobile" class="form-label">Mobile*</label>
+                <input type="text" class="form-control" id="mobile" placeholder="Mobile">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Email">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="alternateContact" class="form-label">Alternate Contact Number</label>
+                <input type="text" class="form-control" id="alternateContact" placeholder="Alternate Contact">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="landline" class="form-label">Landline</label>
+                <input type="text" class="form-control" id="landline" placeholder="Landline">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label for="assignedTo" class="form-label">Assigned To</label>
+                <input type="text" class="form-control" id="assignedTo" placeholder="Assigned To">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <style>
+        .viho-template-active .modal-content .modal-footer .btn,
+        .viho-template-active .modal-content .modal-footer button,
+        .viho-template-active .modal-content .modal-footer .btn *,
+        .viho-template-active .modal-content .modal-footer button * {
+          color: #ffffff !important;
+        }
+        </style>
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="button">Save</button>
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- Trigger Button for Pay Contact Due Modal -->
-    {{-- <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target=".pay_contact_due_modal">
+<!-- Trigger Button for Pay Contact Due Modal -->
+{{-- <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target=".pay_contact_due_modal">
         Open Pay Contact Due Modal
     </button> --}}
 
-    <!-- Dropdown Menu with Pay Option -->
-    {{-- <div class="dropdown">
+<!-- Dropdown Menu with Pay Option -->
+{{-- <div class="dropdown">
         <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
             Actions
         </button> --}}
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li>
-                <a class="dropdown-item" href="#" id="payContactDue">Pay</a>
-            </li>
-            <li>
-                <a class="dropdown-item" href="#">View</a>
-            </li>
-            <li>
-                <a class="dropdown-item" href="#">Edit</a>
-            </li>
-            <li>
-                <a class="dropdown-item" href="#">Delete</a>
-            </li>
-        </ul>
-    </div>
+<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+  <li>
+    <a class="dropdown-item" href="#" id="payContactDue">Pay</a>
+  </li>
+  <li>
+    <a class="dropdown-item" href="#">View</a>
+  </li>
+  <li>
+    <a class="dropdown-item" href="#">Edit</a>
+  </li>
+  <li>
+    <a class="dropdown-item" href="#">Delete</a>
+  </li>
+</ul>
+</div>
 
 @stop
 @section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
-            // Ensure modals are properly initialized
-            $('.payment_modal, .edit_payment_modal, .pay_contact_due_modal').on('shown.bs.modal', function() {
-                console.log('Modal is shown:', $(this).attr('class'));
-            });
+<script type="text/javascript">
+$(document).ready(function() {
+  // Ensure modals are properly initialized
+  $('.payment_modal, .edit_payment_modal, .pay_contact_due_modal').on('shown.bs.modal', function() {
+    console.log('Modal is shown:', $(this).attr('class'));
+  });
 
-            $('#ledger_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#ledger_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
-                        moment_date_format));
-                }
-            );
-            $('#ledger_date_range, #ledger_location').change(function() {
-                get_contact_ledger();
-            });
+  $('#ledger_date_range').daterangepicker(
+    dateRangeSettings,
+    function(start, end) {
+      $('#ledger_date_range').val(start.format(moment_date_format) + ' ~ ' + end.format(
+        moment_date_format));
+    }
+  );
+  $('#ledger_date_range, #ledger_location').change(function() {
+    get_contact_ledger();
+  });
+  get_contact_ledger();
+
+  @if(!empty($contact) && !empty($contact->id))
+  rp_log_table = $('#rp_log_table').DataTable({
+    processing: true,
+    serverSide: true,
+    fixedHeader: false,
+    aaSorting: [
+      [0, 'desc']
+    ],
+    ajax: '/sells?customer_id={{ $contact->id }}&rewards_only=true',
+    columns: [{
+        data: 'transaction_date',
+        name: 'transactions.transaction_date'
+      },
+      {
+        data: 'invoice_no',
+        name: 'transactions.invoice_no'
+      },
+      {
+        data: 'rp_earned',
+        name: 'transactions.rp_earned'
+      },
+      {
+        data: 'rp_redeemed',
+        name: 'transactions.rp_redeemed'
+      },
+    ]
+  });
+
+  if ($.fn.DataTable && $.fn.DataTable.isDataTable('#supplier_stock_report_table')) {
+    supplier_stock_report_table = $('#supplier_stock_report_table').DataTable();
+  } else {
+    supplier_stock_report_table = $('#supplier_stock_report_table').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      'ajax': {
+        url: "{{ action([\App\Http\Controllers\ContactController::class, 'getSupplierStockReport'], [$contact->id]) }}",
+        data: function(d) {
+          d.location_id = $('#sr_location_id').val();
+        }
+      },
+      columns: [{
+          data: 'product_name',
+          name: 'p.name'
+        },
+        {
+          data: 'sub_sku',
+          name: 'v.sub_sku'
+        },
+        {
+          data: 'purchase_quantity',
+          name: 'purchase_quantity',
+          searchable: false
+        },
+        {
+          data: 'total_quantity_sold',
+          name: 'total_quantity_sold',
+          searchable: false
+        },
+        {
+          data: 'total_quantity_transfered',
+          name: 'total_quantity_transfered',
+          searchable: false
+        },
+        {
+          data: 'total_quantity_returned',
+          name: 'total_quantity_returned',
+          searchable: false
+        },
+        {
+          data: 'current_stock',
+          name: 'current_stock',
+          searchable: false
+        },
+        {
+          data: 'stock_price',
+          name: 'stock_price',
+          searchable: false
+        }
+      ],
+      fnDrawCallback: function(oSettings) {
+        __currency_convert_recursively($('#supplier_stock_report_table'));
+      },
+    });
+  }
+  @endif
+
+  $('#sr_location_id').change(function() {
+    supplier_stock_report_table.ajax.reload();
+  });
+
+  $('#contact_id').change(function() {
+    if ($(this).val()) {
+      window.location = "{{ url('/contacts') }}/" + $(this).val();
+    }
+  });
+
+  $('a[href="#sales_tab"]').on('shown.bs.tab', function(e) {
+    sell_table.ajax.reload();
+  });
+
+  function syncLedgerModalBodyState() {
+    $('body').css('overflow', $('.modal.show:visible').length ? 'hidden' : 'auto');
+  }
+
+  function showLedgerModal(selector) {
+    $(selector).css({
+      display: 'block',
+      visibility: 'visible',
+      opacity: '1',
+    }).addClass('show');
+    syncLedgerModalBodyState();
+  }
+
+  function hideLedgerModal(selector, clearContent) {
+    var $modal = $(selector);
+
+    try {
+      if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        var modalInstance = bootstrap.Modal.getInstance($modal[0]);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      } else if ($.fn.modal) {
+        $modal.modal('hide');
+      }
+    } catch (e) {
+      // Use CSS fallback below if bootstrap modal API is unavailable.
+    }
+
+    $modal.css({
+      display: 'none',
+      visibility: 'hidden',
+      opacity: '0',
+    }).removeClass('show');
+
+    if (clearContent === true) {
+      $modal.empty();
+    }
+
+    if ($('.modal.show:visible').not($modal).length === 0) {
+      $('.modal-backdrop').remove();
+      $('body').removeClass('modal-open');
+    }
+
+    syncLedgerModalBodyState();
+  }
+
+  function resetEditLedgerDiscountModal() {
+    var $modal = $('#edit_ledger_discount_modal');
+
+    if (!$modal.length) {
+      return;
+    }
+
+    try {
+      if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        var modalInstance = bootstrap.Modal.getInstance($modal[0]);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      } else if ($.fn.modal) {
+        $modal.modal('hide');
+      }
+    } catch (e) {
+      // Fallback cleanup below is enough when bootstrap modal API is unavailable.
+    }
+
+    $modal.removeClass('show in').css({
+      display: 'none',
+      opacity: '0',
+    }).empty();
+
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open').css({
+      overflow: '',
+      'padding-right': '',
+    });
+  }
+
+  function initDiscountDatePicker($input) {
+    if (!$input.length) {
+      return;
+    }
+
+    if ($input.data('DateTimePicker')) {
+      $input.data('DateTimePicker').destroy();
+    }
+
+    $input.datetimepicker({
+      format: moment_date_format + ' ' + moment_time_format,
+      ignoreReadonly: true,
+    });
+  }
+
+  initDiscountDatePicker($('#discount_date'));
+
+  $(document)
+    .off('submit.vihoLedgerDiscount', 'form#add_discount_form, form#edit_discount_form')
+    .on('submit.vihoLedgerDiscount', 'form#add_discount_form, form#edit_discount_form', function(e) {
+      e.preventDefault();
+
+      var form = $(this);
+      var submitBtn = form.find('button[type="submit"]');
+
+      if (form.data('isSubmitting')) {
+        return;
+      }
+
+      form.data('isSubmitting', true);
+      submitBtn.prop('disabled', true);
+
+      $.ajax({
+        method: 'POST',
+        url: form.attr('action'),
+        dataType: 'json',
+        data: form.serialize(),
+        success: function(result) {
+          if (result.success === true) {
+            hideLedgerModal('#add_discount_modal');
+            resetEditLedgerDiscountModal();
+
+            if (form.attr('id') === 'add_discount_form' && form[0]) {
+              form[0].reset();
+              initDiscountDatePicker($('#discount_date'));
+            }
+
+            toastr.success(result.msg);
             get_contact_ledger();
+          } else {
+            toastr.error(result.msg);
+          }
+        },
+        error: function() {
+          toastr.error(LANG.something_went_wrong || 'Something went wrong');
+        },
+        complete: function() {
+          form.data('isSubmitting', false);
+          submitBtn.prop('disabled', false);
+        },
+      });
+    });
 
-            @if (!empty($contact) && !empty($contact->id))
-                rp_log_table = $('#rp_log_table').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    fixedHeader: false,
-                    aaSorting: [
-                        [0, 'desc']
-                    ],
-                    ajax: '/sells?customer_id={{ $contact->id }}&rewards_only=true',
-                    columns: [{
-                            data: 'transaction_date',
-                            name: 'transactions.transaction_date'
-                        },
-                        {
-                            data: 'invoice_no',
-                            name: 'transactions.invoice_no'
-                        },
-                        {
-                            data: 'rp_earned',
-                            name: 'transactions.rp_earned'
-                        },
-                        {
-                            data: 'rp_redeemed',
-                            name: 'transactions.rp_redeemed'
-                        },
-                    ]
-                });
+  $(document)
+    .off('click.vihoOpenDiscount', '#open_discount_modal_btn')
+    .on('click.vihoOpenDiscount', '#open_discount_modal_btn', function(e) {
+      e.preventDefault();
 
-                if ($.fn.DataTable && $.fn.DataTable.isDataTable('#supplier_stock_report_table')) {
-                    supplier_stock_report_table = $('#supplier_stock_report_table').DataTable();
-                } else {
-                    supplier_stock_report_table = $('#supplier_stock_report_table').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        fixedHeader: false,
-                        'ajax': {
-                            url: "{{ action([\App\Http\Controllers\ContactController::class, 'getSupplierStockReport'], [$contact->id]) }}",
-                            data: function(d) {
-                                d.location_id = $('#sr_location_id').val();
-                            }
-                        },
-                        columns: [{
-                                data: 'product_name',
-                                name: 'p.name'
-                            },
-                            {
-                                data: 'sub_sku',
-                                name: 'v.sub_sku'
-                            },
-                            {
-                                data: 'purchase_quantity',
-                                name: 'purchase_quantity',
-                                searchable: false
-                            },
-                            {
-                                data: 'total_quantity_sold',
-                                name: 'total_quantity_sold',
-                                searchable: false
-                            },
-                            {
-                                data: 'total_quantity_transfered',
-                                name: 'total_quantity_transfered',
-                                searchable: false
-                            },
-                            {
-                                data: 'total_quantity_returned',
-                                name: 'total_quantity_returned',
-                                searchable: false
-                            },
-                            {
-                                data: 'current_stock',
-                                name: 'current_stock',
-                                searchable: false
-                            },
-                            {
-                                data: 'stock_price',
-                                name: 'stock_price',
-                                searchable: false
-                            }
-                        ],
-                        fnDrawCallback: function(oSettings) {
-                            __currency_convert_recursively($('#supplier_stock_report_table'));
-                        },
-                    });
-                }
-            @endif
+      if ($('#add_discount_form').length) {
+        $('#add_discount_form')[0].reset();
+      }
 
-            $('#sr_location_id').change(function() {
-                supplier_stock_report_table.ajax.reload();
-            });
+      initDiscountDatePicker($('#discount_date'));
+      showLedgerModal('#add_discount_modal');
+    });
 
-            $('#contact_id').change(function() {
-                if ($(this).val()) {
-                    window.location = "{{ url('/contacts') }}/" + $(this).val();
-                }
-            });
+  $(document)
+    .off(
+      'click.vihoCloseDiscount',
+      '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]'
+    )
+    .on(
+      'click.vihoCloseDiscount',
+      '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]',
+      function(e) {
+        e.preventDefault();
 
-            $('a[href="#sales_tab"]').on('shown.bs.tab', function(e) {
-                sell_table.ajax.reload();
-            });
+        var $modal = $(this).closest('.modal');
+        hideLedgerModal('#' + $modal.attr('id'), $modal.attr('id') === 'edit_ledger_discount_modal');
+      }
+    );
 
-            function syncLedgerModalBodyState() {
-                $('body').css('overflow', $('.modal.show:visible').length ? 'hidden' : 'auto');
-            }
+  $(document)
+    .off('click.vihoDiscountBackdrop', '#add_discount_modal')
+    .on('click.vihoDiscountBackdrop', '#add_discount_modal', function(e) {
+      if (e.target === this) {
+        hideLedgerModal('#' + this.id);
+      }
+    });
 
-            function showLedgerModal(selector) {
-                $(selector).css({
-                    display: 'block',
-                    visibility: 'visible',
-                    opacity: '1',
-                }).addClass('show');
-                syncLedgerModalBodyState();
-            }
+  $(document)
+    .off('shown.bs.modal.vihoLedgerEdit', '#edit_ledger_discount_modal')
+    .on('shown.bs.modal.vihoLedgerEdit', '#edit_ledger_discount_modal', function() {
+      initDiscountDatePicker($(this).find('#edit_discount_date'));
+    });
 
-            function hideLedgerModal(selector, clearContent) {
-                var $modal = $(selector);
+  $(document)
+    .off('mousedown.vihoPrepareEditDiscount', '.viho-ledger-discount-btn--edit.btn-modal')
+    .on('mousedown.vihoPrepareEditDiscount', '.viho-ledger-discount-btn--edit.btn-modal', function() {
+      $('#edit_ledger_discount_modal').empty().removeClass('show in').css({
+        display: 'none',
+        opacity: '0',
+      });
 
-                try {
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                        var modalInstance = bootstrap.Modal.getInstance($modal[0]);
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-                    } else if ($.fn.modal) {
-                        $modal.modal('hide');
-                    }
-                } catch (e) {
-                    // Use CSS fallback below if bootstrap modal API is unavailable.
-                }
+      $('.modal-backdrop').remove();
+      $('body').removeClass('modal-open').css({
+        overflow: '',
+        'padding-right': '',
+      });
+    });
 
-                $modal.css({
-                    display: 'none',
-                    visibility: 'hidden',
-                    opacity: '0',
-                }).removeClass('show');
+  $(document)
+    .off(
+      'click.vihoCleanupEditDiscount',
+      '#edit_ledger_discount_modal .btn-close, #edit_ledger_discount_modal [data-bs-dismiss="modal"], #edit_ledger_discount_modal .close, #edit_ledger_discount_modal [data-dismiss="modal"]'
+    )
+    .on(
+      'click.vihoCleanupEditDiscount',
+      '#edit_ledger_discount_modal .btn-close, #edit_ledger_discount_modal [data-bs-dismiss="modal"], #edit_ledger_discount_modal .close, #edit_ledger_discount_modal [data-dismiss="modal"]',
+      function() {
+        setTimeout(resetEditLedgerDiscountModal, 0);
+      }
+    );
 
-                if (clearContent === true) {
-                    $modal.empty();
-                }
+  $(document)
+    .off('click.vihoCleanupEditDiscountBackdrop', '#edit_ledger_discount_modal')
+    .on('click.vihoCleanupEditDiscountBackdrop', '#edit_ledger_discount_modal', function(e) {
+      if (e.target === this) {
+        setTimeout(resetEditLedgerDiscountModal, 0);
+      }
+    });
 
-                if ($('.modal.show:visible').not($modal).length === 0) {
-                    $('.modal-backdrop').remove();
-                    $('body').removeClass('modal-open');
-                }
+  $(document)
+    .off('click.vihoDeleteDiscount', '.delete_discount_btn, button.delete_ledger_discount')
+    .on('click.vihoDeleteDiscount', '.delete_discount_btn, button.delete_ledger_discount', function(e) {
+      e.preventDefault();
 
-                syncLedgerModalBodyState();
-            }
+      var href = $(this).data('href');
+      var discountId = $(this).data('discount-id');
 
-            function resetEditLedgerDiscountModal() {
-                var $modal = $('#edit_ledger_discount_modal');
+      if (!href && discountId) {
+        href = '/ledger-discount/' + discountId;
+      }
 
-                if (!$modal.length) {
-                    return;
-                }
-
-                try {
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                        var modalInstance = bootstrap.Modal.getInstance($modal[0]);
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-                    } else if ($.fn.modal) {
-                        $modal.modal('hide');
-                    }
-                } catch (e) {
-                    // Fallback cleanup below is enough when bootstrap modal API is unavailable.
-                }
-
-                $modal.removeClass('show in').css({
-                    display: 'none',
-                    opacity: '0',
-                }).empty();
-
-                $('.modal-backdrop').remove();
-                $('body').removeClass('modal-open').css({
-                    overflow: '',
-                    'padding-right': '',
-                });
-            }
-
-            function initDiscountDatePicker($input) {
-                if (!$input.length) {
-                    return;
-                }
-
-                if ($input.data('DateTimePicker')) {
-                    $input.data('DateTimePicker').destroy();
-                }
-
-                $input.datetimepicker({
-                    format: moment_date_format + ' ' + moment_time_format,
-                    ignoreReadonly: true,
-                });
-            }
-
-            initDiscountDatePicker($('#discount_date'));
-
-            $(document)
-                .off('submit.vihoLedgerDiscount', 'form#add_discount_form, form#edit_discount_form')
-                .on('submit.vihoLedgerDiscount', 'form#add_discount_form, form#edit_discount_form', function(e) {
-                    e.preventDefault();
-
-                    var form = $(this);
-                    var submitBtn = form.find('button[type="submit"]');
-
-                    if (form.data('isSubmitting')) {
-                        return;
-                    }
-
-                    form.data('isSubmitting', true);
-                    submitBtn.prop('disabled', true);
-
-                    $.ajax({
-                        method: 'POST',
-                        url: form.attr('action'),
-                        dataType: 'json',
-                        data: form.serialize(),
-                        success: function(result) {
-                            if (result.success === true) {
-                                hideLedgerModal('#add_discount_modal');
-                                resetEditLedgerDiscountModal();
-
-                                if (form.attr('id') === 'add_discount_form' && form[0]) {
-                                    form[0].reset();
-                                    initDiscountDatePicker($('#discount_date'));
-                                }
-
-                                toastr.success(result.msg);
-                                get_contact_ledger();
-                            } else {
-                                toastr.error(result.msg);
-                            }
-                        },
-                        error: function() {
-                            toastr.error(LANG.something_went_wrong || 'Something went wrong');
-                        },
-                        complete: function() {
-                            form.data('isSubmitting', false);
-                            submitBtn.prop('disabled', false);
-                        },
-                    });
-                });
-
-            $(document)
-                .off('click.vihoOpenDiscount', '#open_discount_modal_btn')
-                .on('click.vihoOpenDiscount', '#open_discount_modal_btn', function(e) {
-                    e.preventDefault();
-
-                    if ($('#add_discount_form').length) {
-                        $('#add_discount_form')[0].reset();
-                    }
-
-                    initDiscountDatePicker($('#discount_date'));
-                    showLedgerModal('#add_discount_modal');
-                });
-
-            $(document)
-                .off(
-                    'click.vihoCloseDiscount',
-                    '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]'
-                )
-                .on(
-                    'click.vihoCloseDiscount',
-                    '#add_discount_modal .btn-close, #add_discount_modal [data-bs-dismiss="modal"]',
-                    function(e) {
-                        e.preventDefault();
-
-                        var $modal = $(this).closest('.modal');
-                        hideLedgerModal('#' + $modal.attr('id'), $modal.attr('id') === 'edit_ledger_discount_modal');
-                    }
-                );
-
-            $(document)
-                .off('click.vihoDiscountBackdrop', '#add_discount_modal')
-                .on('click.vihoDiscountBackdrop', '#add_discount_modal', function(e) {
-                    if (e.target === this) {
-                        hideLedgerModal('#' + this.id);
-                    }
-                });
-
-            $(document)
-                .off('shown.bs.modal.vihoLedgerEdit', '#edit_ledger_discount_modal')
-                .on('shown.bs.modal.vihoLedgerEdit', '#edit_ledger_discount_modal', function() {
-                    initDiscountDatePicker($(this).find('#edit_discount_date'));
-                });
-
-            $(document)
-                .off('mousedown.vihoPrepareEditDiscount', '.viho-ledger-discount-btn--edit.btn-modal')
-                .on('mousedown.vihoPrepareEditDiscount', '.viho-ledger-discount-btn--edit.btn-modal', function() {
-                    $('#edit_ledger_discount_modal').empty().removeClass('show in').css({
-                        display: 'none',
-                        opacity: '0',
-                    });
-
-                    $('.modal-backdrop').remove();
-                    $('body').removeClass('modal-open').css({
-                        overflow: '',
-                        'padding-right': '',
-                    });
-                });
-
-            $(document)
-                .off(
-                    'click.vihoCleanupEditDiscount',
-                    '#edit_ledger_discount_modal .btn-close, #edit_ledger_discount_modal [data-bs-dismiss="modal"], #edit_ledger_discount_modal .close, #edit_ledger_discount_modal [data-dismiss="modal"]'
-                )
-                .on(
-                    'click.vihoCleanupEditDiscount',
-                    '#edit_ledger_discount_modal .btn-close, #edit_ledger_discount_modal [data-bs-dismiss="modal"], #edit_ledger_discount_modal .close, #edit_ledger_discount_modal [data-dismiss="modal"]',
-                    function() {
-                        setTimeout(resetEditLedgerDiscountModal, 0);
-                    }
-                );
-
-            $(document)
-                .off('click.vihoCleanupEditDiscountBackdrop', '#edit_ledger_discount_modal')
-                .on('click.vihoCleanupEditDiscountBackdrop', '#edit_ledger_discount_modal', function(e) {
-                    if (e.target === this) {
-                        setTimeout(resetEditLedgerDiscountModal, 0);
-                    }
-                });
-
-            $(document)
-                .off('click.vihoDeleteDiscount', '.delete_discount_btn, button.delete_ledger_discount')
-                .on('click.vihoDeleteDiscount', '.delete_discount_btn, button.delete_ledger_discount', function(e) {
-                    e.preventDefault();
-
-                    var href = $(this).data('href');
-                    var discountId = $(this).data('discount-id');
-
-                    if (!href && discountId) {
-                        href = '/ledger-discount/' + discountId;
-                    }
-
-                    swal({
-                        title: LANG.sure,
-                        icon: 'warning',
-                        buttons: true,
-                        dangerMode: true,
-                    }).then(function(willDelete) {
-                        if (!willDelete || !href) {
-                            return;
-                        }
-
-                        $.ajax({
-                            method: 'DELETE',
-                            url: href,
-                            dataType: 'json',
-                            success: function(result) {
-                                if (result.success === true) {
-                                    toastr.success(result.msg);
-                                    resetEditLedgerDiscountModal();
-                                    get_contact_ledger();
-                                } else {
-                                    toastr.error(result.msg);
-                                }
-                            },
-                            error: function() {
-                                toastr.error(LANG.something_went_wrong || 'Error deleting discount');
-                            },
-                        });
-                    });
-                });
-        });
-
-        $("input.transaction_types, input#show_payments").on('ifChanged', function(e) {
-            get_contact_ledger();
-        });
-
-        $(document).on('change', 'input[name="ledger_format"]', function() {
-            get_contact_ledger();
-        })
-
-        $(document).one('shown.bs.tab', 'a[href="#payments_tab"]', function() {
-            get_contact_payments();
-        })
-
-        $(document).on('click', '#contact_payments_pagination a', function(e) {
-            e.preventDefault();
-            get_contact_payments($(this).attr('href'));
-        })
-
-        function get_contact_payments(url = null) {
-            if (!url) {
-                url =
-                    "{{ action([\App\Http\Controllers\ContactController::class, 'getContactPayments'], [$contact->id]) }}";
-            }
-            $.ajax({
-                url: url,
-                dataType: 'html',
-                success: function(result) {
-                    $('#contact_payments_div').fadeOut(400, function() {
-                        $('#contact_payments_div')
-                            .html(result).fadeIn(400);
-                    });
-                },
-            });
+      swal({
+        title: LANG.sure,
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true,
+      }).then(function(willDelete) {
+        if (!willDelete || !href) {
+          return;
         }
 
-        function get_contact_ledger() {
-
-            var start_date = '';
-            var end_date = '';
-            var transaction_types = $('input.transaction_types:checked').map(function(i, e) {
-                return e.value
-            }).toArray();
-            var show_payments = $('input#show_payments').is(':checked');
-            var location_id = $('#ledger_location').val();
-
-            if ($('#ledger_date_range').val()) {
-                start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
-                end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        $.ajax({
+          method: 'DELETE',
+          url: href,
+          dataType: 'json',
+          success: function(result) {
+            if (result.success === true) {
+              toastr.success(result.msg);
+              resetEditLedgerDiscountModal();
+              get_contact_ledger();
+            } else {
+              toastr.error(result.msg);
             }
-
-            var format = $('input[name="ledger_format"]:checked').val();
-            var data = {
-                start_date: start_date,
-                transaction_types: transaction_types,
-                show_payments: show_payments,
-                end_date: end_date,
-                format: format,
-                location_id: location_id
-            }
-            $.ajax({
-                url: '/contacts/ledger?contact_id={{ $contact->id }}',
-                data: data,
-                dataType: 'html',
-                success: function(result) {
-                    $('#contact_ledger_div')
-                        .html(result);
-                    __currency_convert_recursively($('#contact_ledger_div'));
-
-                    $('#ledger_table').DataTable({
-                        searching: false,
-                        ordering: false,
-                        paging: false,
-                        fixedHeader: false,
-                        dom: 't'
-                    });
-                },
-            });
-        }
-
-        $(document).on('click', '#send_ledger', function() {
-            var start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
-            var end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
-            var format = $('input[name="ledger_format"]:checked').val();
-
-            var location_id = $('#ledger_location').val();
-
-            var url =
-                "{{ action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], [$contact->id, 'send_ledger']) }}" +
-                '?start_date=' + start_date + '&end_date=' + end_date + '&format=' + format + '&location_id=' +
-                location_id;
-
-            $.ajax({
-                url: url,
-                dataType: 'html',
-                success: function(result) {
-                    $('.view_modal')
-                        .html(result)
-                        .modal('show');
-                },
-            });
-        })
-
-        $(document).on('click', '#print_ledger_pdf', function() {
-            var start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
-            var end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
-
-            var format = $('input[name="ledger_format"]:checked').val();
-
-            var location_id = $('#ledger_location').val();
-
-            var url = $(this).data('href') + '&start_date=' + start_date + '&end_date=' + end_date + '&format=' +
-                format + '&location_id=' + location_id;
-            window.open(url);
+          },
+          error: function() {
+            toastr.error(LANG.something_went_wrong || 'Error deleting discount');
+          },
         });
-    </script>
-    @include('sale_pos.partials.sale_table_javascript')
-    <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
-    @if (in_array($contact->type, ['both', 'supplier']))
-        <script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
-    @endif
+      });
+    });
+});
 
-    @if (!empty($contact_view_tabs))
-        @foreach ($contact_view_tabs as $key => $tabs)
-            @foreach ($tabs as $index => $value)
-                @if (!empty($value['module_js_path']))
-                    @include($value['module_js_path'])
-                @endif
-            @endforeach
-        @endforeach
-    @endif
+$("input.transaction_types, input#show_payments").on('ifChanged', function(e) {
+  get_contact_ledger();
+});
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            function loadAiTemplateContactDocumentsAndNotes() {
-                if (
-                    typeof getDocAndNoteIndexPage !== 'function' ||
-                    typeof initializeDocumentAndNoteDataTable !== 'function'
-                ) {
-                    return;
-                }
+$(document).on('change', 'input[name="ledger_format"]', function() {
+  get_contact_ledger();
+})
 
-                getDocAndNoteIndexPage();
+$(document).one('shown.bs.tab', 'a[href="#payments_tab"]', function() {
+  get_contact_payments();
+})
 
-                setTimeout(function() {
-                    if (!$.fn.DataTable) {
-                        return;
-                    }
+$(document).on('click', '#contact_payments_pagination a', function(e) {
+  e.preventDefault();
+  get_contact_payments($(this).attr('href'));
+})
 
-                    if ($.fn.DataTable.isDataTable('#documents_and_notes_table')) {
-                        $('#documents_and_notes_table').DataTable().ajax.reload(null, false);
-                        return;
-                    }
+function get_contact_payments(url = null) {
+  if (!url) {
+    url =
+      "{{ action([\App\Http\Controllers\ContactController::class, 'getContactPayments'], [$contact->id]) }}";
+  }
+  $.ajax({
+    url: url,
+    dataType: 'html',
+    success: function(result) {
+      $('#contact_payments_div').fadeOut(400, function() {
+        $('#contact_payments_div')
+          .html(result).fadeIn(400);
+      });
+    },
+  });
+}
 
-                    initializeDocumentAndNoteDataTable();
-                }, 200);
-            }
+function get_contact_ledger() {
 
-            loadAiTemplateContactDocumentsAndNotes();
+  var start_date = '';
+  var end_date = '';
+  var transaction_types = $('input.transaction_types:checked').map(function(i, e) {
+    return e.value
+  }).toArray();
+  var show_payments = $('input#show_payments').is(':checked');
+  var location_id = $('#ledger_location').val();
 
-            $('#purchase_list_filter_date_range').daterangepicker(
-                dateRangeSettings,
-                function(start, end) {
-                    $('#purchase_list_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end
-                        .format(moment_date_format));
-                    purchase_table.ajax.reload();
-                }
-            );
-            $('#purchase_list_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
-                $('#purchase_list_filter_date_range').val('');
-                purchase_table.ajax.reload();
-            });
+  if ($('#ledger_date_range').val()) {
+    start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
+    end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
+  }
 
-            $('#purchases-link').on('click', function(e) {
-                purchase_table.ajax.reload();
-            });
+  var format = $('input[name="ledger_format"]:checked').val();
+  var data = {
+    start_date: start_date,
+    transaction_types: transaction_types,
+    show_payments: show_payments,
+    end_date: end_date,
+    format: format,
+    location_id: location_id
+  }
+  $.ajax({
+    url: '/contacts/ledger?contact_id={{ $contact->id }}',
+    data: data,
+    dataType: 'html',
+    success: function(result) {
+      $('#contact_ledger_div')
+        .html(result);
+      __currency_convert_recursively($('#contact_ledger_div'));
 
-            $('a[href="#documents_and_notes_tab"]').on('shown.bs.tab', function() {
-                if ($.fn.DataTable && $.fn.DataTable.isDataTable('#documents_and_notes_table')) {
-                    $('#documents_and_notes_table').DataTable().ajax.reload(null, false);
-                    return;
-                }
+      $('#ledger_table').DataTable({
+        searching: false,
+        ordering: false,
+        paging: false,
+        fixedHeader: false,
+        dom: 't'
+      });
+    },
+  });
+}
 
-                loadAiTemplateContactDocumentsAndNotes();
-            });
-        });
-    </script>
-    @include('templates.viho.sale_pos.partials.subscriptions_table_javascript', ['contact_id' => $contact->id])
+$(document).on('click', '#send_ledger', function() {
+  var start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
+  var end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
+  var format = $('input[name="ledger_format"]:checked').val();
+
+  var location_id = $('#ledger_location').val();
+
+  var url =
+    "{{ action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], [$contact->id, 'send_ledger']) }}" +
+    '?start_date=' + start_date + '&end_date=' + end_date + '&format=' + format + '&location_id=' +
+    location_id;
+
+  $.ajax({
+    url: url,
+    dataType: 'html',
+    success: function(result) {
+      $('.view_modal')
+        .html(result)
+        .modal('show');
+    },
+  });
+})
+
+$(document).on('click', '#print_ledger_pdf', function() {
+  var start_date = $('#ledger_date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
+  var end_date = $('#ledger_date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
+
+  var format = $('input[name="ledger_format"]:checked').val();
+
+  var location_id = $('#ledger_location').val();
+
+  var url = $(this).data('href') + '&start_date=' + start_date + '&end_date=' + end_date + '&format=' +
+    format + '&location_id=' + location_id;
+  window.open(url);
+});
+</script>
+@include('sale_pos.partials.sale_table_javascript')
+<script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
+@if (in_array($contact->type, ['both', 'supplier']))
+<script src="{{ asset('js/purchase.js?v=' . $asset_v) }}"></script>
+@endif
+
+@if (!empty($contact_view_tabs))
+@foreach ($contact_view_tabs as $key => $tabs)
+@foreach ($tabs as $index => $value)
+@if (!empty($value['module_js_path']))
+@include($value['module_js_path'])
+@endif
+@endforeach
+@endforeach
+@endif
+
+<script type="text/javascript">
+$(document).ready(function() {
+  function loadAiTemplateContactDocumentsAndNotes() {
+    if (
+      typeof getDocAndNoteIndexPage !== 'function' ||
+      typeof initializeDocumentAndNoteDataTable !== 'function'
+    ) {
+      return;
+    }
+
+    getDocAndNoteIndexPage();
+
+    setTimeout(function() {
+      if (!$.fn.DataTable) {
+        return;
+      }
+
+      if ($.fn.DataTable.isDataTable('#documents_and_notes_table')) {
+        $('#documents_and_notes_table').DataTable().ajax.reload(null, false);
+        return;
+      }
+
+      initializeDocumentAndNoteDataTable();
+    }, 200);
+  }
+
+  loadAiTemplateContactDocumentsAndNotes();
+
+  $('#purchase_list_filter_date_range').daterangepicker(
+    dateRangeSettings,
+    function(start, end) {
+      $('#purchase_list_filter_date_range').val(start.format(moment_date_format) + ' ~ ' + end
+        .format(moment_date_format));
+      purchase_table.ajax.reload();
+    }
+  );
+  $('#purchase_list_filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+    $('#purchase_list_filter_date_range').val('');
+    purchase_table.ajax.reload();
+  });
+
+  $('#purchases-link').on('click', function(e) {
+    purchase_table.ajax.reload();
+  });
+
+  $('a[href="#documents_and_notes_tab"]').on('shown.bs.tab', function() {
+    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#documents_and_notes_table')) {
+      $('#documents_and_notes_table').DataTable().ajax.reload(null, false);
+      return;
+    }
+
+    loadAiTemplateContactDocumentsAndNotes();
+  });
+});
+</script>
+@include('templates.viho.sale_pos.partials.subscriptions_table_javascript', ['contact_id' => $contact->id])
 @endsection
 
 @push('styles')
-    <style>
-        .viho-template-active .profile-username > i.fa {
-            margin-right: 10px;
-            color: #24695c;
-        }
+<style>
+.viho-template-active .profile-username>i.fa {
+  margin-right: 10px;
+  color: #24695c;
+}
 
-        .viho-template-active .viho-contact-action-btn {
-            background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
-            border: none !important;
-            border-radius: 999px !important;
-            box-shadow: 0 10px 24px rgba(36, 105, 92, 0.18);
-            color: #fff !important;
-            font-weight: 600;
-        }
+.viho-template-active .viho-contact-action-btn {
+  background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(36, 105, 92, 0.18);
+  color: #fff !important;
+  font-weight: 600;
+}
 
-        .viho-template-active .viho-contact-action-btn:hover,
-        .viho-template-active .viho-contact-action-btn:focus {
-            background: linear-gradient(135deg, #1f5a4f 0%, #18473e 100%) !important;
-            color: #fff !important;
-        }
+.viho-template-active .viho-contact-action-btn:hover,
+.viho-template-active .viho-contact-action-btn:focus {
+  background: linear-gradient(135deg, #1f5a4f 0%, #18473e 100%) !important;
+  color: #fff !important;
+}
 
-        .viho-template-active .viho-contact-action-btn i {
-            color: #fff !important;
-            margin-right: 6px;
-        }
+.viho-template-active .viho-contact-action-btn i {
+  color: #fff !important;
+  margin-right: 6px;
+}
 
-        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link {
-            background: rgba(36, 105, 92, 0.08);
-            border-radius: 999px;
-            color: #24695c !important;
-            font-weight: 600;
-            margin: 8px 6px 0;
-        }
+.viho-template-active .nav-tabs-custom .nav-tabs>li>a.viho-ledger-tab-link {
+  background: rgba(36, 105, 92, 0.08);
+  border-radius: 999px;
+  color: #24695c !important;
+  font-weight: 600;
+  margin: 8px 6px 0;
+}
 
-        .viho-template-active .nav-tabs-custom .nav-tabs > li.active > a.viho-ledger-tab-link,
-        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link:hover,
-        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link:focus {
-            background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
-            border-color: transparent !important;
-            color: #fff !important;
-        }
+.viho-template-active .nav-tabs-custom .nav-tabs>li.active>a.viho-ledger-tab-link,
+.viho-template-active .nav-tabs-custom .nav-tabs>li>a.viho-ledger-tab-link:hover,
+.viho-template-active .nav-tabs-custom .nav-tabs>li>a.viho-ledger-tab-link:focus {
+  background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
 
-        .viho-template-active .nav-tabs-custom .nav-tabs > li > a.viho-ledger-tab-link i {
-            margin-right: 6px;
-        }
+.viho-template-active .nav-tabs-custom .nav-tabs>li>a.viho-ledger-tab-link i {
+  margin-right: 6px;
+}
 
-        .viho-template-active .viho-ledger-toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
+.viho-template-active .viho-ledger-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
 
-        .viho-template-active .viho-ledger-format-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            width: 100%;
-        }
+.viho-template-active .viho-ledger-format-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
 
-        .viho-template-active .viho-ledger-format-group .btn {
-            border-radius: 999px;
-            flex: 0 0 calc(50% - 4px);
-            margin-left: 0;
-            max-width: calc(50% - 4px);
-            text-align: center;
-        }
+.viho-template-active .viho-ledger-format-group .btn {
+  border-radius: 999px;
+  flex: 0 0 calc(50% - 4px);
+  margin-left: 0;
+  max-width: calc(50% - 4px);
+  text-align: center;
+}
 
-        .viho-template-active .viho-ledger-actions {
-            padding-top: 26px;
-        }
+.viho-template-active .viho-ledger-actions {
+  padding-top: 26px;
+}
 
-        .viho-template-active .viho-ledger-actions .btn {
-            margin-left: 6px;
-        }
+.viho-template-active .viho-ledger-actions .btn {
+  margin-left: 6px;
+}
 
-        .viho-template-active .viho-ledger-discount-actions {
-            display: inline-flex;
-            gap: 6px;
-            margin-top: 8px;
-        }
+.viho-template-active .viho-ledger-discount-actions {
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 8px;
+}
 
-        .viho-template-active .viho-ledger-discount-btn {
-            align-items: center;
-            border: none !important;
-            border-radius: 999px !important;
-            color: #fff !important;
-            display: inline-flex;
-            height: 28px;
-            justify-content: center;
-            min-width: 28px;
-            padding: 0 10px;
-        }
+.viho-template-active .viho-ledger-discount-btn {
+  align-items: center;
+  border: none !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  min-width: 28px;
+  padding: 0 10px;
+}
 
-        .viho-template-active .viho-ledger-discount-btn i {
-            color: #fff !important;
-        }
+.viho-template-active .viho-ledger-discount-btn i {
+  color: #fff !important;
+}
 
-        .viho-template-active .viho-ledger-discount-btn--edit {
-            background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
-        }
+.viho-template-active .viho-ledger-discount-btn--edit {
+  background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+}
 
-        .viho-template-active .viho-ledger-discount-btn--delete {
-            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important;
-        }
+.viho-template-active .viho-ledger-discount-btn--delete {
+  background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important;
+}
 
-        @media (max-width: 991px) {
-            .viho-template-active .viho-ledger-actions {
-                padding-top: 0;
-                text-align: left;
-            }
+.viho-template-active #documents_and_notes_tab .docs_and_notes_btn {
+  background: linear-gradient(135deg, #24695c 0%, #1f5a4f 100%) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(36, 105, 92, 0.18);
+  color: #fff !important;
+  font-weight: 600;
+}
 
-            .viho-template-active .viho-ledger-actions .btn {
-                margin-left: 0;
-                margin-right: 6px;
-                margin-top: 4px;
-            }
-        }
-    </style>
+.viho-template-active #documents_and_notes_tab .docs_and_notes_btn:hover,
+.viho-template-active #documents_and_notes_tab .docs_and_notes_btn:focus {
+  background: linear-gradient(135deg, #1f5a4f 0%, #18473e 100%) !important;
+  color: #fff !important;
+}
+
+.viho-template-active #documents_and_notes_tab .docs_and_notes_btn i {
+  color: #fff !important;
+}
+
+@media (max-width: 991px) {
+  .viho-template-active .viho-ledger-actions {
+    padding-top: 0;
+    text-align: left;
+  }
+
+  .viho-template-active .viho-ledger-actions .btn {
+    margin-left: 0;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+}
+</style>
 @endpush

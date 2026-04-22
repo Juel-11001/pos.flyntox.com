@@ -15,9 +15,6 @@ $(document).ready(function(){
     // initialize ck editor & dropzone on docs & notes model open
     var dropzoneForDocsAndNotes = {};
     $(document).on('shown.bs.modal','.docus_note_modal', function (e) {
-        tinymce.init({
-            selector: 'textarea#docs_note_description',
-        });
         $('form#docus_notes_form').validate();
         initialize_dropzone_for_docus_n_notes();
     });
@@ -75,7 +72,6 @@ $(document).ready(function(){
 
     // on close of docs & notes form destroy dropzone
     $(document).on('hide.bs.modal','.docus_note_modal', function (e) {
-        tinymce.remove("textarea#docs_note_description");
         if (dropzoneForDocsAndNotes.length > 0) {
             Dropzone.forElement("div#docusUpload").destroy();
             dropzoneForDocsAndNotes = {};
