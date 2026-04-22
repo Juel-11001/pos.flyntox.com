@@ -233,7 +233,8 @@ class DocumentAndNoteController extends Controller
             //model name like App\User
             $notable_type = request()->get('notable_type');
 
-            $input = $request->only('heading', 'description', 'is_private');
+            $input = $request->only('heading', 'description');
+            $input['is_private'] = ! empty($request->get('is_private')) ? 1 : 0;
             $input['business_id'] = request()->session()->get('user.business_id');
             $input['created_by'] = request()->session()->get('user.id');
 

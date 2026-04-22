@@ -26,7 +26,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('description', __('lang_v1.description') . ':') !!}
-                        {!! Form::textarea('description', null, ['class' => 'form-control ', 'id' => 'docs_note_description']); !!}
+                        {!! Form::textarea('description', null, ['class' => 'form-control', 'id' => 'docs_note_description', 'rows' => 4]) !!}
                     </div>
                 </div>
             </div>
@@ -44,9 +44,11 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="is_private" value="1"> @lang('lang_v1.is_private')
+                        <div class="form-check">
+                            <input type="hidden" name="is_private" value="0">
+                            <input type="checkbox" name="is_private" id="is_private" value="1" class="form-check-input">
+                            <label for="is_private" class="form-check-label">
+                                @lang('lang_v1.is_private')
                                 <i class="fa fa-info-circle" data-toggle="tooltip" title="@lang('lang_v1.note_will_be_visible_to_u_only')"></i>
                             </label>
                         </div>

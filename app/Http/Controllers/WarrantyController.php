@@ -40,9 +40,8 @@ class WarrantyController extends Controller
                 ->addColumn(
                     'action',
                     function ($row) {
-                        $edit_href = action([\App\Http\Controllers\WarrantyController::class, 'edit'], [$row->id]);
-
                         if ($this->isAiTemplateRequest()) {
+                            $edit_href = route('ai-template.warranties.edit', [$row->id]);
                             return
                                 '<div class="btn-showcase d-flex flex-nowrap" role="group" aria-label="Action Buttons">' .
                                 '<button data-href="' . $edit_href . '" class="btn btn-primary btn-xs btn-modal d-inline-flex align-items-center justify-content-center" data-container=".view_modal" title="' . __("messages.edit") . '">' .

@@ -133,7 +133,7 @@
 			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-addon">
-						<i class="fa fa-external-link-square-alt text-primary service_modal_btn"></i>
+						<i class="fa fa-external-link-square text-primary service_modal_btn"></i>
 					</span>
 					{!! Form::select('types_of_service_id', $types_of_service, null, ['class' => 'form-control', 'id' => 'types_of_service_id', 'style' => 'width: 100%;', 'placeholder' => __('lang_v1.select_types_of_service')]); !!}
 

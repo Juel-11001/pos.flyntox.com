@@ -11,8 +11,8 @@
 		<div class="form-group">
 			{!! Form::label("amount_$row_index" ,__('sale.amount') . ':*') !!}
 			<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fas fa-money-bill-alt"></i>
+				<span class="input-group-addon d-flex align-items-center justify-content-center flex-nowrap">
+					<i class="fas fa-money-bill"></i>
 				</span>
 				{!! Form::text("payment[$row_index][amount]", @num_format($payment_line['amount']), ['class' => 'form-control payment-amount input_number', 'required', 'id' => "amount_$row_index", 'placeholder' => __('sale.amount'), 'readonly' => $readonly]); !!}
 			</div>
@@ -22,8 +22,8 @@
 	<div class="{{$col_class}}">
 		<div class="form-group">
 			{!! Form::label("paid_on_$row_index" , __('lang_v1.paid_on') . ':*') !!}
-			<div class="input-group">
-              <span class="input-group-addon">
+			<div class="input-group flex-nowrap">
+              <span class="input-group-addon d-flex align-items-center justify-content-center ">
                 <i class="fa fa-calendar"></i>
               </span>
               {!! Form::text("payment[$row_index][paid_on]", isset($payment_line['paid_on']) ? @format_datetime($payment_line['paid_on']) : @format_datetime('now'), ['class' => 'form-control paid_on', 'readonly', 'required']); !!}
@@ -34,9 +34,9 @@
 	<div class="{{$col_class}}">
 		<div class="form-group">
 			{!! Form::label("method_$row_index" , __('lang_v1.payment_method') . ':*') !!}
-			<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fas fa-money-bill-alt"></i>
+			<div class="input-group flex-nowrap">
+				<span class="input-group-addon d-flex align-items-center justify-content-center ">
+					<i class="fas fa-money-bill"></i>
 				</span>
 				@php
 					$_payment_method = empty($payment_line['method']) && array_key_exists('cash', $payment_types) ? 'cash' : $payment_line['method'];
@@ -123,9 +123,9 @@
 		<div class="{{$col_class}}">
 			<div class="form-group @if($readonly) hide @endif">
 				{!! Form::label("account_$row_index" , __('lang_v1.payment_account') . ':') !!}
-				<div class="input-group">
-					<span class="input-group-addon">
-						<i class="fas fa-money-bill-alt"></i>
+				<div class="input-group flex-nowrap">
+					<span class="input-group-addon d-flex align-items-center justify-content-center ">
+						<i class="fas fa-money-bill"></i>
 					</span>
 					{!! Form::select("payment[$row_index][account_id]", $accounts, !empty($payment_line['account_id']) ? $payment_line['account_id'] : '' , ['class' => 'form-control select2 account-dropdown', 'id' => !$readonly ? "account_$row_index" : "account_advance_$row_index", 'style' => 'width:100%;', 'disabled' => $readonly]); !!}
 				</div>

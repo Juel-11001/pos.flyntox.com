@@ -600,6 +600,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('manage-modules/uninstall/{module_id}', [Install\ModulesController::class, 'uninstall'])->name('manage-modules.uninstall');
         Route::get('manage-modules/update-module/{module_id}', [Install\ModulesController::class, 'updateModule'])->name('manage-modules.update-module');
         Route::post('manage-modules/install-module', [Install\ModulesController::class, 'installModule'])->name('manage-modules.install-module');
+
+        // Notifications (Viho)
+        Route::get('notification/get-template/{transaction_id}/{template_for}', [NotificationController::class, 'getTemplate'])->name('notification.get-template');
+        Route::post('notification/send', [NotificationController::class, 'send'])->name('notification.send');
     });
 
     Route::resource('group-taxes', GroupTaxController::class);

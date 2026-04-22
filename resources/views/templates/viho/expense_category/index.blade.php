@@ -41,6 +41,8 @@
 .paging_simple_numbers {
   margin-left: auto !important;
 }
+
+
 </style>
 @endpush
 
@@ -219,6 +221,7 @@ $(document).ready(function() {
     }
   });
 });
+
 
 // Create / update expense category (modal form)
 $(document).on('submit', 'form#expense_category_add_form', function(e) {
