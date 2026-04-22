@@ -131,7 +131,7 @@ class AccountController extends Controller
                                             }
 
                                             if (Route::has($route_name_prefix . 'account.deposit')) {
-                                                $html .= '<button data-href="' . route($route_name_prefix . 'account.deposit', [$row->id]) . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_modal" title="' . __('account.deposit') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #00a65a; border-color: #00a65a; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fas fa-money-bill-alt" style="font-size: 14px;"></i></button>';
+                                                $html .= '<button data-href="' . route($route_name_prefix . 'account.deposit', [$row->id]) . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_modal" title="' . __('account.deposit') . '" style="padding: 6px 12px; margin-right: 8px; margin-bottom: 6px; background-color: #00a65a; border-color: #00a65a; color: #fff; min-width: 36px; min-height: 36px; border-radius: 4px;"><i class="fas fa-money-bill" style="font-size: 14px;"></i></button>';
                                             }
 
                                             if (Route::has($route_name_prefix . 'account.close')) {

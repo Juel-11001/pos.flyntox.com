@@ -1,7 +1,15 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
+    <style>
+      @media print {
+        .no-print,
+        .modal-footer,
+        button.close {
+          display: none !important;
+        }
+      }
+    </style>
     <div class="modal-header">
-      <button type="button" class="close no-print" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h4 class="modal-title no-print">
         @lang( 'lang_v1.view_payment' )
         @if(!empty($single_payment_line->payment_ref_no))
@@ -194,7 +202,7 @@
     <div class="modal-footer">
       <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
         aria-label="Print" 
-          onclick="$(this).closest('div.modal').printThis();">
+          onclick="$(this).closest('div.modal-content').printThis({importCSS: true, importStyle: true, printContainer: true, pageTitle: ''});">
         <i class="fa fa-print"></i> @lang( 'messages.print' )
       </button>
       <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white no-print" data-dismiss="modal">@lang( 'messages.close' )

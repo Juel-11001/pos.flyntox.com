@@ -1,6 +1,121 @@
 @extends('templates.viho.layout')
 @section('title', __('report.tax_report'))
 
+@push('styles')
+<style>
+.print_section {
+  display: none;
+}
+
+@page {
+  size: auto;
+  margin: 10mm;
+}
+
+@media print {
+  html,
+  body,
+  .page-wrapper,
+  .page-body-wrapper,
+  .page-body,
+  .container-fluid,
+  .content,
+  #scrollable-container {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .page-main-header,
+  .main-nav,
+  .page-header,
+  .nav-tabs-custom > .nav-tabs,
+  .box-footer,
+  .scrolltop,
+  #toast-container,
+  .loader-wrapper,
+  .default-header-embedded,
+  .no-print {
+    display: none !important;
+  }
+
+  .card,
+  .card-body,
+  .nav-tabs-custom,
+  .nav-tabs-custom > .tab-content,
+  .box,
+  .box-header,
+  .box-body {
+    border: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print_section {
+    display: block !important;
+    margin-bottom: 12px !important;
+  }
+
+  .nav-tabs-custom .tab-content > .tab-pane {
+    display: none !important;
+  }
+
+  .nav-tabs-custom .tab-content > .tab-pane.active {
+    display: block !important;
+  }
+
+  .dataTables_length,
+  .dataTables_filter,
+  .dataTables_paginate,
+  .dataTables_info,
+  .dt-buttons,
+  .dataTables_processing {
+    display: none !important;
+  }
+
+  .dataTables_wrapper,
+  .table-responsive,
+  div[id$="_wrapper"] {
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  th,
+  td {
+    font-size: 12px !important;
+    padding: 6px !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  tr,
+  td,
+  th {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid">
   <div class="page-header">
@@ -23,21 +138,21 @@
         <div class="form-group">
           {!! Form::label('tax_report_location_id', __('purchase.business_location') . ':') !!}
           {!! Form::select('tax_report_location_id', $business_locations, null, ['class' => 'form-control select2',
-          'style' => 'width:100%']); !!}
+          'style' => 'width:100%']) !!}
         </div>
       </div>
       <div class="col-sm-12 col-md-6 col-xl-3">
         <div class="form-group">
           {!! Form::label('tax_report_contact_id', __('report.contact') . ':') !!}
           {!! Form::select('tax_report_contact_id', $contact_dropdown, null , ['class' => 'form-control select2',
-          'style' => 'width:100%', 'id' => 'tax_report_contact_id', 'placeholder' => __('lang_v1.all')]); !!}
+          'style' => 'width:100%', 'id' => 'tax_report_contact_id', 'placeholder' => __('lang_v1.all')]) !!}
         </div>
       </div>
       <div class="col-sm-12 col-md-6 col-xl-3">
         <div class="form-group">
           {!! Form::label('tax_report_date_range', __('report.date_range') . ':') !!}
           {!! Form::text('tax_report_date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
-          'form-control', 'id' => 'tax_report_date_range', 'readonly']); !!}
+          'form-control', 'id' => 'tax_report_date_range', 'readonly']) !!}
         </div>
       </div>
     </div>
@@ -47,6 +162,9 @@
 
 <div class="row">
   <div class="col-xs-12">
+    <div class="print_section">
+      <h3>{{ session()->get('business.name') }} - @lang('report.tax_report')</h3>
+    </div>
     @component('components.widget')
     @slot('title')
     {{ __('lang_v1.tax_overall') }} @show_tooltip(__('tooltip.tax_overall'))
@@ -209,5 +327,187 @@
 @endsection
 
 @section('javascript')
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#tax_report_date_range').daterangepicker(
+            dateRangeSettings,
+            function(start, end) {
+                $('#tax_report_date_range').val(
+                    start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+                );
+            }
+        );
+
+        if ($.fn.DataTable.isDataTable('#input_tax_table')) {
+            input_tax_table = $('#input_tax_table').DataTable();
+        } else {
+            input_tax_table = $('#input_tax_table').DataTable({
+                processing: true,
+                serverSide: true,
+                fixedHeader: false,
+                ajax: {
+                    url: '/reports/tax-details',
+                    data: function(d) {
+                        d.type = 'purchase';
+                        d.location_id = $('#tax_report_location_id').val();
+                        d.contact_id = $('#tax_report_contact_id').val();
+                        var start = $('input#tax_report_date_range')
+                            .data('daterangepicker')
+                            .startDate.format('YYYY-MM-DD');
+                        var end = $('input#tax_report_date_range')
+                            .data('daterangepicker')
+                            .endDate.format('YYYY-MM-DD');
+                        d.start_date = start;
+                        d.end_date = end;
+                    }
+                },
+                columns: [
+                    { data: 'transaction_date', name: 'transaction_date' },
+                    { data: 'ref_no', name: 'ref_no' },
+                    { data: 'contact_name', name: 'c.name' },
+                    { data: 'tax_number', name: 'c.tax_number' },
+                    { data: 'total_before_tax', name: 'total_before_tax' },
+                    { data: 'payment_methods', orderable: false, searchable: false },
+                    { data: 'discount_amount', name: 'discount_amount' },
+                    @foreach($taxes as $tax)
+                    { data: "tax_{{$tax['id']}}", searchable: false, orderable: false },
+                    @endforeach
+                ],
+                footerCallback: function(row, data, start, end, display) {
+                    $('.input_payment_method_count').html(__count_status(data, 'payment_methods'));
+                },
+                fnDrawCallback: function(oSettings) {
+                    $('#sell_total').text(
+                        sum_table_col($('#input_tax_table'), 'total_before_tax')
+                    );
+                    @foreach($taxes as $tax)
+                    $("#total_input_{{$tax['id']}}").text(
+                        sum_table_col($('#input_tax_table'), "tax_{{$tax['id']}}")
+                    );
+                    @endforeach
+
+                    __currency_convert_recursively($('#input_tax_table'));
+                },
+            });
+        }
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            if ($(e.target).attr('href') == '#output_tax_tab') {
+                if (typeof (output_tax_datatable) == 'undefined') {
+                    output_tax_datatable = $('#output_tax_table').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        fixedHeader: false,
+                        aaSorting: [[0, 'desc']],
+                        ajax: {
+                            url: '/reports/tax-details',
+                            data: function(d) {
+                                d.type = 'sell';
+                                d.location_id = $('#tax_report_location_id').val();
+                                d.contact_id = $('#tax_report_contact_id').val();
+                                var start = $('input#tax_report_date_range')
+                                    .data('daterangepicker')
+                                    .startDate.format('YYYY-MM-DD');
+                                var end = $('input#tax_report_date_range')
+                                    .data('daterangepicker')
+                                    .endDate.format('YYYY-MM-DD');
+                                d.start_date = start;
+                                d.end_date = end;
+                            }
+                        },
+                        columns: [
+                            { data: 'transaction_date', name: 'transaction_date' },
+                            { data: 'invoice_no', name: 'invoice_no' },
+                            { data: 'contact_name', name: 'c.name' },
+                            { data: 'tax_number', name: 'c.tax_number' },
+                            { data: 'total_before_tax', name: 'total_before_tax' },
+                            { data: 'payment_methods', orderable: false, searchable: false },
+                            { data: 'discount_amount', name: 'discount_amount' },
+                            @foreach($taxes as $tax)
+                            { data: "tax_{{$tax['id']}}", searchable: false, orderable: false },
+                            @endforeach
+                        ],
+                        footerCallback: function(row, data, start, end, display) {
+                            $('.output_payment_method_count').html(__count_status(data, 'payment_methods'));
+                        },
+                        fnDrawCallback: function(oSettings) {
+                            $('#purchase_total').text(
+                                sum_table_col($('#output_tax_table'), 'total_before_tax')
+                            );
+                            @foreach($taxes as $tax)
+                            $("#total_output_{{$tax['id']}}").text(
+                                sum_table_col($('#output_tax_table'), "tax_{{$tax['id']}}")
+                            );
+                            @endforeach
+                            __currency_convert_recursively($('#output_tax_table'));
+                        },
+                    });
+                }
+            } else if ($(e.target).attr('href') == '#expense_tax_tab') {
+                if (typeof (expense_tax_datatable) == 'undefined') {
+                    expense_tax_datatable = $('#expense_tax_table').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        fixedHeader: false,
+                        ajax: {
+                            url: '/reports/tax-details',
+                            data: function(d) {
+                                d.type = 'expense';
+                                d.location_id = $('#tax_report_location_id').val();
+                                d.contact_id = $('#tax_report_contact_id').val();
+                                var start = $('input#tax_report_date_range')
+                                    .data('daterangepicker')
+                                    .startDate.format('YYYY-MM-DD');
+                                var end = $('input#tax_report_date_range')
+                                    .data('daterangepicker')
+                                    .endDate.format('YYYY-MM-DD');
+                                d.start_date = start;
+                                d.end_date = end;
+                            }
+                        },
+                        columns: [
+                            { data: 'transaction_date', name: 'transaction_date' },
+                            { data: 'ref_no', name: 'ref_no' },
+                            { data: 'tax_number', name: 'c.tax_number' },
+                            { data: 'total_before_tax', name: 'total_before_tax' },
+                            { data: 'payment_methods', orderable: false, searchable: false },
+                            @foreach($taxes as $tax)
+                            { data: "tax_{{$tax['id']}}", searchable: false, orderable: false },
+                            @endforeach
+                        ],
+                        footerCallback: function(row, data, start, end, display) {
+                            $('.expense_payment_method_count').html(__count_status(data, 'payment_methods'));
+                        },
+                        fnDrawCallback: function(oSettings) {
+                            $('#expense_total').text(
+                                sum_table_col($('#expense_tax_table'), 'total_before_tax')
+                            );
+                            @foreach($taxes as $tax)
+                            $("#total_expense_{{$tax['id']}}").text(
+                                sum_table_col($('#expense_tax_table'), "tax_{{$tax['id']}}")
+                            );
+                            @endforeach
+                            __currency_convert_recursively($('#expense_tax_table'));
+                        },
+                    });
+                }
+            }
+
+            $('.btn-default').removeClass('btn-default');
+            $('.tw-dw-btn-outline').removeClass('btn');
+        });
+
+        $('#tax_report_date_range, #tax_report_location_id, #tax_report_contact_id').change(function() {
+            if ($("#input_tax_tab").hasClass('active')) {
+                input_tax_table.ajax.reload();
+            }
+            if ($("#output_tax_tab").hasClass('active') && typeof (output_tax_datatable) != 'undefined') {
+                output_tax_datatable.ajax.reload();
+            }
+            if ($("#expense_tax_tab").hasClass('active') && typeof (expense_tax_datatable) != 'undefined') {
+                expense_tax_datatable.ajax.reload();
+            }
+        });
+    });
+</script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 @endsection

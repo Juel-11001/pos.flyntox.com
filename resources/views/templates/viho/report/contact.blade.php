@@ -24,7 +24,7 @@
           <div class="form-group">
             {!! Form::label('cg_customer_group_id', __( 'lang_v1.customer_group_name' ) . ':') !!}
             {!! Form::select('cnt_customer_group_id', $customer_group, null, ['class' => 'form-control select2', 'style'
-            => 'width:100%', 'id' => 'cnt_customer_group_id']); !!}
+            => 'width:100%', 'id' => 'cnt_customer_group_id']) !!}
           </div>
         </div>
 
@@ -32,7 +32,7 @@
           <div class="form-group">
             {!! Form::label('type', __( 'lang_v1.type' ) . ':') !!}
             {!! Form::select('contact_type', $types, null, ['class' => 'form-control select2', 'style' => 'width:100%',
-            'id' => 'contact_type']); !!}
+            'id' => 'contact_type']) !!}
           </div>
         </div>
 
@@ -40,7 +40,7 @@
           <div class="form-group">
             {!! Form::label('cs_report_location_id', __( 'sale.location' ) . ':') !!}
             {!! Form::select('cs_report_location_id', $business_locations, null, ['class' => 'form-control select2',
-            'style' => 'width:100%', 'id' => 'cs_report_location_id']); !!}
+            'style' => 'width:100%', 'id' => 'cs_report_location_id']) !!}
           </div>
         </div>
 
@@ -48,7 +48,7 @@
           <div class="form-group">
             {!! Form::label('scr_contact_id', __( 'report.contact' ) . ':') !!}
             {!! Form::select('scr_contact_id', $contact_dropdown, null , ['class' => 'form-control select2', 'id' =>
-            'scr_contact_id', 'placeholder' => __('lang_v1.all'), 'style' => 'width:100%']); !!}
+            'scr_contact_id', 'placeholder' => __('lang_v1.all'), 'style' => 'width:100%']) !!}
           </div>
         </div>
 
@@ -56,7 +56,7 @@
           <div class="form-group">
             {!! Form::label('scr_date_filter', __('report.date_range') . ':') !!}
             {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
-            'form-control', 'id' => 'scr_date_filter', 'readonly']); !!}
+            'form-control', 'id' => 'scr_date_filter', 'readonly']) !!}
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
   <div class="row">
     <div class="col-md-12">
       @component('components.widget', ['class' => 'box-primary'])
-      <div class="d-flex overflow-auto w-100">
+      <div class="table-responsive">
         <table class="table table-bordered table-striped" id="supplier_report_tbl">
           <thead>
             <tr>
@@ -108,27 +108,84 @@
 
 @section('javascript')
 <script>
-  // Clear any existing DataTable instance completely
-  (function() {
-    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#supplier_report_tbl')) {
-      $('#supplier_report_tbl').DataTable().clear().destroy();
-    }
-    $('#supplier_report_tbl').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-    $('#supplier_report_tbl').removeAttr('style').removeAttr('width');
-  })();
-</script>
-<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
-<script>
   $(document).ready(function() {
-    var checkAndFix = function() {
-      if ($.fn.DataTable.isDataTable('#supplier_report_tbl')) {
-        $('#supplier_report_tbl').DataTable().clear().destroy();
-        $('#supplier_report_tbl').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-        $('#supplier_report_tbl').removeAttr('style').removeAttr('width');
-      }
-    };
-    checkAndFix();
-    setTimeout(checkAndFix, 500);
+    // Ensure previous bindings are cleared if this script runs again.
+    $('#cnt_customer_group_id, #contact_type, #cs_report_location_id, #scr_contact_id').off('change.contactReport');
+    $('#scr_date_filter').off('cancel.daterangepicker.contactReport');
+
+    var supplier_report_tbl = null;
+
+    if ($.fn.DataTable.isDataTable('#supplier_report_tbl')) {
+      supplier_report_tbl = $('#supplier_report_tbl').DataTable();
+      supplier_report_tbl.ajax.reload();
+    } else {
+      supplier_report_tbl = $('#supplier_report_tbl').DataTable({
+        processing: true,
+        serverSide: true,
+        fixedHeader: false,
+        ajax: {
+          url: '/reports/customer-supplier',
+          data: function(d) {
+            d.customer_group_id = $('#cnt_customer_group_id').val();
+            d.contact_type = $('#contact_type').val();
+            d.location_id = $('#cs_report_location_id').val();
+            d.contact_id = $('#scr_contact_id').val();
+            d.start_date = $('input#scr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD');
+            d.end_date = $('input#scr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD');
+          }
+        },
+        columnDefs: [
+          { targets: [5], orderable: false, searchable: false },
+          { targets: [1, 2, 3, 4], searchable: false }
+        ],
+        columns: [
+          { data: 'name', name: 'name' },
+          { data: 'total_purchase', name: 'total_purchase' },
+          { data: 'total_purchase_return', name: 'total_purchase_return' },
+          { data: 'total_invoice', name: 'total_invoice' },
+          { data: 'total_sell_return', name: 'total_sell_return' },
+          { data: 'opening_balance_due', name: 'opening_balance_due' },
+          { data: 'due', name: 'due' }
+        ],
+        fnDrawCallback: function() {
+          var total_purchase = sum_table_col($('#supplier_report_tbl'), 'total_purchase');
+          $('#footer_total_purchase').text(total_purchase);
+
+          var total_purchase_return = sum_table_col($('#supplier_report_tbl'), 'total_purchase_return');
+          $('#footer_total_purchase_return').text(total_purchase_return);
+
+          var total_sell = sum_table_col($('#supplier_report_tbl'), 'total_invoice');
+          $('#footer_total_sell').text(total_sell);
+
+          var total_sell_return = sum_table_col($('#supplier_report_tbl'), 'total_sell_return');
+          $('#footer_total_sell_return').text(total_sell_return);
+
+          var total_opening_bal_due = sum_table_col($('#supplier_report_tbl'), 'opening_balance_due');
+          $('#footer_total_opening_bal_due').text(total_opening_bal_due);
+
+          var total_due = sum_table_col($('#supplier_report_tbl'), 'total_due');
+          $('#footer_total_due').text(total_due);
+
+          __currency_convert_recursively($('#supplier_report_tbl'));
+        }
+      });
+    }
+
+    if ($('#scr_date_filter').length == 1 && !$('#scr_date_filter').data('daterangepicker')) {
+      $('#scr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+        $('#scr_date_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
+        supplier_report_tbl.ajax.reload();
+      });
+    }
+
+    $('#scr_date_filter').on('cancel.daterangepicker.contactReport', function() {
+      $('#scr_date_filter').val('');
+      supplier_report_tbl.ajax.reload();
+    });
+
+    $('#cnt_customer_group_id, #contact_type, #cs_report_location_id, #scr_contact_id').on('change.contactReport', function() {
+      supplier_report_tbl.ajax.reload();
+    });
   });
 </script>
 @endsection

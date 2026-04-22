@@ -1,6 +1,96 @@
 @extends('templates.viho.layout')
 @section('title', __( 'account.trial_balance' ))
 
+@section('css')
+<style>
+@page {
+  size: auto;
+  margin: 10mm;
+}
+
+@media print {
+  html,
+  body {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  #scrollable-container,
+  .page-body,
+  .page-body-wrapper {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .page-main-header,
+  .main-nav,
+  .no-print,
+  .box-footer,
+  .scrolltop,
+  #toast-container,
+  .loader-wrapper,
+  .default-header-embedded {
+    display: none !important;
+  }
+
+  .page-wrapper,
+  .page-body-wrapper,
+  .page-body,
+  .container-fluid,
+  .content {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .box,
+  .box-header,
+  .box-body {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .box {
+    margin-bottom: 0 !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .content > br {
+    display: none !important;
+  }
+
+  .table {
+    width: 100% !important;
+  }
+
+  table {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  tr,
+  td,
+  th {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+</style>
+@endsection
+
 @section('content')
 
 <!-- Content Header (Page header) -->
@@ -19,7 +109,7 @@
           <div class="form-group">
             {!! Form::label('trial_bal_location_id', __('purchase.business_location') . ':') !!}
             {!! Form::select('trial_bal_location_id', $business_locations, null, ['class' => 'form-control select2',
-            'style' => 'width:100%']); !!}
+            'style' => 'width:100%']) !!}
           </div>
         </div>
         <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
@@ -42,9 +132,7 @@
           id="hidden_date">{{@format_date('now')}}</span></h3>
     </div>
     <div class="box-body">
-      <div class="d-flex w-100 overflow-auto">
-        <table class="table table-border-center-col no-border table-pl-12" id="trial_balance_table"
-          style="min-width: 800px">
+        <table class="table table-border-center-col no-border table-pl-12" id="trial_balance_table">
           <thead>
             <tr class="bg-gray">
               <th>@lang('account.trial_balance')</th>
@@ -107,10 +195,9 @@
             </tr>
           </tfoot>
         </table>
-      </div>
     </div>
     <div class="box-footer">
-      <button type="button" class="tw-dw-btn tw-dw-btn-primary text-white no-print pull-right" onclick="window.print()">
+      <button type="button" class="btn btn-primary text-white no-print pull-right" onclick="window.print()">
         <i class="fa fa-print"></i> @lang('messages.print')</button>
     </div>
   </div>

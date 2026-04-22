@@ -1,7 +1,62 @@
 <div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
+    <style type="text/css">
+      @media print {
+        html,
+        body {
+          overflow: visible !important;
+          height: auto !important;
+          max-height: none !important;
+        }
+
+        .no-print,
+        .modal-footer,
+        button.close {
+          display: none !important;
+        }
+
+        .modal,
+        .modal-dialog,
+        .modal-content,
+        .modal-body,
+        .modal-dialog .modal-content,
+        .modal-dialog .modal-body {
+          position: static !important;
+          overflow: visible !important;
+          height: auto !important;
+          max-height: none !important;
+          min-height: 0 !important;
+          width: 100% !important;
+        }
+
+        .modal-content {
+          border: 0 !important;
+          box-shadow: none !important;
+          page-break-inside: auto !important;
+          break-inside: auto !important;
+        }
+
+        .row,
+        table,
+        tbody,
+        tr,
+        td,
+        th {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
+
+        /* Remove any visual scrollbars in print output */
+        * {
+          scrollbar-width: none !important;
+        }
+        *::-webkit-scrollbar {
+          width: 0 !important;
+          height: 0 !important;
+        }
+      }
+    </style>
     <div class="modal-header mini_print">
-      <button type="button" class="close no-print" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h3 class="modal-title">@lang( 'cash_register.register_details' ) ( {{ \Carbon::createFromFormat('Y-m-d H:i:s', $register_details->open_time)->format('jS M, Y h:i A') }} -  {{\Carbon::createFromFormat('Y-m-d H:i:s', $close_time)->format('jS M, Y h:i A')}} )</h3>
     </div>
 
@@ -72,7 +127,7 @@
   </button>
       <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white no-print" 
         aria-label="Print" 
-          onclick="$(this).closest('div.modal').printThis();">
+          onclick="$(this).closest('div.modal-content').printThis({importCSS: true, importStyle: true, printContainer: true, pageTitle: ''});">
         <i class="fa fa-print"></i> @lang( 'messages.print_detailed' )
       </button>
 
@@ -83,18 +138,6 @@
 
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
-<style type="text/css">
-  @media print {
-    .modal {
-        position: absolute;
-        left: 0;
-        top: 0;
-        margin: 0;
-        padding: 0;
-        overflow: visible!important;
-    }
-}
-</style>
 <script>
   $(document).ready(function () {
       $(document).on('click', '.print-mini-button', function () {

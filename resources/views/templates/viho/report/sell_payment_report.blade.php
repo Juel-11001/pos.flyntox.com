@@ -81,7 +81,7 @@
     <div class="col-md-12">
       @component('components.widget', ['class' => 'box-primary'])
       <div class="d-flex w-100 overflow-auto">
-        <table class="table table-bordered table-striped" id="sell_payment_report_table">
+        <table class="table table-bordered table-striped" id="sell_payment_report_table" style="min-width: 1300px;">
           <thead>
             <tr>
               <th>&nbsp;</th>
@@ -116,32 +116,158 @@
 @endsection
 
 @section('javascript')
-<script>
-  // Clear any existing DataTable instance completely
-  (function() {
-    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#sell_payment_report_table')) {
-      $('#sell_payment_report_table').DataTable().clear().destroy();
-    }
-    // Remove DataTable generated elements
-    $('#sell_payment_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-    $('#sell_payment_report_table').removeAttr('style').removeAttr('width');
-  })();
-</script>
-<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 <script>
-  // Final cleanup after page load
   $(document).ready(function() {
-    var checkAndFix = function() {
-      if ($.fn.DataTable.isDataTable('#sell_payment_report_table')) {
-        $('#sell_payment_report_table').DataTable().clear().destroy();
-        $('#sell_payment_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-        $('#sell_payment_report_table').removeAttr('style').removeAttr('width');
+    if ($.fn.DataTable.isDataTable('#sell_payment_report_table')) {
+      $('#sell_payment_report_table').DataTable().destroy();
+    }
+
+    sell_payment_report = $('#sell_payment_report_table').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      aaSorting: [
+        [2, 'desc']
+      ],
+      ajax: {
+        url: "{{ route('ai-template.reports.sell-payment-report') }}",
+        data: function(d) {
+          d.supplier_id = $('#customer_id').val();
+          d.location_id = $('#location_id').val();
+          d.payment_types = $('#payment_types').val();
+          d.customer_group_id = $('#customer_group_filter').val();
+
+          if ($('#spr_date_filter').val()) {
+            d.start_date = $('#spr_date_filter')
+              .data('daterangepicker')
+              .startDate.format('YYYY-MM-DD');
+            d.end_date = $('#spr_date_filter')
+              .data('daterangepicker')
+              .endDate.format('YYYY-MM-DD');
+          }
+        }
+      },
+      columns: [{
+          data: null,
+          defaultContent: '',
+          orderable: false,
+          searchable: false
+        },
+        {
+          data: 'payment_ref_no',
+          name: 'payment_ref_no'
+        },
+        {
+          data: 'paid_on',
+          name: 'paid_on'
+        },
+        {
+          data: 'amount',
+          name: 'transaction_payments.amount'
+        },
+        {
+          data: 'customer',
+          name: 'customer_subquery.customer_name',
+          orderable: false,
+          searchable: true
+        },
+        {
+          data: 'contact_id',
+          name: 'c.contact_id',
+          orderable: true,
+          searchable: true
+        },
+        {
+          data: 'customer_group',
+          name: 'customer_group',
+          searchable: false
+        },
+        {
+          data: 'method',
+          name: 'method'
+        },
+        {
+          data: 'invoice_no',
+          name: 't.invoice_no'
+        },
+        {
+          data: 'action',
+          orderable: false,
+          searchable: false
+        }
+      ],
+      fnDrawCallback: function() {
+        var total_amount = sum_table_col($('#sell_payment_report_table'), 'paid-amount');
+        $('#footer_total_amount').text(total_amount);
+        __currency_convert_recursively($('#sell_payment_report_table'));
+      },
+      createdRow: function(row, data) {
+        if (!data.transaction_id) {
+          $(row).find('td:eq(0)').addClass('details-control');
+        }
       }
-    };
-    checkAndFix();
-    // Run again after a short delay to catch any late initializations
-    setTimeout(checkAndFix, 500);
+    });
+
+    var spr_detail_rows = [];
+
+    $('#sell_payment_report_table tbody').on('click', 'tr td.details-control', function() {
+      var tr = $(this).closest('tr');
+      var row = sell_payment_report.row(tr);
+      var idx = $.inArray(tr.attr('id'), spr_detail_rows);
+
+      if (row.child.isShown()) {
+        tr.removeClass('details');
+        row.child.hide();
+        spr_detail_rows.splice(idx, 1);
+      } else {
+        tr.addClass('details');
+        row.child(showChildPayments(row.data())).show();
+
+        if (idx === -1) {
+          spr_detail_rows.push(tr.attr('id'));
+        }
+      }
+    });
+
+    sell_payment_report.on('draw', function() {
+      $.each(spr_detail_rows, function(i, id) {
+        $('#' + id + ' td.details-control').trigger('click');
+      });
+    });
+
+    $('#spr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+      $('#spr_date_filter').val(
+        start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+      );
+      sell_payment_report.ajax.reload();
+    });
+
+    $('#spr_date_filter').on('cancel.daterangepicker', function() {
+      $('#spr_date_filter').val('');
+      sell_payment_report.ajax.reload();
+    });
+
+    $(document).on('change', '#sell_payment_report_form #location_id, #sell_payment_report_form #customer_id, #sell_payment_report_form #payment_types, #sell_payment_report_form #customer_group_filter', function() {
+      sell_payment_report.ajax.reload();
+    });
   });
+
+  function showChildPayments(rowData) {
+    var div = $('<div/>')
+      .addClass('loading')
+      .text('Loading...');
+
+    $.ajax({
+      url: '/payments/show-child-payments/' + rowData.DT_RowId,
+      dataType: 'html',
+      success: function(data) {
+        div.html(data).removeClass('loading');
+        __currency_convert_recursively(div);
+      }
+    });
+
+    return div;
+  }
 </script>
 @endsection

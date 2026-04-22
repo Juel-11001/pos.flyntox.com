@@ -1717,7 +1717,7 @@
         $__is_pusher_enabled = $__is_pusher_enabled ?? false;
         $__system_settings = $__system_settings ?? [];
     @endphp
-    @include('layouts.partials.javascripts')
+    @include('layouts.partials.javascripts_viho')
     {{-- Module JS/CSS --}}
     @include('layouts.module-assets')
     <div class="modal fade view_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>

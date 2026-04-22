@@ -1263,15 +1263,24 @@ class ReportController extends Controller
                 })
 
                 ->addColumn('action', function ($row) {
+                    $is_ai_template = $this->isAiTemplateRequest();
                     $html = '';
                     if (auth()->user()->can('view_cash_register')) {
                         $view_url = action([\App\Http\Controllers\CashRegisterController::class, 'show'], [$row->id]);
-                        $html .= '<button type="button" data-href="' . $view_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</button>';
+                        if ($is_ai_template) {
+                            $html .= '<button type="button" data-href="' . $view_url . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_register" title="' . __('messages.view') . '" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" aria-hidden="true" style="font-size: 13px;"></i></button>';
+                        } else {
+                            $html .= '<button type="button" data-href="' . $view_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</button>';
+                        }
                     }
 
                     if ($row->status != 'close' && auth()->user()->can('close_cash_register')) {
                         $close_url = action([\App\Http\Controllers\CashRegisterController::class, 'getCloseRegister'], [$row->id]);
-                        $html .= ' <button type="button" data-href="' . $close_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-window-close"></i> ' . __('messages.close') . '</button>';
+                        if ($is_ai_template) {
+                            $html .= '<button type="button" data-href="' . $close_url . '" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_register" title="' . __('messages.close') . '" style="padding: 4px 10px; background-color: #dc3545; border-color: #dc3545; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-window-close" aria-hidden="true" style="font-size: 13px;"></i></button>';
+                        } else {
+                            $html .= ' <button type="button" data-href="' . $close_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-window-close"></i> ' . __('messages.close') . '</button>';
+                        }
                     }
 
                     return $html;
@@ -2499,6 +2508,12 @@ class ReportController extends Controller
 
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
+            $is_ai_template = $this->isAiTemplateRequest();
+            $action_html = $is_ai_template
+                ? '<button type="button" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}" title="@lang("messages.view")" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" style="font-size: 13px;"></i></button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="btn btn-info btn-xs d-inline-flex align-items-center justify-content-center" download="" title="@lang("purchase.download_document")" style="padding: 4px 10px; background-color: #0d6efd; border-color: #0d6efd; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-download" style="font-size: 13px;"></i></a>@endif'
+                : '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
+                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif';
+
             return Datatables::of($query)
                  ->editColumn('ref_no', function ($row) {
                      if (! empty($row->ref_no)) {
@@ -2531,8 +2546,7 @@ class ReportController extends Controller
                     return '<span class="paid-amount" data-orig-value="'.$row->amount.'">'.
                     $this->transactionUtil->num_f($row->amount, true).'</span>';
                 })
-                ->addColumn('action', '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
-                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
+                ->addColumn('action', $action_html)
                 ->rawColumns(['ref_no', 'amount', 'method', 'action', 'supplier'])
                 ->make(true);
         }
@@ -2665,6 +2679,12 @@ class ReportController extends Controller
                 $query->where('transaction_payments.method', $request->get('payment_types'));
             }
 
+            $is_ai_template = $this->isAiTemplateRequest();
+            $action_html = $is_ai_template
+                ? '<button type="button" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}" title="@lang("messages.view")" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" style="font-size: 13px;"></i></button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="btn btn-info btn-xs d-inline-flex align-items-center justify-content-center" download="" title="@lang("purchase.download_document")" style="padding: 4px 10px; background-color: #0d6efd; border-color: #0d6efd; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-download" style="font-size: 13px;"></i></a>@endif'
+                : '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
+                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif';
+
             return Datatables::of($query)
                  ->editColumn('invoice_no', function ($row) {
                      if (! empty($row->transaction_id)) {
@@ -2702,8 +2722,7 @@ class ReportController extends Controller
                     return '<span class="paid-amount" data-orig-value="'.$amount.'" 
                     >'.$this->transactionUtil->num_f($amount, true).'</span>';
                 })
-                ->addColumn('action', '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
-                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
+                ->addColumn('action', $action_html)
                 ->rawColumns(['invoice_no', 'amount', 'method', 'action', 'customer'])
                 ->make(true);
         }
