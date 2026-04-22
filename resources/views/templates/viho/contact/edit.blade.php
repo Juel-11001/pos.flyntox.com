@@ -223,7 +223,12 @@
                     <div class="col-md-6 contact_assign_div" @if($is_lead_form) style="display: none;" @endif>
                         <div class="form-group">
                             {!! Form::label('assigned_to_users', __('lang_v1.assigned_to') . ':') !!}
-                            {!! Form::select('assigned_to_users[]', $users, $assigned_to_users ?? [], ['class' => 'form-control select2 w-100', 'id' => 'assigned_to_users', 'multiple', 'style' => 'width: 100%;']) !!}
+                            <div class="input-group flex-nowrap">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                                {!! Form::select('assigned_to_users', $users, $assigned_to_users ?? [], ['class' => 'form-control', 'id' => 'assigned_to_users', 'placeholder' => __('messages.please_select')]) !!}
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -681,31 +686,30 @@
         if ($.fn.select2) {
             var $modal = $form.closest('.modal');
 
-            $form.find('.select2').each(function () {
-                var $select = $(this);
-
-                if ($select.hasClass('select2-hidden-accessible')) {
-                    $select.select2('destroy');
+            function initSelect2($element) {
+                if ($element.hasClass('select2-hidden-accessible')) {
+                    $element.select2('destroy');
                 }
-
-                $select.select2({
+                $element.select2({
                     dropdownParent: $modal,
                     width: '100%',
-                    closeOnSelect: !$select.prop('multiple'),
-                });
-            });
-
-            var $assignedToUsers = $form.find('#assigned_to_users');
-            if ($assignedToUsers.length) {
-                if ($assignedToUsers.hasClass('select2-hidden-accessible')) {
-                    $assignedToUsers.select2('destroy');
-                }
-                $assignedToUsers.select2({
-                    dropdownParent: $modal,
-                    width: '100%',
-                    closeOnSelect: false,
+                    closeOnSelect: !$element.prop('multiple'),
                 });
             }
+
+            $form.find('.select2').each(function () {
+                var $select = $(this);
+                if ($select.is(':visible')) {
+                    initSelect2($select);
+                }
+            });
+
+            $form.find('#contact_type').on('change.vihoSelect2Init', function () {
+                var $userId = $form.find('#user_id');
+                if ($userId.length && $userId.is(':visible') && !$userId.hasClass('select2-hidden-accessible')) {
+                    initSelect2($userId);
+                }
+            });
         }
 
         $form.find('.contact-more-btn')
@@ -745,5 +749,26 @@
 
     #contact_edit_form .contact_assign_div .select2-container {
         width: 100% !important;
+    }
+
+    #contact_edit_form .contact_assign_div .input-group.flex-nowrap {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    #contact_edit_form .contact_assign_div .input-group.flex-nowrap .select2-container {
+        flex: 1 1 auto;
+        width: 1% !important;
+        min-width: 0;
+    }
+
+    #contact_edit_form .contact_assign_div .select2-container .select2-selection {
+        display: block;
+        width: 100%;
+    }
+
+    #contact_edit_form .contact_assign_div .select2-container--default .select2-selection--multiple {
+        width: 100%;
+        min-height: 38px;
     }
 </style>
