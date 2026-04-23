@@ -1,3 +1,39 @@
+    <style>
+      .select2-container--default .select2-search--dropdown .select2-search__field {
+        background-color: white !important;
+        border: 1px solid #ced4da !important;
+      }
+      .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #3e5fce !important;
+      }
+      .input-group .input-group-btn .add_new_customer {
+        height: 100%;
+        border: 1px solid #ced4da;
+        border-left: none;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        min-height: 38px;
+        background-color: white !important;
+      }
+      .input-group .select2-container--default .select2-selection--single {
+        height: 100%;
+        min-height: 38px;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        background-color: white !important;
+      }
+      .select2-dropdown {
+        background-color: white !important;
+      }
+      .input-group-btn {
+        display: flex;
+        align-items: stretch;
+      }
+    </style>
     <section class="content no-print">
       <input type="hidden" id="amount_rounding_method" value="{{ $pos_settings['amount_rounding_method'] ?? '' }}">
       @if (!empty($pos_settings['allow_overselling']))
@@ -58,9 +94,9 @@
 
           @if (!empty($price_groups))
           @if (count($price_groups) > 1)
-          <div class="col-sm-4">
+          <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="form-group">
-              <div class="input-group">
+              <div class="input-group flex-nowrap">
                 <span class="input-group-addon d-flex align-items-center justify-content-center">
                   <i class="fas fa-money-bill"></i>
                 </span>
@@ -76,6 +112,7 @@
                 {!! Form::select('price_group', $price_groups, $selected_price_group, [
                 'class' => 'form-control select2',
                 'id' => 'price_group',
+                'style' => 'width: 100%;',
                 ]) !!}
                 <span class="input-group-addon">
                   @show_tooltip(__('lang_v1.price_group_help_text'))
@@ -95,8 +132,9 @@
             {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
             @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-            <div class="col-sm-12 col-md-6 col-xl-4">
+            <div class="col-sm-12 col-md-6 col-xl-3">
               <div class="form-group">
+                {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
                 <div class="input-group flex-nowrap">
                   <span class="input-group-addon d-flex align-items-center justify-content-center">
                     <i class="fa fa-external-link-square text-primary service_modal_btn"></i>
@@ -107,8 +145,6 @@
                   'style' => 'width: 100%;',
                   'placeholder' => __('lang_v1.select_types_of_service'),
                   ]) !!}
-
-                  {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
 
                   <span class="input-group-addon d-flex align-items-center justify-content-center">
                     @show_tooltip(__('lang_v1.types_of_service_help'))
@@ -136,38 +172,37 @@
             </div>
             @endif
           </div>
-          <div class="clearfix"></div>
-          <div class="@if (!empty($commission_agent)) @else col-sm-12 col-md-6 col-xl-4 @endif">
+          <div class="row justify-content-between">
+            <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="form-group">
               {!! Form::label('contact_id', __('contact.customer') . ':*') !!}
-              <div class="input-group flex-nowrap row">
-                <span class="col-1 input-group-addon d-flex align-items-center justify-content-center">
+              <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] }}">
+              <input type="hidden" id="default_customer_name" value="{{ $walk_in_customer['name'] }}">
+              <input type="hidden" id="default_customer_balance" value="{{ $walk_in_customer['balance'] ?? '' }}">
+              <input type="hidden" id="default_customer_address"
+                value="{{ $walk_in_customer['shipping_address'] ?? '' }}">
+              @if (
+              !empty($walk_in_customer['price_calculation_type']) &&
+              $walk_in_customer['price_calculation_type'] == 'selling_price_group')
+              <input type="hidden" id="default_selling_price_group"
+                value="{{ $walk_in_customer['selling_price_group_id'] ?? '' }}">
+              @endif
+              <div class="input-group flex-nowrap">
+                <span class="input-group-addon d-flex align-items-center justify-content-center">
                   <i class="fa fa-user"></i>
                 </span>
-                <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] }}">
-                <input type="hidden" id="default_customer_name" value="{{ $walk_in_customer['name'] }}">
-                <input type="hidden" id="default_customer_balance" value="{{ $walk_in_customer['balance'] ?? '' }}">
-                <input type="hidden" id="default_customer_address"
-                  value="{{ $walk_in_customer['shipping_address'] ?? '' }}">
-                @if (
-                !empty($walk_in_customer['price_calculation_type']) &&
-                $walk_in_customer['price_calculation_type'] == 'selling_price_group')
-                <input type="hidden" id="default_selling_price_group"
-                  value="{{ $walk_in_customer['selling_price_group_id'] ?? '' }}">
-                @endif
-                  <div class='col-9' style='padding: 0;'>
-                    {!! Form::select('contact_id', [], null, [
-                    'class' => 'form-control mousetrap',
-                    'id' => 'customer_id',
-                    'placeholder' => 'Enter Customer name / phone',
-                    'required',
-                    ]) !!}
-                  </div>
-                  <span class="input-group-btn col-2 d-flex align-items-center" style='padding-left: 0;'>
-                    <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" style='border: 1px solid lightgray;' data-name=""><i
-                        class="fa fa-plus-circle text-primary fa-lg"></i>
-                    </button>
-                  </span>
+                {!! Form::select('contact_id', [], null, [
+                'class' => 'form-control mousetrap',
+                'id' => 'customer_id',
+                'placeholder' => 'Enter Customer name / phone',
+                'required',
+                'style' => 'width: 100%;',
+                ]) !!}
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""><i
+                      class="fa fa-plus-circle text-primary fa-lg"></i>
+                  </button>
+                </span>
               </div>
               <small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong>
                 <span></span></small>
@@ -191,7 +226,7 @@
             </small>
           </div>
 
-          <div class="col-sm-12 col-md-6 col-xl-4">
+          <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="form-group">
               <div class="multi-input row">
                 @php
@@ -229,7 +264,7 @@
           @php
           $is_commission_agent_required = !empty($pos_settings['is_commission_agent_required']);
           @endphp
-          <div class="col-sm-3">
+          <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="form-group">
               {!! Form::label('commission_agent', __('lang_v1.commission_agent') . ':') !!}
               {!! Form::select('commission_agent', $commission_agent, null, [
@@ -240,7 +275,7 @@
             </div>
           </div>
           @endif
-          <div class="@if (!empty($commission_agent)) @else col-sm-12 col-md-6 col-xl-4 @endif">
+          <div class="col-sm-12 col-md-6 col-xl-3">
             <div class="form-group">
               {!! Form::label('transaction_date', __('sale.sale_date') . ':*') !!}
               <div class="input-group">
@@ -252,6 +287,8 @@
               </div>
             </div>
           </div>
+          </div>
+          <div class="row">
           @if (!empty($status))
           <br>
           <input type="hidden" name="status" id="status" value="{{ $status }}">
@@ -260,7 +297,7 @@
           <input type="hidden" id="disable_qty_alert">
           @endif
           @else
-          <div class="@if (!empty($commission_agent)) col-sm-3 @else col-sm-4 @endif">
+          <div class="col-sm-12 col-md-6 col-xl-4">
             <div class="form-group">
               {!! Form::label('status', __('sale.status') . ':*') !!}
               {!! Form::select('status', $statuses, null, [
@@ -297,6 +334,7 @@
             </div>
           </div>
           @endcan
+        </div>
 
           @php
           $custom_field_1_label = !empty($custom_labels['sell']['custom_field_1'])
@@ -941,7 +979,7 @@
           <div class="clearfix"></div>
           <div class="col-12 text-center">
             <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-sm text-white"
-              id="toggle_additional_expense"> <i class="fas fa-plus"></i> @lang('lang_v1.add_additional_expenses') <i
+              id="toggle_additional_expense" style="background-color: #24695C !important; border-color: #24695C !important;"> <i class="fas fa-plus"></i> @lang('lang_v1.add_additional_expenses') <i
                 class="fas fa-chevron-down"></i></button>
           </div>
           <div class="col-md-8" id="additional_expenses_div" style="display: none;">
@@ -1212,9 +1250,9 @@
           {!! Form::hidden('is_save_and_print', 0, ['id' => 'is_save_and_print']) !!}
           <div class="col-sm-12 text-center tw-mt-4">
             <button type="button" id="submit-sell"
-              class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-md text-white">@lang('messages.save')</button>
+              class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-md text-white" style="background-color: #24695C !important; border-color: #24695C !important;">@lang('messages.save')</button>
             <button type="button" id="save-and-print"
-              class="tw-dw-btn tw-dw-btn-success tw-dw-btn-md text-white">@lang('lang_v1.save_and_print')</button>
+              class="tw-dw-btn tw-dw-btn-success tw-dw-btn-md text-white" style="background-color: #24695C !important; border-color: #24695C !important;">@lang('lang_v1.save_and_print')</button>
           </div>
         </div>
 
@@ -1226,7 +1264,7 @@
     </section>
 
     <div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-      @include('contact.create', ['quick_add' => true])
+      @include('templates.viho.contact.create', ['quick_add' => true])
     </div>
     <!-- /.content -->
     <div class="modal fade register_details_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">

@@ -96,6 +96,9 @@
         @if (isMobile())
             <input type="hidden" id="__is_mobile">
         @endif
+        @if($is_viho_request)
+            <input type="hidden" id="__is_viho_template" value="true">
+        @endif
         @if (session('status'))
             <input type="hidden" id="status_span" data-status="{{ session('status.success') }}"
                 data-msg="{{ session('status.msg') }}">
