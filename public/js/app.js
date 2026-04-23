@@ -1948,6 +1948,24 @@ $(document).ready(function () {
         updateProfitLoss(start, end, location_id, $('#todays_profit'));
     });
 
+    // Open the dedicated sell print page for modal actions so printing
+    // doesn't depend on the surrounding page shell/styles.
+    $(document).on('click', 'a.print-invoice-window', function (e) {
+        e.preventDefault();
+
+        if (typeof window.template === 'undefined' || window.template !== 'viho') {
+            return;
+        }
+
+        var href = $(this).data('href');
+        if (!href) {
+            return;
+        }
+
+        var separator = href.indexOf('?') === -1 ? '?' : '&';
+        window.open(href + separator + 'print_on_load=1', '_blank');
+    });
+
     //Used for Purchase & Sell invoice.
     $(document).on('click', 'a.print-invoice', function (e) {
         e.preventDefault();

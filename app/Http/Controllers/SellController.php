@@ -47,6 +47,16 @@ class SellController extends Controller
     {
         return 'templates.viho.sell.' . $view;
     }
+
+    /**
+     * Get the correct show URL for sell details based on the active template.
+     */
+    protected function sellShowUrl($id)
+    {
+        return $this->isAiTemplateRequest()
+            ? route('ai-template.sells.show', [$id])
+            : action([\App\Http\Controllers\SellController::class, 'show'], [$id]);
+    }
     /**
      * All Utils instance.
      */
@@ -275,7 +285,7 @@ class SellController extends Controller
                                     <ul class="dropdown-menu dropdown-menu-left" role="menu">';
 
                         if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view') || auth()->user()->can('view_own_sell_only')) {
-                            $html .= '<li><a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('messages.view').'</a></li>';
+                            $html .= '<li><a href="#" data-href="'.$this->sellShowUrl($row->id).'" class="btn-modal" data-container=".view_modal"><i class="fas fa-eye" aria-hidden="true"></i> '.__('messages.view').'</a></li>';
                         }
                         if (! $only_shipments) {
                             if ($row->is_direct_sale == 0) {
@@ -548,7 +558,7 @@ class SellController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         if (auth()->user()->can('sell.view') || auth()->user()->can('view_own_sell_only')) {
-                            return  action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
+                            return $this->sellShowUrl($row->id);
                         } else {
                             return '';
                         }
@@ -830,7 +840,7 @@ class SellController extends Controller
         $status_color_in_activity = Transaction::sales_order_statuses();
         $sales_orders = $sell->salesOrders();
 
-        return view('sale_pos.show')
+        return view($this->isAiTemplateRequest() ? 'templates.viho.sale_pos.show' : 'sale_pos.show')
             ->with(compact(
                 'taxes',
                 'sell',
@@ -1320,7 +1330,7 @@ class SellController extends Controller
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li>
-                                    <a href="#" data-href="'.action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]).'" class="btn-modal" data-container=".view_modal">
+                                    <a href="#" data-href="'.$this->sellShowUrl($row->id).'" class="btn-modal" data-container=".view_modal">
                                         <i class="fas fa-eye" aria-hidden="true"></i>'.__('messages.view').'
                                     </a>
                                     </li>';
@@ -1439,7 +1449,7 @@ class SellController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         if (auth()->user()->can('sell.view')) {
-                            return  action([\App\Http\Controllers\SellController::class, 'show'], [$row->id]);
+                            return $this->sellShowUrl($row->id);
                         } else {
                             return '';
                         }

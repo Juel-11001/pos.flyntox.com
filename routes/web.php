@@ -401,6 +401,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('sells/drafts', [SellController::class, 'getDrafts'])->name('sells.drafts');
         Route::get('sells/quotations', [SellController::class, 'getQuotations'])->name('sells.quotations');
         Route::get('shipments', [SellController::class, 'shipments'])->name('shipments');
+        Route::get('sells/{id}', [SellController::class, 'show'])->name('sells.show');
         Route::resource('sells', SellController::class)->except(['show']);
 
         // POS (Viho)
