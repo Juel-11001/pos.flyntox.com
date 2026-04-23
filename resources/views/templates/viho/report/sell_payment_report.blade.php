@@ -19,7 +19,7 @@
           <div class="form-group">
             {!! Form::label('customer_id', __('contact.customer') . ':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
+              <span class="input-group-addon bg-primary">
                 <i class="fa fa-user"></i>
               </span>
               {!! Form::select('customer_id', $customers, null, ['class' => 'form-control select2', 'style' =>
@@ -31,7 +31,7 @@
           <div class="form-group">
             {!! Form::label('location_id', __('purchase.business_location').':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
+              <span class="input-group-addon bg-primary">
                 <i class="fa fa-map-marker"></i>
               </span>
               {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'style' =>
@@ -43,8 +43,8 @@
           <div class="form-group">
             {!! Form::label('payment_types', __('lang_v1.payment_method').':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
-                <i class="fas fa-money-bill-alt"></i>
+              <span class="input-group-addon bg-primary">
+                <i class="fas fa-money-bill"></i>
               </span>
               {!! Form::select('payment_types', $payment_types, null, ['class' => 'form-control select2', 'placeholder'
               =>
@@ -56,7 +56,7 @@
           <div class="form-group">
             {!! Form::label('customer_group_filter', __('lang_v1.customer_group').':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
+              <span class="input-group-addon bg-primary">
                 <i class="fa fa-users"></i>
               </span>
               {!! Form::select('customer_group_filter', $customer_groups, null, ['class' => 'form-control select2',

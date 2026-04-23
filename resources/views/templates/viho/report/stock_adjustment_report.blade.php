@@ -14,7 +14,7 @@
   <div class="row">
     <div class="col-md-3 col-md-offset-7 col-xs-6">
       <div class="input-group flex-nowrap">
-        <span class="input-group-addon bg-light-blue"><i class="fa fa-map-marker"></i></span>
+        <span class="input-group-addon bg-primary"><i class="fa fa-map-marker"></i></span>
         <select class="form-control select2" id="stock_adjustment_location_filter">
           @foreach($business_locations as $key => $value)
           <option value="{{ $key }}">{{ $value }}</option>
@@ -25,7 +25,7 @@
     <div class="col-md-2 col-xs-6">
       <div class="form-group pull-right">
         <div class="input-group flex-nowrap">
-          <button type="button" class="tw-dw-btn tw-dw-btn-primary text-white tw-dw-btn-sm"
+          <button type="button" class="tw-dw-btn  btn-primary text-white tw-dw-btn-sm"
             id="stock_adjustment_date_filter">
             <span>
               <i class="fa fa-calendar"></i> {{ __('messages.filter_by_date') }}

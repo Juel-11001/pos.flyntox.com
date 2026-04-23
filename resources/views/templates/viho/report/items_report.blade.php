@@ -18,7 +18,7 @@
           <div class="form-group ">
             {!! Form::label('ir_supplier_id', __('purchase.supplier') . ':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
+              <span class="input-group-addon bg-primary">
                 <i class="fa fa-user"></i>
               </span>
               {!! Form::select('ir_supplier_id', $suppliers, null, ['class' => 'form-control select2', 'style' =>
@@ -33,11 +33,19 @@
             => 'form-control', 'readonly']); !!}
           </div>
         </div>
+       
         <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
+          <div class="form-group">
+            {!! Form::label('ir_sale_date_filter', __('lang_v1.sell_date') . ':') !!}
+            {!! Form::text('ir_sale_date_filter', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
+            'form-control', 'readonly']); !!}
+          </div>
+        </div>
+         <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
           <div class="form-group">
             {!! Form::label('ir_customer_id', __('contact.customer') . ':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
+              <span class="input-group-addon bg-primary">
                 <i class="fa fa-user"></i>
               </span>
               {!! Form::select('ir_customer_id', $customers, null, ['class' => 'form-control select2', 'style' =>
@@ -47,16 +55,9 @@
         </div>
         <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
           <div class="form-group">
-            {!! Form::label('ir_sale_date_filter', __('lang_v1.sell_date') . ':') !!}
-            {!! Form::text('ir_sale_date_filter', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
-            'form-control', 'readonly']); !!}
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
-          <div class="form-group">
             {!! Form::label('ir_location_id', __('purchase.business_location').':') !!}
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon">
+              <span class="input-group-addon bg-primary">
                 <i class="fa fa-map-marker"></i>
               </span>
               {!! Form::select('ir_location_id', $business_locations, null, ['class' => 'form-control select2', 'style'
@@ -131,27 +132,45 @@
 
 @section('javascript')
 <script>
-  // Clear any existing DataTable instance completely
   (function() {
-    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#items_report_table')) {
-      $('#items_report_table').DataTable().clear().destroy();
+    if (window.__itemsReportDtGuardApplied) {
+      return;
     }
-    $('#items_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-    $('#items_report_table').removeAttr('style').removeAttr('width');
+    window.__itemsReportDtGuardApplied = true;
+
+    function patchDataTableGuard() {
+      if (typeof window.jQuery === 'undefined' || !jQuery.fn || !jQuery.fn.DataTable || !jQuery.fn.dataTable) {
+        return false;
+      }
+
+      var $ = window.jQuery;
+      var originalDataTable = $.fn.dataTable;
+      var originalDataTableApi = $.fn.DataTable;
+
+      $.fn.dataTable = function(options) {
+        if (this.attr('id') === 'items_report_table' && options && $.fn.dataTable.isDataTable(this)) {
+          this.DataTable().clear().destroy();
+        }
+
+        return originalDataTable.apply(this, arguments);
+      };
+
+      $.fn.DataTable = function(options) {
+        if (this.attr('id') === 'items_report_table' && options && $.fn.dataTable.isDataTable(this)) {
+          this.DataTable().clear().destroy();
+        }
+
+        return originalDataTableApi.apply(this, arguments);
+      };
+
+      $.fn.dataTable.isDataTable = originalDataTable.isDataTable;
+      return true;
+    }
+
+    if (!patchDataTableGuard()) {
+      document.addEventListener('DOMContentLoaded', patchDataTableGuard);
+    }
   })();
 </script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
-<script>
-  $(document).ready(function() {
-    var checkAndFix = function() {
-      if ($.fn.DataTable.isDataTable('#items_report_table')) {
-        $('#items_report_table').DataTable().clear().destroy();
-        $('#items_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-        $('#items_report_table').removeAttr('style').removeAttr('width');
-      }
-    };
-    checkAndFix();
-    setTimeout(checkAndFix, 500);
-  });
-</script>
 @endsection

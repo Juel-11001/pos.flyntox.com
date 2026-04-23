@@ -49,13 +49,3 @@
 </section>
 <!-- /.content -->
 @stop
-@section('javascript')
-<script type="text/javascript">
-    $('textarea.ckeditor').each( function(){
-        var editor_id = $(this).attr('id');
-        tinymce.init({
-            selector: 'textarea#'+editor_id,
-        });
-    });
-</script>
-@endsection

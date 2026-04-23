@@ -54,7 +54,7 @@
                         {!! Form::label($key . '_email_body',
                         __('lang_v1.email_body').':') !!}
                         {!! Form::textarea('template_data[' . $key . '][email_body]', 
-                        $value['email_body'], ['class' => 'form-control ckeditor'
+                        $value['email_body'], ['class' => 'form-control'
                         , 'placeholder' => __('lang_v1.email_body'), 'id' => $key . '_email_body', 'rows' => 6]); !!}
                     </div>
                 </div>

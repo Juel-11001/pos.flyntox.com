@@ -60,6 +60,16 @@
     margin-bottom: 12px !important;
   }
 
+  .print-meta {
+    display: block !important;
+    margin-bottom: 12px !important;
+    font-size: 13px !important;
+  }
+
+  .print-meta div {
+    margin-bottom: 4px !important;
+  }
+
   .nav-tabs-custom .tab-content > .tab-pane {
     display: none !important;
   }
@@ -180,7 +190,7 @@
 </div>
 <div class="row no-print">
   <div class="col-sm-12">
-    <button class="btn btn-primary pull-right mb-2" aria-label="Print" onclick="window.print();">
+    <button class="btn btn-primary pull-right mb-2" aria-label="Print" id="print_tax_report">
       <i class="fa fa-print"></i> @lang('messages.print')
     </button>
   </div>
@@ -329,6 +339,59 @@
 @section('javascript')
 <script type="text/javascript">
     $(document).ready(function() {
+        $(document).on('click', '#print_tax_report', function() {
+            var iframe_id = 'tax_report_print_iframe';
+            var iframe = document.getElementById(iframe_id);
+            var business_name = @json(session()->get('business.name'));
+            var location_name = $('#tax_report_location_id option:selected').text() || business_name;
+            var contact_name = $('#tax_report_contact_id option:selected').text() || '{{ __("lang_v1.all") }}';
+            var date_range = $('#tax_report_date_range').val() || '{{ __("messages.all") }}';
+
+            if (iframe) {
+                iframe.parentNode.removeChild(iframe);
+            }
+
+            iframe = document.createElement('iframe');
+            iframe.id = iframe_id;
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            iframe.style.visibility = 'hidden';
+            document.body.appendChild(iframe);
+
+            var active_tab_selector = '.nav-tabs-custom .tab-content > .tab-pane.active';
+            var active_tab = document.querySelector(active_tab_selector);
+            var printable_html =
+                '<div class="print_section">' + document.querySelector('.print_section').innerHTML + '</div>' +
+                '<div class="print-meta">' +
+                '<div><strong>{{ __("purchase.business_location") }}:</strong> ' + location_name + '</div>' +
+                '<div><strong>{{ __("report.contact") }}:</strong> ' + contact_name + '</div>' +
+                '<div><strong>{{ __("report.date_range") }}:</strong> ' + date_range + '</div>' +
+                '</div>' +
+                '<div class="nav-tabs-custom"><div class="tab-content">' +
+                (active_tab ? active_tab.outerHTML : '') +
+                '</div></div>';
+
+            var iframe_doc = iframe.contentWindow.document;
+            iframe_doc.open();
+            iframe_doc.write(
+                '<!DOCTYPE html><html><head><base href="' + window.location.origin + '">' +
+                document.head.innerHTML +
+                '</head><body class="viho-template-active">' + printable_html + '</body></html>'
+            );
+            iframe_doc.close();
+
+            $(iframe_doc).find('.dataTables_length, .dataTables_filter, .dataTables_paginate, .dataTables_info, .dt-buttons, .buttons-html5, .buttons-print').remove();
+
+            setTimeout(function() {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            }, 300);
+        });
+
         $('#tax_report_date_range').daterangepicker(
             dateRangeSettings,
             function(start, end) {

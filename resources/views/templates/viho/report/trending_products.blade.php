@@ -10,6 +10,11 @@
   width: 100%;
 }
 
+.print_section,
+.print-meta {
+  display: none;
+}
+
 canvas {
   max-width: 100%;
 }
@@ -51,10 +56,44 @@ canvas {
     padding: 0 !important;
   }
 
+  .print_section,
+  .print-meta {
+    display: block !important;
+  }
+
+  .print_section {
+    text-align: center !important;
+    margin-bottom: 18px !important;
+  }
+
+  .row,
+  [class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    float: none !important;
+  }
+
   .chart-container {
+    display: block !important;
+    width: 100% !important;
     height: auto !important;
     min-height: 300px !important;
+    margin: 0 !important;
+    padding: 0 !important;
     page-break-inside: avoid !important;
+  }
+
+  .chart-container > div,
+  .chart-container canvas {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 !important;
   }
 }
 </style>
@@ -73,8 +112,11 @@ canvas {
 
 <div class="row">
   <div class="col-sm-12">
-    <div class="card">
+      <div class="card">
       <div class="card-body">
+        <div class="print_section">
+          <h3>{{ session()->get('business.name') }} - @lang('report.trending_products')</h3>
+        </div>
         <div class="row no-print">
           <div class="col-md-12">
             @component('components.filters', ['title' => __('report.filters')])
@@ -158,7 +200,7 @@ canvas {
         </div>
         <div class="row no-print">
           <div class="col-sm-12">
-            <button type="button" class="btn btn-primary pull-right" aria-label="Print" onclick="window.print();">
+            <button type="button" class="btn btn-primary pull-right" aria-label="Print" id="print_trending_products_report">
               <i class="fa fa-print"></i> @lang('messages.print')
             </button>
           </div>
@@ -172,4 +214,85 @@ canvas {
 @section('javascript')
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 {!! $chart->script() !!}
+<script type="text/javascript">
+  $(document).ready(function() {
+    function getPrintableChartMarkup() {
+      var container = document.querySelector('.chart-container');
+
+      if (!container) {
+        return '';
+      }
+
+      var svg = container.querySelector('svg');
+      if (svg) {
+        return '<div class="print-chart-svg">' + svg.outerHTML + '</div>';
+      }
+
+      var canvas = container.querySelector('canvas');
+      if (canvas) {
+        return '<img src="' + canvas.toDataURL('image/png') + '" alt="Trending products chart">';
+      }
+
+      var image = container.querySelector('img');
+      if (image) {
+        return image.outerHTML;
+      }
+
+      var chartHtml = container.innerHTML;
+      return chartHtml ? '<div class="print-chart-html">' + chartHtml + '</div>' : '';
+    }
+    $(document).on('click', '#print_trending_products_report', function() {
+      var iframe_id = 'trending_products_print_iframe';
+      var iframe = document.getElementById(iframe_id);
+      var chart_markup = getPrintableChartMarkup();
+      var title_html = document.querySelector('.print_section') ? document.querySelector('.print_section').innerHTML : '';
+
+      if (iframe) {
+        iframe.parentNode.removeChild(iframe);
+      }
+
+      iframe = document.createElement('iframe');
+      iframe.id = iframe_id;
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      iframe.style.visibility = 'hidden';
+      document.body.appendChild(iframe);
+
+      var printable_html =
+        '<div class="print-wrap">' +
+          '<div class="print-title">' + title_html + '</div>' +
+          '<div class="print-chart">' +
+            chart_markup +
+          '</div>' +
+        '</div>';
+
+      var iframe_doc = iframe.contentWindow.document;
+      iframe_doc.open();
+      iframe_doc.write(
+        '<!DOCTYPE html><html><head><title>{{ __("report.trending_products") }}</title>' +
+        '<style>' +
+        'html,body{margin:0;padding:0;background:#fff;font-family:Arial,sans-serif;color:#111;}' +
+        '.print-wrap{padding:24px 28px;}' +
+        '.print-title{text-align:center;margin-bottom:10px;}' +
+        '.print-title h3{margin:0;font-size:20px;font-weight:700;}' +
+        '.print-chart{width:100%;text-align:left;}' +
+        '.print-chart img{display:block;width:100%;max-width:100%;height:auto;}' +
+        '.print-chart svg{display:block;width:100% !important;max-width:100%;height:auto !important;overflow:visible;}' +
+        '.print-chart .highcharts-container{width:100% !important;max-width:100% !important;}' +
+        '</style></head><body>' + printable_html + '</body></html>'
+      );
+      iframe_doc.close();
+
+      setTimeout(function() {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 300);
+    });
+
+  });
+</script>
 @endsection

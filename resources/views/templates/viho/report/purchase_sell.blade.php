@@ -44,7 +44,7 @@
         <div class="row no-print">
           <div class="col-sm-12 col-md-6">
             <div class="input-group flex-nowrap">
-              <span class="input-group-addon bg-light-blue"><i class="fa fa-map-marker"></i></span>
+              <span class="input-group-addon bg-primary"><i class="fa fa-map-marker"></i></span>
               <select class="form-control select2" id="purchase_sell_location_filter">
                 @foreach($business_locations as $key => $value)
                 <option value="{{ $key }}">{{ $value }}</option>
@@ -56,7 +56,8 @@
             <div class="form-group pull-right">
               <div class="input-group">
                 <button type="button" class="btn btn-primary btn-sm" id="purchase_sell_date_filter">
-                  <i class="fa fa-calendar"></i> {{ __('messages.filter_by_date') }}
+                  <span><i class="fa fa-calendar"></i> {{ __('messages.filter_by_date') }}</span>
+                  <i class="fa fa-caret-down"></i>
                 </button>
               </div>
             </div>
@@ -140,4 +141,8 @@
     </div>
   </div>
 </div>
+@endsection
+
+@section('javascript')
+<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 @endsection

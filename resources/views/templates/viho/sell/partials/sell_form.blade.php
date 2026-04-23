@@ -1,10 +1,47 @@
     <style>
+      #price_group + .select2-container {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      #price_group + .select2-container .select2-selection--single {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        padding-right: 28px;
+      }
+      #price_group + .select2-container .select2-selection__rendered {
+        display: block;
+        width: 100%;
+        padding-left: 12px !important;
+        padding-right: 8px !important;
+        line-height: 36px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #price_group + .select2-container .select2-selection__arrow {
+        right: 8px;
+        height: 100%;
+      }
+      .viho-sell-top-controls {
+        align-items: end;
+      }
+      .viho-sell-top-controls .checkbox {
+        min-height: 38px;
+        margin-top: 0;
+        margin-bottom: 15px;
+        white-space: nowrap;
+      }
+      .viho-sell-top-controls .btn-link {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
       .select2-container--default .select2-search--dropdown .select2-search__field {
         background-color: white !important;
         border: 1px solid #ced4da !important;
       }
       .select2-container--default .select2-results__option--highlighted[aria-selected] {
-        background-color: #3e5fce !important;
+        background-color: #3e5fce;
       }
       .input-group .input-group-btn .add_new_customer {
         height: 100%;
@@ -92,10 +129,10 @@
           '',
           ]) !!}
 
-          <div class="row">
+          <div class="row viho-sell-top-controls">
             @if (!empty($price_groups))
               @if (count($price_groups) > 1)
-                <div class="col-sm-12 col-md-6 col-xl-3">
+                <div class="col-sm-12 col-md-6 col-xl-4">
                   <div class="form-group">
                     <div class="input-group flex-nowrap">
                       <span class="input-group-addon d-flex align-items-center justify-content-center">
@@ -132,7 +169,7 @@
             {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
             @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-              <div class="col-sm-12 col-md-6 col-xl-3">
+              <div class="col-sm-12 col-md-6 col-xl-4">
                 <div class="form-group">
                   {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
                   <div class="input-group flex-nowrap">
@@ -158,7 +195,7 @@
             @endif
 
             @if (in_array('subscription', $enabled_modules))
-              <div class="col-sm-12 col-md-6 col-xl-4">
+              <div class="col-sm-12 col-md-12 col-xl-4">
                 <div class="checkbox d-flex align-items-center">
                   <label>
                     {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
