@@ -284,7 +284,7 @@ $api_key = env('GOOGLE_MAP_API_KEY');
   </div>
 </div>
 
-<div class="modal fade contact_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+<div class="modal fade contact_modal" role="dialog" aria-labelledby="gridSystemModalLabel">
 </div>
 <div class="modal fade modal-bookmark viho-modal pay_contact_due_modal" tabindex="-1" role="dialog" aria-labelledby="payContactDueModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">

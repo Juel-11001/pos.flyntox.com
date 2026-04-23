@@ -785,4 +785,8 @@
     margin-top: 0;
     height: 32px;
   }
+
+  .select2-container--open {
+    z-index: 9999999 !important;
+  }
 </style>
