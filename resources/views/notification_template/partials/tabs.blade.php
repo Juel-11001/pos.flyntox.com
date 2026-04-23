@@ -11,6 +11,9 @@
     <div class="tab-content">
         @foreach($templates as $key => $value)
             <div class="tab-pane @if($loop->index == 0) active @endif" id="cn_{{$key}}">
+                @php
+                    $email_body = preg_replace('/\n{3,}/', "\n\n", trim(html_entity_decode(strip_tags(str_replace(['<br>', '<br/>', '<br />', '</p>'], "\n", $value['email_body'] ?? '')))));
+                @endphp
                 <div class="row">
                 <div class="col-md-12">
                     @if(!empty($value['extra_tags']))
@@ -54,7 +57,7 @@
                         {!! Form::label($key . '_email_body',
                         __('lang_v1.email_body').':') !!}
                         {!! Form::textarea('template_data[' . $key . '][email_body]', 
-                        $value['email_body'], ['class' => 'form-control ckeditor'
+                        $email_body, ['class' => 'form-control'
                         , 'placeholder' => __('lang_v1.email_body'), 'id' => $key . '_email_body', 'rows' => 6]); !!}
                     </div>
                 </div>

@@ -8,10 +8,23 @@
     <div class="modal-body">
       <div class="row">
         {!! Form::hidden('category_type', $category_type); !!}
+        @php
+          $name_label = 'Category Name';
+          $cat_code_enabled = isset($module_category_data['enable_taxonomy_code']) && !$module_category_data['enable_taxonomy_code'] ? false : true;
+          $cat_code_label = 'Category Code';
+          $category_code_help_text = !empty($module_category_data['taxonomy_code_help_text']) ? $module_category_data['taxonomy_code_help_text'] : __('lang_v1.category_code_help');
+        @endphp
         <div class="form-group col-sm-12">
-          {!! Form::label('name', __( 'category.category_name' ) . ':*') !!}
-          {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'category.category_name' )]); !!}
+          {!! Form::label('name', $name_label . ':*') !!}
+          {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => $name_label]); !!}
         </div>
+        @if($cat_code_enabled)
+        <div class="form-group col-sm-12">
+          {!! Form::label('short_code', $cat_code_label . ':') !!}
+          {!! Form::text('short_code', null, ['class' => 'form-control', 'placeholder' => $cat_code_label]); !!}
+          <p class="help-block">{!! $category_code_help_text !!}</p>
+        </div>
+        @endif
         <div class="form-group col-sm-12">
           {!! Form::label('description', __( 'lang_v1.description' ) . ':') !!}
           {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.description' ), 'rows' => 3]); !!}
@@ -19,13 +32,13 @@
         <div class="form-group col-sm-12">
             <div class="checkbox">
               <label>
-                 {!! Form::checkbox('add_as_sub_cat', 1, false, ['class' => 'toggler', 'data-toggle_id' => 'parent_cat_div']); !!} @lang( 'category.add_as_sub_category' )
+                 {!! Form::checkbox('add_as_sub_cat', 1, false, ['class' => 'toggler taxonomy-subcat-toggle', 'data-toggle_id' => 'parent_cat_div', 'id' => 'add_as_sub_cat']); !!} @lang( 'category.add_as_sub_category' )
               </label>
             </div>
         </div>
         <div class="form-group col-sm-12 hide" id="parent_cat_div">
           {!! Form::label('parent_id', __( 'category.select_parent_category' ) . ':*') !!}
-          {!! Form::select('parent_id', $parent_categories, null, ['class' => 'form-control select2', 'placeholder' => __( 'messages.please_select' ), 'required', 'style' => 'width: 100%;']); !!}
+          {!! Form::select('parent_id', $parent_categories, null, ['class' => 'form-control select2 taxonomy-parent-select', 'placeholder' => __( 'messages.please_select' ), 'id' => 'parent_id', 'style' => 'width: 100%;']); !!}
         </div>
       </div>
     </div>
@@ -36,25 +49,3 @@
     {!! Form::close() !!}
   </div>
 </div>
-
-<script>
-    if (typeof $ !== 'undefined') {
-        var parentSelectInitialized = false;
-
-        // Initialize select2 when parent category div is shown
-        $('input[name="add_as_sub_cat"]').on('change', function() {
-            if ($(this).is(':checked')) {
-                $('#parent_cat_div').removeClass('hide');
-                if (!parentSelectInitialized) {
-                    $('#parent_id').select2({
-                        width: '100%',
-                        dropdownParent: $('.modal-content')
-                    });
-                    parentSelectInitialized = true;
-                }
-            } else {
-                $('#parent_cat_div').addClass('hide');
-            }
-        });
-    }
-</script>

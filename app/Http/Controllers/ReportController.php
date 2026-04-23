@@ -143,6 +143,86 @@ class ReportController extends Controller
     }
 
     /**
+     * Render Profit & Loss in a dedicated print page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function printProfitLoss(Request $request)
+    {
+        if (! auth()->user()->can('profit_loss_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
+
+        $location_id = ! empty($request->input('location_id')) ? $request->input('location_id') : null;
+        $start_date = ! empty($request->input('start_date')) ? $request->input('start_date') : $fy['start'];
+        $end_date = ! empty($request->input('end_date')) ? $request->input('end_date') : $fy['end'];
+        $user_id = $request->input('user_id') ?? null;
+
+        $permitted_locations = auth()->user()->permitted_locations();
+        $data = $this->transactionUtil->getProfitLossDetails(
+            $business_id,
+            $location_id,
+            $start_date,
+            $end_date,
+            $user_id,
+            $permitted_locations
+        );
+
+        $stocks = [
+            'opening_stock_by_sp' => null,
+            'closing_stock_by_sp' => null,
+        ];
+
+        $day_before_start_date = \Carbon\Carbon::createFromFormat('Y-m-d', $start_date)
+            ->subDay()
+            ->format('Y-m-d');
+
+        $stocks['opening_stock_by_sp'] = $this->transactionUtil->getOpeningClosingStock(
+            $business_id,
+            $day_before_start_date,
+            $location_id,
+            true,
+            true,
+            $permitted_locations
+        );
+
+        $stocks['closing_stock_by_sp'] = $this->transactionUtil->getOpeningClosingStock(
+            $business_id,
+            $end_date,
+            $location_id,
+            false,
+            true,
+            $permitted_locations
+        );
+
+        $business = session()->get('business');
+        $business_name = $business->name ?? session()->get('business.name');
+        $location_name = __('report.all_locations');
+
+        if (! empty($location_id)) {
+            $location = BusinessLocation::where('business_id', $business_id)->find($location_id);
+            if (! empty($location)) {
+                $location_name = $location->name;
+            }
+        }
+
+        $title = $business_name . ' | ' . __('report.profit_loss');
+
+        return view('report.partials.profit_loss_print')->with(compact(
+            'data',
+            'stocks',
+            'title',
+            'business_name',
+            'location_name',
+            'start_date',
+            'end_date'
+        ));
+    }
+
+    /**
      * Shows product report of a business
      *
      * @return \Illuminate\Http\Response
@@ -385,6 +465,7 @@ class ReportController extends Controller
             $show_manufacturing_data = 0;
         }
         if ($request->ajax()) {
+            $is_ai_template = $this->isAiTemplateRequest();
             $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
                 'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', ]);
 
@@ -404,11 +485,14 @@ class ReportController extends Controller
             }
 
             $datatable = Datatables::of($products)
-                ->editColumn('stock', function ($row) {
+                ->editColumn('stock', function ($row) use ($is_ai_template) {
                     if ($row->enable_stock) {
                         $stock = $row->stock ? $row->stock : 0;
 
-                        return  '<span class="current_stock" data-is_quantity="true" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>'.' '.$row->unit;
+                        $stock_html = '<span class="current_stock" data-is_quantity="true" data-orig-value="'.(float) $stock.'" data-unit="'.$row->unit.'"> '.$this->transactionUtil->num_f($stock, false, null, true).'</span>';
+                        $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                        return $stock_html.' '.$unit_html;
                     } else {
                         return '--';
                     }
@@ -418,7 +502,14 @@ class ReportController extends Controller
 
                     return $name;
                 })
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use ($is_ai_template) {
+                    $history_url = action([\App\Http\Controllers\ProductController::class, 'productStockHistory'], [$row->product_id]).
+                    '?location_id='.$row->location_id.'&variation_id='.$row->variation_id;
+
+                    if ($is_ai_template) {
+                        return '<a class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-w-max viho-stock-action-link" href="'.$history_url.'"><i class="fas fa-history"></i> '.__('lang_v1.product_stock_history').'</a>';
+                    }
+
                     return '<a class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max " href="'.action([\App\Http\Controllers\ProductController::class, 'productStockHistory'], [$row->product_id]).
                     '?location_id='.$row->location_id.'&variation_id='.$row->variation_id.
                     '"><i class="fas fa-history"></i> '.__('lang_v1.product_stock_history').'</a>';
@@ -431,39 +522,56 @@ class ReportController extends Controller
 
                     return $variation;
                 })
-                ->editColumn('total_sold', function ($row) {
+                ->editColumn('total_sold', function ($row) use ($is_ai_template) {
                     $total_sold = 0;
                     if ($row->total_sold) {
                         $total_sold = (float) $row->total_sold;
                     }
 
-                    return '<span data-is_quantity="true" class="total_sold" data-orig-value="'.$total_sold.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_sold, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span data-is_quantity="true" class="total_sold" data-orig-value="'.$total_sold.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_sold, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 })
-                ->editColumn('total_transfered', function ($row) {
+                ->editColumn('total_transfered', function ($row) use ($is_ai_template) {
                     $total_transfered = 0;
                     if ($row->total_transfered) {
                         $total_transfered = (float) $row->total_transfered;
                     }
 
-                    return '<span class="total_transfered" data-is_quantity="true" data-orig-value="'.$total_transfered.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_transfered, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span class="total_transfered" data-is_quantity="true" data-orig-value="'.$total_transfered.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_transfered, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 })
 
-                ->editColumn('total_adjusted', function ($row) {
+                ->editColumn('total_adjusted', function ($row) use ($is_ai_template) {
                     $total_adjusted = 0;
                     if ($row->total_adjusted) {
                         $total_adjusted = (float) $row->total_adjusted;
                     }
 
-                    return '<span data-is_quantity="true" class="total_adjusted" data-orig-value="'.$total_adjusted.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_adjusted, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span data-is_quantity="true" class="total_adjusted" data-orig-value="'.$total_adjusted.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_adjusted, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 })
-                ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group) {
+                ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group, $is_ai_template) {
                     $html = '';
                     if (auth()->user()->can('access_default_selling_price')) {
-                        $html .= $this->transactionUtil->num_f($row->unit_price, true);
+                        if ($is_ai_template) {
+                            $html .= '<span class="viho-selling-price-text">'.$this->transactionUtil->num_f($row->unit_price, true).'</span>';
+                        } else {
+                            $html .= $this->transactionUtil->num_f($row->unit_price, true);
+                        }
                     }
 
                     if ($allowed_selling_price_group) {
-                        $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary tw-w-max btn-modal no-print" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                        if ($is_ai_template) {
+                            $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-w-max btn-modal no-print viho-group-price-link" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                        } else {
+                            $html .= ' <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary tw-w-max btn-modal no-print" data-container=".view_modal" data-href="'.action([\App\Http\Controllers\ProductController::class, 'viewGroupPrice'], [$row->product_id]).'">'.__('lang_v1.view_group_prices').'</button>';
+                        }
                     }
 
                     return $html;
@@ -505,13 +613,16 @@ class ReportController extends Controller
                 'potential_profit', 'action', ];
 
             if ($show_manufacturing_data) {
-                $datatable->editColumn('total_mfg_stock', function ($row) {
+                $datatable->editColumn('total_mfg_stock', function ($row) use ($is_ai_template) {
                     $total_mfg_stock = 0;
                     if ($row->total_mfg_stock) {
                         $total_mfg_stock = (float) $row->total_mfg_stock;
                     }
 
-                    return '<span data-is_quantity="true" class="total_mfg_stock"  data-orig-value="'.$total_mfg_stock.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_mfg_stock, false, null, true).'</span> '.$row->unit;
+                    $value_html = '<span data-is_quantity="true" class="total_mfg_stock"  data-orig-value="'.$total_mfg_stock.'" data-unit="'.$row->unit.'" >'.$this->transactionUtil->num_f($total_mfg_stock, false, null, true).'</span>';
+                    $unit_html = $is_ai_template ? '<span class="viho-stock-unit-text">'.e($row->unit).'</span>' : e($row->unit);
+
+                    return $value_html.' '.$unit_html;
                 });
                 $raw_columns[] = 'total_mfg_stock';
             }
@@ -1263,15 +1374,24 @@ class ReportController extends Controller
                 })
 
                 ->addColumn('action', function ($row) {
+                    $is_ai_template = $this->isAiTemplateRequest();
                     $html = '';
                     if (auth()->user()->can('view_cash_register')) {
                         $view_url = action([\App\Http\Controllers\CashRegisterController::class, 'show'], [$row->id]);
-                        $html .= '<button type="button" data-href="' . $view_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</button>';
+                        if ($is_ai_template) {
+                            $html .= '<button type="button" data-href="' . $view_url . '" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_register" title="' . __('messages.view') . '" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" aria-hidden="true" style="font-size: 13px;"></i></button>';
+                        } else {
+                            $html .= '<button type="button" data-href="' . $view_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-eye" aria-hidden="true"></i> ' . __('messages.view') . '</button>';
+                        }
                     }
 
                     if ($row->status != 'close' && auth()->user()->can('close_cash_register')) {
                         $close_url = action([\App\Http\Controllers\CashRegisterController::class, 'getCloseRegister'], [$row->id]);
-                        $html .= ' <button type="button" data-href="' . $close_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-window-close"></i> ' . __('messages.close') . '</button>';
+                        if ($is_ai_template) {
+                            $html .= '<button type="button" data-href="' . $close_url . '" class="btn btn-danger btn-xs d-inline-flex align-items-center justify-content-center btn-modal" data-container=".view_register" title="' . __('messages.close') . '" style="padding: 4px 10px; background-color: #dc3545; border-color: #dc3545; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-window-close" aria-hidden="true" style="font-size: 13px;"></i></button>';
+                        } else {
+                            $html .= ' <button type="button" data-href="' . $close_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error tw-w-max btn-modal" data-container=".view_register"><i class="fas fa-window-close"></i> ' . __('messages.close') . '</button>';
+                        }
                     }
 
                     return $html;
@@ -2499,6 +2619,12 @@ class ReportController extends Controller
 
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
+            $is_ai_template = $this->isAiTemplateRequest();
+            $action_html = $is_ai_template
+                ? '<button type="button" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}" title="@lang("messages.view")" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" style="font-size: 13px;"></i></button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="btn btn-info btn-xs d-inline-flex align-items-center justify-content-center" download="" title="@lang("purchase.download_document")" style="padding: 4px 10px; background-color: #0d6efd; border-color: #0d6efd; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-download" style="font-size: 13px;"></i></a>@endif'
+                : '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
+                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif';
+
             return Datatables::of($query)
                  ->editColumn('ref_no', function ($row) {
                      if (! empty($row->ref_no)) {
@@ -2531,8 +2657,7 @@ class ReportController extends Controller
                     return '<span class="paid-amount" data-orig-value="'.$row->amount.'">'.
                     $this->transactionUtil->num_f($row->amount, true).'</span>';
                 })
-                ->addColumn('action', '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
-                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
+                ->addColumn('action', $action_html)
                 ->rawColumns(['ref_no', 'amount', 'method', 'action', 'supplier'])
                 ->make(true);
         }
@@ -2665,6 +2790,12 @@ class ReportController extends Controller
                 $query->where('transaction_payments.method', $request->get('payment_types'));
             }
 
+            $is_ai_template = $this->isAiTemplateRequest();
+            $action_html = $is_ai_template
+                ? '<button type="button" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}" title="@lang("messages.view")" style="padding: 4px 10px; margin-right: 5px; background-color: #24695c; border-color: #24695c; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-eye" style="font-size: 13px;"></i></button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="btn btn-info btn-xs d-inline-flex align-items-center justify-content-center" download="" title="@lang("purchase.download_document")" style="padding: 4px 10px; background-color: #0d6efd; border-color: #0d6efd; color: #fff; min-width: 32px; min-height: 32px; border-radius: 4px;"><i class="fa fa-download" style="font-size: 13px;"></i></a>@endif'
+                : '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
+                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif';
+
             return Datatables::of($query)
                  ->editColumn('invoice_no', function ($row) {
                      if (! empty($row->transaction_id)) {
@@ -2702,8 +2833,7 @@ class ReportController extends Controller
                     return '<span class="paid-amount" data-orig-value="'.$amount.'" 
                     >'.$this->transactionUtil->num_f($amount, true).'</span>';
                 })
-                ->addColumn('action', '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_payment" data-href="{{ action([\App\Http\Controllers\TransactionPaymentController::class, \'viewPayment\'], [$DT_RowId]) }}">@lang("messages.view")
-                    </button> @if(!empty($document))<a href="{{asset("/uploads/documents/" . $document)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent" download=""><i class="fa fa-download"></i> @lang("purchase.download_document")</a>@endif')
+                ->addColumn('action', $action_html)
                 ->rawColumns(['invoice_no', 'amount', 'method', 'action', 'customer'])
                 ->make(true);
         }

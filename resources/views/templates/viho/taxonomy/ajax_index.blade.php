@@ -26,5 +26,3 @@
     </div>
 @endcan
 
-<div class="modal fade category_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
-</div>

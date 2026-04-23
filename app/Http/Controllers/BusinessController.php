@@ -47,6 +47,45 @@ class BusinessController extends Controller
     protected $layoutTemplates;
 
     /**
+     * Normalize business common settings into an array.
+     */
+    protected function normalizeCommonSettings($common_settings): array
+    {
+        if (is_string($common_settings)) {
+            $common_settings = json_decode($common_settings, true) ?? [];
+        } elseif (is_object($common_settings)) {
+            $common_settings = json_decode(json_encode($common_settings), true) ?? [];
+        }
+
+        return is_array($common_settings) ? $common_settings : [];
+    }
+
+    /**
+     * Build a redirect path after switching layout templates.
+     */
+    protected function getLayoutTemplateRedirectPath(string $template_key, ?string $current_path): string
+    {
+        $path = trim((string) $current_path, '/');
+
+        if ($path === '' || $path === 'home' || $path === 'ai-template' || $path === 'ai-template/home') {
+            return $template_key === 'viho' ? url('/ai-template/home') : url('/home');
+        }
+
+        if ($template_key === 'viho') {
+            if (strpos($path, 'ai-template/') === 0 || $path === 'ai-template') {
+                return url('/' . $path);
+            }
+
+            return url('/ai-template/' . $path);
+        }
+
+        $default_path = preg_replace('#^ai-template/?#', '', $path);
+        $default_path = trim((string) $default_path, '/');
+
+        return url('/' . ($default_path !== '' ? $default_path : 'home'));
+    }
+
+    /**
      * Check if the current request is for the AI (Viho) template
      */
     protected function isAiTemplateRequest()
@@ -363,7 +402,7 @@ class BusinessController extends Controller
 
         $custom_labels = ! empty($business->custom_labels) ? json_decode($business->custom_labels, true) : [];
 
-        $common_settings = ! empty($business->common_settings) ? $business->common_settings : [];
+        $common_settings = $this->normalizeCommonSettings($business->common_settings ?? []);
 
         $weighing_scale_setting = ! empty($business->weighing_scale_setting) ? $business->weighing_scale_setting : [];
 
@@ -561,6 +600,12 @@ class BusinessController extends Controller
                 return response()->json($notAllowed);
             }
 
+            if (! $request->filled('template_key') && $request->filled('template')) {
+                $request->merge([
+                    'template_key' => $request->input('template'),
+                ]);
+            }
+
             $template_keys = array_keys($this->layoutTemplates);
             $validated = $request->validate([
                 'template_key' => 'required|string|in:'.implode(',', $template_keys),
@@ -569,7 +614,7 @@ class BusinessController extends Controller
             $business_id = $request->session()->get('user.business_id');
             $business = Business::where('id', $business_id)->firstOrFail();
 
-            $common_settings = ! empty($business->common_settings) ? $business->common_settings : [];
+            $common_settings = $this->normalizeCommonSettings($business->common_settings ?? []);
             $common_settings['layout_template'] = $validated['template_key'];
 
             $business->common_settings = $common_settings;
@@ -582,6 +627,10 @@ class BusinessController extends Controller
                 'success' => 1,
                 'msg' => __('business.settings_updated_success'),
                 'template_key' => $validated['template_key'],
+                'redirect_url' => $this->getLayoutTemplateRedirectPath(
+                    $validated['template_key'],
+                    $request->input('current_path', $request->path())
+                ),
             ]);
         } catch (\Exception $e) {
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());

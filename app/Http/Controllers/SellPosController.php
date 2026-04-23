@@ -1822,46 +1822,78 @@ class SellPosController extends Controller
      */
     public function printInvoice(Request $request, $transaction_id)
     {
-        if (request()->ajax()) {
-            try {
-                $output = ['success' => 0,
-                    'msg' => trans('messages.something_went_wrong'),
-                ];
+        try {
+            $output = ['success' => 0,
+                'msg' => trans('messages.something_went_wrong'),
+            ];
 
-                $business_id = $request->session()->get('user.business_id');
+            $business_id = $request->session()->get('user.business_id');
 
-                $transaction = Transaction::where('business_id', $business_id)
-                    ->where('id', $transaction_id)
-                    ->with(['location'])
-                    ->first();
+            $transaction = Transaction::where('business_id', $business_id)
+                ->where('id', $transaction_id)
+                ->with(['location'])
+                ->first();
 
-                if (empty($transaction)) {
-                    return $output;
-                }
+            if (empty($transaction)) {
+                return $output;
+            }
 
-                $printer_type = 'browser';
-                if (!empty(request()->input('check_location')) && request()->input('check_location') == true) {
-                    $printer_type = $transaction->location->receipt_printer_type;
-                }
+            $printer_type = 'browser';
+            if (!empty($request->input('check_location')) && $request->input('check_location') == true) {
+                $printer_type = $transaction->location->receipt_printer_type;
+            }
 
-                $is_package_slip = !empty($request->input('package_slip')) ? true : false;
-                $is_delivery_note = !empty($request->input('delivery_note')) ? true : false;
+            $is_package_slip = !empty($request->input('package_slip')) ? true : false;
+            $is_delivery_note = !empty($request->input('delivery_note')) ? true : false;
 
-                $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
-                $receipt = $this->receiptContent($business_id, $transaction->location_id, $transaction_id, $printer_type, $is_package_slip, false, $invoice_layout_id, $is_delivery_note);
+            $invoice_layout_id = $transaction->is_direct_sale ? $transaction->location->sale_invoice_layout_id : null;
+            $receipt = $this->receiptContent(
+                $business_id,
+                $transaction->location_id,
+                $transaction_id,
+                $printer_type,
+                $is_package_slip,
+                false,
+                $invoice_layout_id,
+                $is_delivery_note
+            );
 
+            if ($request->ajax()) {
                 if (!empty($receipt)) {
                     $output = ['success' => 1, 'receipt' => $receipt];
                 }
-            } catch (\Exception $e) {
-                \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-                $output = ['success' => 0,
+                return $output;
+            }
+
+            // Non-AJAX: render a clean guest print page (default print design),
+            // so template-specific @media print rules (e.g. Viho) don't blank the output.
+            $title = $transaction->invoice_no;
+            if ($is_package_slip) {
+                $title = $title . ' - ' . __('lang_v1.packing_slip');
+            } elseif ($is_delivery_note) {
+                $title = $title . ' - ' . __('lang_v1.delivery_note');
+            }
+
+            $view = request()->segment(1) === 'ai-template'
+                ? 'templates.viho.sale_pos.partials.show_invoice'
+                : 'sale_pos.partials.show_invoice';
+
+            return view($view)->with([
+                'title' => $title,
+                'receipt' => $receipt,
+                'payment_link' => null,
+            ]);
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            if ($request->ajax()) {
+                return ['success' => 0,
                     'msg' => trans('messages.something_went_wrong'),
                 ];
             }
 
-            return $output;
+            abort(500, trans('messages.something_went_wrong'));
         }
     }
 

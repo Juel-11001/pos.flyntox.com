@@ -78,7 +78,7 @@
     <div class="col-md-12">
       @component('components.widget', ['class' => 'box-primary'])
       <div class="d-flex w-100 overflow-auto">
-        <table class="table table-bordered table-striped" id="product_purchase_report_table">
+        <table class="table table-bordered table-striped" id="product_purchase_report_table" style="min-width: 1100px;">
           <thead>
             <tr>
               <th>@lang('sale.product')</th>
@@ -115,30 +115,139 @@
 
 @section('javascript')
 <script>
-  // Clear any existing DataTable instance completely
-  (function() {
-    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#product_purchase_report_table')) {
-      $('#product_purchase_report_table').DataTable().clear().destroy();
-    }
-    // Remove DataTable generated elements
-    $('#product_purchase_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-    $('#product_purchase_report_table').removeAttr('style').removeAttr('width');
-  })();
-</script>
-<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
-<script>
-  // Final cleanup after page load
   $(document).ready(function() {
-    var checkAndFix = function() {
-      if ($.fn.DataTable.isDataTable('#product_purchase_report_table')) {
-        $('#product_purchase_report_table').DataTable().clear().destroy();
-        $('#product_purchase_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-        $('#product_purchase_report_table').removeAttr('style').removeAttr('width');
+    if ($.fn.DataTable.isDataTable('#product_purchase_report_table')) {
+      $('#product_purchase_report_table').DataTable().destroy();
+    }
+
+    product_purchase_report = $('#product_purchase_report_table').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      aaSorting: [
+        [3, 'desc']
+      ],
+      ajax: {
+        url: '/reports/product-purchase-report',
+        data: function(d) {
+          if ($('#product_pr_date_filter').val()) {
+            d.start_date = $('#product_pr_date_filter')
+              .data('daterangepicker')
+              .startDate.format('YYYY-MM-DD');
+            d.end_date = $('#product_pr_date_filter')
+              .data('daterangepicker')
+              .endDate.format('YYYY-MM-DD');
+          }
+
+          d.variation_id = $('#variation_id').val();
+          d.supplier_id = $('#supplier_id').val();
+          d.location_id = $('#location_id').val();
+          d.brand_id = $('#ppr_brand_id').val();
+        }
+      },
+      columns: [{
+          data: 'product_name',
+          name: 'p.name'
+        },
+        {
+          data: 'sub_sku',
+          name: 'v.sub_sku'
+        },
+        {
+          data: 'supplier',
+          name: 'c.name'
+        },
+        {
+          data: 'ref_no',
+          name: 't.ref_no'
+        },
+        {
+          data: 'transaction_date',
+          name: 't.transaction_date'
+        },
+        {
+          data: 'purchase_qty',
+          name: 'purchase_lines.quantity'
+        },
+        {
+          data: 'quantity_adjusted',
+          name: 'purchase_lines.quantity_adjusted'
+        },
+        {
+          data: 'unit_purchase_price',
+          name: 'purchase_lines.purchase_price_inc_tax'
+        },
+        {
+          data: 'subtotal',
+          name: 'subtotal',
+          searchable: false
+        }
+      ],
+      fnDrawCallback: function() {
+        $('#footer_subtotal').text(
+          sum_table_col($('#product_purchase_report_table'), 'row_subtotal')
+        );
+        $('#footer_total_purchase').html(
+          __sum_stock($('#product_purchase_report_table'), 'purchase_qty')
+        );
+        $('#footer_total_adjusted').html(
+          __sum_stock($('#product_purchase_report_table'), 'quantity_adjusted')
+        );
+        __currency_convert_recursively($('#product_purchase_report_table'));
       }
-    };
-    checkAndFix();
-    // Run again after a short delay to catch any late initializations
-    setTimeout(checkAndFix, 500);
+    });
+
+    $('#product_pr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+      $('#product_pr_date_filter').val(
+        start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+      );
+      product_purchase_report.ajax.reload();
+    });
+
+    $('#product_pr_date_filter').on('cancel.daterangepicker', function() {
+      $('#product_pr_date_filter').val('');
+      product_purchase_report.ajax.reload();
+    });
+
+    $(document).on('change', '#product_purchase_report_form #variation_id, #product_purchase_report_form #location_id, #product_purchase_report_form #supplier_id, #product_purchase_report_form #product_pr_date_filter, #ppr_brand_id', function() {
+      product_purchase_report.ajax.reload();
+    });
+
+    if ($('#search_product').length > 0) {
+      $('#search_product').autocomplete({
+        source: function(request, response) {
+          $.ajax({
+            url: '/purchases/get_products?check_enable_stock=false',
+            dataType: 'json',
+            data: {
+              term: request.term
+            },
+            success: function(data) {
+              response($.map(data, function(v) {
+                if (v.variation_id) {
+                  return {
+                    label: v.text,
+                    value: v.variation_id
+                  };
+                }
+
+                return false;
+              }));
+            }
+          });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+          $('#variation_id').val(ui.item.value).change();
+          event.preventDefault();
+          $(this).val(ui.item.label);
+        },
+        focus: function(event, ui) {
+          event.preventDefault();
+          $(this).val(ui.item.label);
+        }
+      });
+    }
   });
 </script>
 @endsection

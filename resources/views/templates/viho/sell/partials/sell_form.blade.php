@@ -1,43 +1,75 @@
     <style>
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            background-color: white !important;
-            border: 1px solid #ced4da !important;
-        }
-
-        .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #3e5fce !important;
-        }
-
-        .input-group .input-group-btn .add_new_customer {
-            height: 100%;
-            border: 1px solid #ced4da;
-            border-left: none;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            min-height: 38px;
-            background-color: white !important;
-        }
-
-        .input-group .select2-container--default .select2-selection--single {
-            height: 100%;
-            min-height: 38px;
-            border-radius: 0;
-            display: flex;
-            align-items: center;
-            background-color: white !important;
-        }
-
-        .select2-dropdown {
-            background-color: white !important;
-        }
-
-        .customer-input-group .input-group-btn {
-            display: flex;
-            align-items: stretch;
-        }
+      #price_group + .select2-container {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      #price_group + .select2-container .select2-selection--single {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        padding-right: 28px;
+      }
+      #price_group + .select2-container .select2-selection__rendered {
+        display: block;
+        width: 100%;
+        padding-left: 12px !important;
+        padding-right: 8px !important;
+        line-height: 36px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #price_group + .select2-container .select2-selection__arrow {
+        right: 8px;
+        height: 100%;
+      }
+      .viho-sell-top-controls {
+        align-items: end;
+      }
+      .viho-sell-top-controls .checkbox {
+        min-height: 38px;
+        margin-top: 0;
+        margin-bottom: 15px;
+        white-space: nowrap;
+      }
+      .viho-sell-top-controls .btn-link {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .select2-container--default .select2-search--dropdown .select2-search__field {
+        background-color: white !important;
+        border: 1px solid #ced4da !important;
+      }
+      .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #3e5fce;
+      }
+      .input-group .input-group-btn .add_new_customer {
+        height: 100%;
+        border: 1px solid #ced4da;
+        border-left: none;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        min-height: 38px;
+        background-color: white !important;
+      }
+      .input-group .select2-container--default .select2-selection--single {
+        height: 100%;
+        min-height: 38px;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        background-color: white !important;
+      }
+      .select2-dropdown {
+        background-color: white !important;
+      }
+      .input-group-btn {
+        display: flex;
+        align-items: stretch;
+      }
     </style>
     <section class="content no-print">
         <input type="hidden" id="amount_rounding_method" value="{{ $pos_settings['amount_rounding_method'] ?? '' }}">
@@ -133,7 +165,42 @@
                         @endif
                     @endif
 
-                    {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
+          <div class="row viho-sell-top-controls">
+            @if (!empty($price_groups))
+              @if (count($price_groups) > 1)
+                <div class="col-sm-12 col-md-6 col-xl-4">
+                  <div class="form-group">
+                    <div class="input-group flex-nowrap">
+                      <span class="input-group-addon d-flex align-items-center justify-content-center">
+                        <i class="fas fa-money-bill"></i>
+                      </span>
+                      @php
+                      reset($price_groups);
+                      $selected_price_group =
+                      !empty($default_price_group_id) &&
+                      array_key_exists($default_price_group_id, $price_groups)
+                      ? $default_price_group_id
+                      : null;
+                      @endphp
+                      {!! Form::hidden('hidden_price_group', key($price_groups), ['id' => 'hidden_price_group']) !!}
+                      {!! Form::select('price_group', $price_groups, $selected_price_group, [
+                      'class' => 'form-control select2',
+                      'id' => 'price_group',
+                      'style' => 'width: 100%;',
+                      ]) !!}
+                      <span class="input-group-addon">
+                        @show_tooltip(__('lang_v1.price_group_help_text'))
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              @else
+                @php
+                reset($price_groups);
+                @endphp
+                {!! Form::hidden('price_group', key($price_groups), ['id' => 'price_group']) !!}
+              @endif
+            @endif
 
                     @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
                         <div class="col-sm-12 col-md-6 col-xl-3">
@@ -150,105 +217,100 @@
                                         'placeholder' => __('lang_v1.select_types_of_service'),
                                     ]) !!}
 
-                                    <span class="input-group-addon d-flex align-items-center justify-content-center">
-                                        @show_tooltip(__('lang_v1.types_of_service_help'))
-                                    </span>
-                                </div>
-                                <small>
-                                    <p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p>
-                                </small>
-                            </div>
-                        </div>
-                    @endif
+            @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+              <div class="col-sm-12 col-md-6 col-xl-4">
+                <div class="form-group">
+                  {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
+                  <div class="input-group flex-nowrap">
+                    <span class="input-group-addon d-flex align-items-center justify-content-center">
+                      <i class="fa fa-external-link-square text-primary service_modal_btn"></i>
+                    </span>
+                    {!! Form::select('types_of_service_id', $types_of_service, null, [
+                    'class' => 'form-control',
+                    'id' => 'types_of_service_id',
+                    'style' => 'width: 100%;',
+                    'placeholder' => __('lang_v1.select_types_of_service'),
+                    ]) !!}
 
-                    @if (in_array('subscription', $enabled_modules))
-                        <div class="col-sm-12 col-md-6 col-xl-4">
-                            <div class="checkbox d-flex align-items-center">
-                                <label>
-                                    {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
-                                    @lang('lang_v1.subscribe')?
-                                </label>
-                                <button type="button" data-toggle="modal" data-target="#recurringInvoiceModal"
-                                    class="btn btn-link">
-                                    <i class="fa fa-external-link"></i>
-                                </button>
-                                @show_tooltip(__('lang_v1.recurring_invoice_help'))
-                            </div>
-                        </div>
-                    @endif
+                    <span class="input-group-addon d-flex align-items-center justify-content-center">
+                      @show_tooltip(__('lang_v1.types_of_service_help'))
+                    </span>
+                  </div>
+                  <small>
+                    <p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p>
+                  </small>
                 </div>
-                <div class="row justify-content-between">
-                    <div class="col-sm-12 col-md-6 col-xl-3">
-                        <div class="form-group">
-                            {!! Form::label('contact_id', __('contact.customer') . ':*') !!}
-                            <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] }}">
-                            <input type="hidden" id="default_customer_name" value="{{ $walk_in_customer['name'] }}">
-                            <input type="hidden" id="default_customer_balance"
-                                value="{{ $walk_in_customer['balance'] ?? '' }}">
-                            <input type="hidden" id="default_customer_address"
-                                value="{{ $walk_in_customer['shipping_address'] ?? '' }}">
-                            @if (
-                                !empty($walk_in_customer['price_calculation_type']) &&
-                                    $walk_in_customer['price_calculation_type'] == 'selling_price_group')
-                                <input type="hidden" id="default_selling_price_group"
-                                    value="{{ $walk_in_customer['selling_price_group_id'] ?? '' }}">
-                            @endif
-                            <div class="input-group flex-nowrap customer-input-group">
-                                <span class="input-group-addon d-flex align-items-center justify-content-center">
-                                    <i class="fa fa-user"></i>
-                                </span>
-                                {!! Form::select('contact_id', [], null, [
-                                    'class' => 'form-control mousetrap',
-                                    'id' => 'customer_id',
-                                    'placeholder' => 'Enter Customer name / phone',
-                                    'required',
-                                    'style' => 'width: 100%;',
-                                ]) !!}
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default bg-white btn-flat add_new_customer"
-                                        data-name=""><i class="fa fa-plus-circle text-primary fa-lg"></i>
-                                    </button>
-                                </span>
-                            </div>
-                            <small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong>
-                                <span></span></small>
-                        </div>
-                        <small>
-                            <strong>
-                                @lang('lang_v1.billing_address'):
-                            </strong>
-                            <div id="billing_address_div">
-                                {!! $walk_in_customer['contact_address'] ?? '' !!}
-                            </div>
-                            <br>
-                            <strong>
-                                @lang('lang_v1.shipping_address'):
-                            </strong>
-                            <div id="shipping_address_div">
-                                {{ $walk_in_customer['supplier_business_name'] ?? '' }},<br>
-                                {{ $walk_in_customer['name'] ?? '' }},<br>
-                                {{ $walk_in_customer['shipping_address'] ?? '' }}
-                            </div>
-                        </small>
-                    </div>
+              </div>
+            @endif
 
-                    <div class="col-sm-12 col-md-6 col-xl-3">
-                        <div class="form-group">
-                            <div class="multi-input row">
-                                @php
-                                    $is_pay_term_required = !empty($pos_settings['is_pay_term_required']);
-                                @endphp
-                                <div class="d-flex align-items-center gap-2">
-                                    <div>{!! Form::label('pay_term_number', __('contact.pay_term') . ':') !!}</div>
-                                    <div>@show_tooltip(__('tooltip.pay_term'))</div>
-                                </div>
-                                <div class='col-6' style='padding-right: 0;'>
-                                    {!! Form::number('pay_term_number', $walk_in_customer['pay_term_number'], [
-                                        'class' => 'form-control width-40 pull-left',
-                                        'placeholder' => __('contact.pay_term'),
-                                        'required' => $is_pay_term_required,
-                                    ]) !!}
-                                </div>
+            @if (in_array('subscription', $enabled_modules))
+              <div class="col-sm-12 col-md-12 col-xl-4">
+                <div class="checkbox d-flex align-items-center">
+                  <label>
+                    {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
+                    @lang('lang_v1.subscribe')?
+                  </label>
+                  <button type="button" data-toggle="modal" data-target="#recurringInvoiceModal" class="btn btn-link">
+                    <i class="fa fa-external-link"></i>
+                  </button>
+                  @show_tooltip(__('lang_v1.recurring_invoice_help'))
+                </div>
+              </div>
+            @endif
+          </div>
+          <div class="row justify-content-between">
+            <div class="col-sm-12 col-md-6 col-xl-3">
+            <div class="form-group">
+              {!! Form::label('contact_id', __('contact.customer') . ':*') !!}
+              <input type="hidden" id="default_customer_id" value="{{ $walk_in_customer['id'] }}">
+              <input type="hidden" id="default_customer_name" value="{{ $walk_in_customer['name'] }}">
+              <input type="hidden" id="default_customer_balance" value="{{ $walk_in_customer['balance'] ?? '' }}">
+              <input type="hidden" id="default_customer_address"
+                value="{{ $walk_in_customer['shipping_address'] ?? '' }}">
+              @if (
+              !empty($walk_in_customer['price_calculation_type']) &&
+              $walk_in_customer['price_calculation_type'] == 'selling_price_group')
+              <input type="hidden" id="default_selling_price_group"
+                value="{{ $walk_in_customer['selling_price_group_id'] ?? '' }}">
+              @endif
+              <div class="input-group flex-nowrap">
+                <span class="input-group-addon d-flex align-items-center justify-content-center">
+                  <i class="fa fa-user"></i>
+                </span>
+                {!! Form::select('contact_id', [], null, [
+                'class' => 'form-control mousetrap',
+                'id' => 'customer_id',
+                'placeholder' => 'Enter Customer name / phone',
+                'required',
+                'style' => 'width: 100%;',
+                ]) !!}
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""><i
+                      class="fa fa-plus-circle text-primary fa-lg"></i>
+                  </button>
+                </span>
+              </div>
+              <small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong>
+                <span></span></small>
+            </div>
+            <small>
+              <strong>
+                @lang('lang_v1.billing_address'):
+              </strong>
+              <div id="billing_address_div">
+                {!! $walk_in_customer['contact_address'] ?? '' !!}
+              </div>
+              <br>
+              <strong>
+                @lang('lang_v1.shipping_address'):
+              </strong>
+              <div id="shipping_address_div">
+                {{ $walk_in_customer['supplier_business_name'] ?? '' }},<br>
+                {{ $walk_in_customer['name'] ?? '' }},<br>
+                {{ $walk_in_customer['shipping_address'] ?? '' }}
+              </div>
+            </small>
+          </div>
 
                                 <div class='col-6' style='padding-left: 0'>
                                     {!! Form::select(

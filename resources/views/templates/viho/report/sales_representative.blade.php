@@ -159,20 +159,323 @@
 
 @section('javascript')
 <script>
-  // Destroy existing DataTables to prevent reinitialisation error
-  if ($.fn.DataTable.isDataTable('#sr_sales_report')) {
-    $('#sr_sales_report').DataTable().destroy();
+  $(document).ready(function() {
+    if ($.fn.DataTable.isDataTable('#sr_sales_report')) {
+      $('#sr_sales_report').DataTable().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#sr_expenses_report')) {
+      $('#sr_expenses_report').DataTable().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#sr_sales_with_commission_table')) {
+      $('#sr_sales_with_commission_table').DataTable().destroy();
+    }
+    if ($.fn.DataTable.isDataTable('#sr_payments_with_commission_table')) {
+      $('#sr_payments_with_commission_table').DataTable().destroy();
+    }
+
+    $('#sr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+      $('#sr_date_filter').val(
+        start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+      );
+      updateSalesRepresentativeReportViho();
+    });
+
+    $('#sr_date_filter').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(
+        picker.startDate.format(moment_date_format) +
+        ' ~ ' +
+        picker.endDate.format(moment_date_format)
+      );
+    });
+
+    $('#sr_date_filter').on('cancel.daterangepicker', function() {
+      $(this).val('');
+    });
+
+    initSalesRepresentativeTablesViho();
+    salesRepresentativeTotalExpenseViho();
+    salesRepresentativeTotalSalesViho();
+    salesRepresentativeTotalCommissionViho();
+
+    $('select#sr_id, select#sr_business_id').on('change', function() {
+      updateSalesRepresentativeReportViho();
+    });
+  });
+
+  function initSalesRepresentativeTablesViho() {
+    if ($('#sr_payments_with_commission_table').length > 0) {
+      sr_payments_with_commission_report = $('#sr_payments_with_commission_table').DataTable({
+        processing: true,
+        serverSide: true,
+        fixedHeader: false,
+        aaSorting: [
+          [1, 'desc']
+        ],
+        ajax: {
+          url: '/reports/sell-payment-report',
+          data: function(d) {
+            d.commission_agent = $('#sr_id').val() !== '' ? $('#sr_id').val() : 0;
+            d.location_id = $('#sr_business_id').val();
+            d.start_date = $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD');
+            d.end_date = $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD');
+          }
+        },
+        columns: [
+          { data: 'payment_ref_no', name: 'payment_ref_no' },
+          { data: 'paid_on', name: 'paid_on' },
+          { data: 'amount', name: 'transaction_payments.amount' },
+          { data: 'customer', orderable: false, searchable: false },
+          { data: 'method', name: 'method' },
+          { data: 'invoice_no', name: 't.invoice_no' },
+          { data: 'action', orderable: false, searchable: false }
+        ],
+        fnDrawCallback: function() {
+          var total_amount = sum_table_col($('#sr_payments_with_commission_table'), 'paid-amount');
+          $('#footer_total_amount').text(total_amount);
+          __currency_convert_recursively($('#sr_payments_with_commission_table'));
+        }
+      });
+    }
+
+    sr_sales_report = $('#sr_sales_report').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      aaSorting: [
+        [0, 'desc']
+      ],
+      ajax: {
+        url: '/sells',
+        data: function(d) {
+          d.created_by = $('#sr_id').val();
+          d.location_id = $('#sr_business_id').val();
+          d.start_date = $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          d.end_date = $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        }
+      },
+      columns: [
+        { data: 'transaction_date', name: 'transaction_date' },
+        { data: 'invoice_no', name: 'invoice_no' },
+        { data: 'conatct_name', name: 'conatct_name' },
+        { data: 'business_location', name: 'bl.name' },
+        { data: 'payment_status', name: 'payment_status' },
+        { data: 'final_total', name: 'final_total' },
+        { data: 'total_paid', name: 'total_paid' },
+        { data: 'total_remaining', name: 'total_remaining' }
+      ],
+      columnDefs: [
+        {
+          searchable: false,
+          targets: [6]
+        }
+      ],
+      fnDrawCallback: function() {
+        $('#sr_footer_sale_total').text(sum_table_col($('#sr_sales_report'), 'final-total'));
+        $('#sr_footer_total_paid').text(sum_table_col($('#sr_sales_report'), 'total-paid'));
+        $('#sr_footer_total_remaining').text(sum_table_col($('#sr_sales_report'), 'payment_due'));
+        $('#sr_footer_total_sell_return_due').text(sum_table_col($('#sr_sales_report'), 'sell_return_due'));
+        $('#sr_footer_payment_status_count').html(
+          __sum_status_html($('#sr_sales_report'), 'payment-status-label')
+        );
+        __currency_convert_recursively($('#sr_sales_report'));
+      }
+    });
+
+    sr_expenses_report = $('#sr_expenses_report').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      aaSorting: [
+        [0, 'desc']
+      ],
+      ajax: {
+        url: '/expenses',
+        data: function(d) {
+          d.expense_for = $('#sr_id').val();
+          d.location_id = $('#sr_business_id').val();
+          d.start_date = $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          d.end_date = $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        }
+      },
+      columnDefs: [
+        {
+          targets: 7,
+          orderable: false,
+          searchable: false
+        }
+      ],
+      columns: [
+        { data: 'transaction_date', name: 'transaction_date' },
+        { data: 'ref_no', name: 'ref_no' },
+        { data: 'category', name: 'ec.name' },
+        { data: 'location_name', name: 'bl.name' },
+        { data: 'payment_status', name: 'payment_status' },
+        { data: 'final_total', name: 'final_total' },
+        { data: 'expense_for', name: 'expense_for' },
+        { data: 'additional_notes', name: 'additional_notes' }
+      ],
+      fnDrawCallback: function() {
+        $('#footer_expense_total').text(sum_table_col($('#sr_expenses_report'), 'final-total'));
+        $('#er_footer_payment_status_count').html(
+          __sum_status_html($('#sr_expenses_report'), 'payment-status')
+        );
+        __currency_convert_recursively($('#sr_expenses_report'));
+      }
+    });
+
+    sr_sales_commission_report = $('#sr_sales_with_commission_table').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      aaSorting: [
+        [0, 'desc']
+      ],
+      ajax: {
+        url: '/sells',
+        data: function(d) {
+          d.commission_agent = $('#sr_id').val();
+          d.location_id = $('#sr_business_id').val();
+          d.start_date = $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD');
+          d.end_date = $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD');
+        }
+      },
+      columns: [
+        { data: 'transaction_date', name: 'transaction_date' },
+        { data: 'invoice_no', name: 'invoice_no' },
+        { data: 'conatct_name', name: 'conatct_name' },
+        { data: 'business_location', name: 'bl.name' },
+        { data: 'payment_status', name: 'payment_status' },
+        { data: 'final_total', name: 'final_total' },
+        { data: 'total_paid', name: 'total_paid' },
+        { data: 'total_remaining', name: 'total_remaining' }
+      ],
+      columnDefs: [
+        {
+          searchable: false,
+          targets: [6]
+        }
+      ],
+      fnDrawCallback: function() {
+        $('#footer_sale_total').text(sum_table_col($('#sr_sales_with_commission_table'), 'final-total'));
+        $('#footer_total_paid').text(sum_table_col($('#sr_sales_with_commission_table'), 'total-paid'));
+        $('#footer_total_remaining').text(sum_table_col($('#sr_sales_with_commission_table'), 'payment_due'));
+        $('#footer_total_sell_return_due').text(sum_table_col($('#sr_sales_with_commission_table'), 'sell_return_due'));
+        $('#footer_payment_status_count').html(
+          __sum_status_html($('#sr_sales_with_commission_table'), 'payment-status-label')
+        );
+        __currency_convert_recursively($('#sr_sales_with_commission_table'));
+        __currency_convert_recursively($('#sr_sales_with_commission'));
+      }
+    });
   }
-  if ($.fn.DataTable.isDataTable('#sr_expenses_report')) {
-    $('#sr_expenses_report').DataTable().destroy();
+
+  function updateSalesRepresentativeReportViho() {
+    salesRepresentativeTotalExpenseViho();
+    salesRepresentativeTotalSalesViho();
+    salesRepresentativeTotalCommissionViho();
+
+    sr_expenses_report.ajax.reload();
+    sr_sales_report.ajax.reload();
+    sr_sales_commission_report.ajax.reload();
+
+    if ($('#sr_payments_with_commission_table').length > 0) {
+      sr_payments_with_commission_report.ajax.reload();
+    }
   }
-  if ($.fn.DataTable.isDataTable('#sr_sales_with_commission_table')) {
-    $('#sr_sales_with_commission_table').DataTable().destroy();
+
+  function salesRepresentativeTotalExpenseViho() {
+    $('span#sr_total_expenses').html(__fa_awesome());
+
+    $.ajax({
+      method: 'GET',
+      url: '/reports/sales-representative-total-expense',
+      dataType: 'json',
+      data: {
+        expense_for: $('#sr_id').val(),
+        location_id: $('#sr_business_id').val(),
+        start_date: $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD'),
+        end_date: $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD')
+      },
+      success: function(data) {
+        $('span#sr_total_expenses').html(__currency_trans_from_en(data.total_expense, true));
+      }
+    });
   }
-  if ($.fn.DataTable.isDataTable('#sr_sales_commission_report')) {
-    $('#sr_sales_commission_report').DataTable().destroy();
+
+  function salesRepresentativeTotalSalesViho() {
+    $('span#sr_total_sales').html(__fa_awesome());
+    $('span#sr_total_sales_return').html(__fa_awesome());
+    $('span#sr_total_sales_final').html(__fa_awesome());
+
+    $.ajax({
+      method: 'GET',
+      url: '/reports/sales-representative-total-sell',
+      dataType: 'json',
+      data: {
+        created_by: $('#sr_id').val(),
+        location_id: $('#sr_business_id').val(),
+        start_date: $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD'),
+        end_date: $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD')
+      },
+      success: function(data) {
+        $('span#sr_total_sales').html(__currency_trans_from_en(data.total_sell_exc_tax, true));
+        $('span#sr_total_sales_return').html(__currency_trans_from_en(data.total_sell_return_exc_tax, true));
+        $('span#sr_total_sales_final').html(__currency_trans_from_en(data.total_sell, true));
+      }
+    });
+  }
+
+  function salesRepresentativeTotalCommissionViho() {
+    var commission_agent = $('#sr_id').val();
+
+    $('div#total_payment_with_commsn_div').addClass('hide');
+    $('span#sr_total_commission').html(__fa_awesome());
+    $('span#total_payment_with_commsn').html(__fa_awesome());
+
+    if (commission_agent) {
+      $('div#total_commission_div').removeClass('hide');
+      $.ajax({
+        method: 'GET',
+        url: '/reports/sales-representative-total-commission',
+        dataType: 'json',
+        data: {
+          commission_agent: commission_agent,
+          location_id: $('#sr_business_id').val(),
+          start_date: $('#sr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD'),
+          end_date: $('#sr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD')
+        },
+        success: function(data) {
+          var str = '<div style="padding-right:15px; display: inline-block">' +
+            __currency_trans_from_en(data.total_commission, true) +
+            '</div>';
+
+          if (data.commission_percentage != 0) {
+            if (data.total_sales_with_commission) {
+              str += ' <small>(' +
+                data.commission_percentage +
+                '% of ' +
+                __currency_trans_from_en(data.total_sales_with_commission) +
+                ')</small>';
+            }
+
+            if (data.total_payment_with_commission) {
+              $('div#total_payment_with_commsn_div').removeClass('hide');
+              $('span#total_payment_with_commsn').html(__currency_trans_from_en(data.total_payment_with_commission));
+              str += ' <small>(' +
+                data.commission_percentage +
+                '% of ' +
+                __currency_trans_from_en(data.total_payment_with_commission) +
+                ')</small>';
+            }
+          }
+
+          $('span#sr_total_commission').html(str);
+        }
+      });
+    } else {
+      $('div#total_commission_div').addClass('hide');
+    }
   }
 </script>
-<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 @endsection

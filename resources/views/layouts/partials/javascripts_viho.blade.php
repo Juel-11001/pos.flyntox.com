@@ -24,6 +24,22 @@
 
 <script src="{{ asset('js/vendor.js?v=' . $asset_v) }}"></script>
 
+<script>
+    // Viho-only DataTables compatibility:
+    // Some builds expose isDataTable on $.fn.dataTable (lowercase) but not on $.fn.DataTable (uppercase).
+    // app.js uses $.fn.DataTable.isDataTable, so we polyfill it safely on Viho pages only.
+    (function () {
+        if (typeof window.jQuery === 'undefined') return;
+        var $ = window.jQuery;
+        try {
+            if ($.fn && $.fn.DataTable && typeof $.fn.DataTable.isDataTable !== 'function' &&
+                $.fn.dataTable && typeof $.fn.dataTable.isDataTable === 'function') {
+                $.fn.DataTable.isDataTable = $.fn.dataTable.isDataTable;
+            }
+        } catch (e) {}
+    })();
+</script>
+
 @if (file_exists(public_path('js/lang/' . session()->get('user.language', config('app.locale')) . '.js')))
     <script src="{{ asset('js/lang/' . session()->get('user.language', config('app.locale')) . '.js?v=' . $asset_v) }}">
     </script>
@@ -219,7 +235,6 @@
             }
 
             $btn.prop('disabled', true);
-
             $.ajax({
                 url: updateUrl,
                 type: 'POST',
@@ -228,25 +243,17 @@
                     template_key: templateKey,
                     current_path: window.location.pathname + window.location.search,
                 },
-                success: function(result) {
-                    if (result && result.success === 1) {
-                        toastr.success(result.msg || 'Template updated.');
-                        window.location = result.redirect_url || "{{ url('/home') }}";
+                success: function(resp) {
+                    if (resp && (resp.success === 1 || resp.success === true || resp.success === 'true')) {
+                        window.location = resp.redirect_url || "{{ url('/home') }}";
                     } else {
-                        toastr.error((result && result.msg) ? result.msg : 'Unable to update template.');
                         $btn.prop('disabled', false);
                     }
                 },
                 error: function() {
-                    toastr.error('Unable to update template.');
                     $btn.prop('disabled', false);
                 }
             });
         });
-        
-        // $('.date_range').on('show.daterangepicker', function (ev, picker) {
-        //     $(picker.container).insertAfter($(this));
-        // });
-   
     });
 </script>

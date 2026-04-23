@@ -336,6 +336,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         // Selling Price Groups (Viho)
         Route::get('selling-price-group/update-product-price', [SellingPriceGroupController::class, 'updateProductPrice'])->name('update-product-price');
+        Route::get('export-product-price', [SellingPriceGroupController::class, 'export'])->name('export-product-price');
+        Route::post('import-product-price', [SellingPriceGroupController::class, 'import'])->name('import-product-price');
         Route::get('selling-price-group/activate-deactivate/{id}', [SellingPriceGroupController::class, 'activateDeactivate']);
         Route::resource('selling-price-group', SellingPriceGroupController::class);
 
@@ -381,7 +383,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::post('/update-account-transaction/{id}', [AccountController::class, 'updateAccountTransaction'])->name('update-transaction');
             Route::get('/get-account-balance/{id}', [AccountController::class, 'getAccountBalance'])->name('balance');
             Route::get('/balance-sheet', [AccountReportsController::class, 'balanceSheet'])->name('balance-sheet');
+            Route::get('/balance-sheet/print', [AccountReportsController::class, 'printBalanceSheet'])->name('balance-sheet.print');
             Route::get('/trial-balance', [AccountReportsController::class, 'trialBalance'])->name('trial-balance');
+            Route::get('/trial-balance/print', [AccountReportsController::class, 'printTrialBalance'])->name('trial-balance.print');
             Route::get('/payment-account-report', [AccountReportsController::class, 'paymentAccountReport'])->name('payment-report');
             Route::get('/link-account/{id}', [AccountReportsController::class, 'getLinkAccount'])->name('link-account');
             Route::post('/link-account', [AccountReportsController::class, 'postLinkAccount'])->name('link-account.post');
@@ -404,6 +408,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::get('sells/drafts', [SellController::class, 'getDrafts'])->name('sells.drafts');
         Route::get('sells/quotations', [SellController::class, 'getQuotations'])->name('sells.quotations');
         Route::get('shipments', [SellController::class, 'shipments'])->name('shipments');
+        Route::get('sells/{id}', [SellController::class, 'show'])->whereNumber('id')->name('sells.show');
         Route::resource('sells', SellController::class)->except(['show']);
 
         // POS (Viho)
@@ -433,6 +438,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::resource('account-types', AccountController::class);
         // Reports (Viho) - Batch 1
         Route::get('reports/profit-loss', [ReportController::class, 'getProfitLoss'])->name('reports.profit-loss');
+        Route::get('reports/profit-loss/print', [ReportController::class, 'printProfitLoss'])->name('reports.profit-loss.print');
         Route::get('reports/purchase-sell', [ReportController::class, 'getPurchaseSell'])->name('reports.purchase-sell');
         Route::get('reports/tax-report', [ReportController::class, 'getTaxReport'])->name('reports.tax-report');
 

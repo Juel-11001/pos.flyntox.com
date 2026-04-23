@@ -33,11 +33,11 @@
   @component('components.widget', ['class' => 'box-primary', 'title' => __('lang_v1.import_export_product_price')])
   <div class="row">
     <div class="col-sm-6">
-      <a href="{{action([\App\Http\Controllers\SellingPriceGroupController::class, 'export'])}}"
+      <a href="{{ route('ai-template.export-product-price') }}"
         class="btn btn-primary">@lang('lang_v1.export_product_prices')</a>
     </div>
     <div class="col-sm-12 col-lg-6 col-xl-4">
-      {!! Form::open(['url' => action([\App\Http\Controllers\SellingPriceGroupController::class, 'import']), 'method' =>
+      {!! Form::open(['url' => route('ai-template.import-product-price'), 'method' =>
       'post', 'enctype' => 'multipart/form-data' ]) !!}
       <div class="form-group">
         {!! Form::label('name', __( 'product.file_to_import' ) . ':') !!}

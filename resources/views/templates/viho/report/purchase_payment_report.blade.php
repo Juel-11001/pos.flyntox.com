@@ -56,7 +56,7 @@
     <div class="col-md-12">
       @component('components.widget', ['class' => 'box-primary'])
       <div class="d-flex w-100 overflow-auto">
-        <table class="table table-bordered table-striped" id="purchase_payment_report_table">
+        <table class="table table-bordered table-striped" id="purchase_payment_report_table" style="min-width: 1000px;">
           <thead>
             <tr>
               <th>&nbsp;</th>
@@ -89,32 +89,144 @@
 @endsection
 
 @section('javascript')
-<script>
-  // Clear any existing DataTable instance completely
-  (function() {
-    if ($.fn.DataTable && $.fn.DataTable.isDataTable('#purchase_payment_report_table')) {
-      $('#purchase_payment_report_table').DataTable().clear().destroy();
-    }
-    // Remove DataTable generated elements
-    $('#purchase_payment_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-    $('#purchase_payment_report_table').removeAttr('style').removeAttr('width');
-  })();
-</script>
-<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/payment.js?v=' . $asset_v) }}"></script>
 <script>
-  // Final cleanup after page load
   $(document).ready(function() {
-    var checkAndFix = function() {
-      if ($.fn.DataTable.isDataTable('#purchase_payment_report_table')) {
-        $('#purchase_payment_report_table').DataTable().clear().destroy();
-        $('#purchase_payment_report_table').find('thead th, tbody td').removeClass('sorting sorting_asc sorting_desc');
-        $('#purchase_payment_report_table').removeAttr('style').removeAttr('width');
+    if ($.fn.DataTable.isDataTable('#purchase_payment_report_table')) {
+      $('#purchase_payment_report_table').DataTable().destroy();
+    }
+
+    purchase_payment_report = $('#purchase_payment_report_table').DataTable({
+      processing: true,
+      serverSide: true,
+      fixedHeader: false,
+      aaSorting: [
+        [2, 'desc']
+      ],
+      ajax: {
+        url: "{{ route('ai-template.reports.purchase-payment-report') }}",
+        data: function(d) {
+          d.supplier_id = $('#supplier_id').val();
+          d.location_id = $('#location_id').val();
+
+          if ($('#ppr_date_filter').val()) {
+            d.start_date = $('#ppr_date_filter')
+              .data('daterangepicker')
+              .startDate.format('YYYY-MM-DD');
+            d.end_date = $('#ppr_date_filter')
+              .data('daterangepicker')
+              .endDate.format('YYYY-MM-DD');
+          }
+        }
+      },
+      columns: [{
+          data: null,
+          defaultContent: '',
+          orderable: false,
+          searchable: false
+        },
+        {
+          data: 'payment_ref_no',
+          name: 'payment_ref_no'
+        },
+        {
+          data: 'paid_on',
+          name: 'paid_on'
+        },
+        {
+          data: 'amount',
+          name: 'transaction_payments.amount'
+        },
+        {
+          data: 'supplier',
+          orderable: false,
+          searchable: false
+        },
+        {
+          data: 'method',
+          name: 'method'
+        },
+        {
+          data: 'ref_no',
+          name: 't.ref_no'
+        },
+        {
+          data: 'action',
+          orderable: false,
+          searchable: false
+        }
+      ],
+      fnDrawCallback: function() {
+        var total_amount = sum_table_col($('#purchase_payment_report_table'), 'paid-amount');
+        $('#footer_total_amount').text(total_amount);
+        __currency_convert_recursively($('#purchase_payment_report_table'));
+      },
+      createdRow: function(row, data) {
+        if (!data.transaction_id) {
+          $(row).find('td:eq(0)').addClass('details-control');
+        }
       }
-    };
-    checkAndFix();
-    // Run again after a short delay to catch any late initializations
-    setTimeout(checkAndFix, 500);
+    });
+
+    var ppr_detail_rows = [];
+
+    $('#purchase_payment_report_table tbody').on('click', 'tr td.details-control', function() {
+      var tr = $(this).closest('tr');
+      var row = purchase_payment_report.row(tr);
+      var idx = $.inArray(tr.attr('id'), ppr_detail_rows);
+
+      if (row.child.isShown()) {
+        tr.removeClass('details');
+        row.child.hide();
+        ppr_detail_rows.splice(idx, 1);
+      } else {
+        tr.addClass('details');
+        row.child(showChildPayments(row.data())).show();
+
+        if (idx === -1) {
+          ppr_detail_rows.push(tr.attr('id'));
+        }
+      }
+    });
+
+    purchase_payment_report.on('draw', function() {
+      $.each(ppr_detail_rows, function(i, id) {
+        $('#' + id + ' td.details-control').trigger('click');
+      });
+    });
+
+    $('#ppr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+      $('#ppr_date_filter').val(
+        start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+      );
+      purchase_payment_report.ajax.reload();
+    });
+
+    $('#ppr_date_filter').on('cancel.daterangepicker', function() {
+      $('#ppr_date_filter').val('');
+      purchase_payment_report.ajax.reload();
+    });
+
+    $(document).on('change', '#purchase_payment_report_form #location_id, #purchase_payment_report_form #supplier_id', function() {
+      purchase_payment_report.ajax.reload();
+    });
   });
+
+  function showChildPayments(rowData) {
+    var div = $('<div/>')
+      .addClass('loading')
+      .text('Loading...');
+
+    $.ajax({
+      url: '/payments/show-child-payments/' + rowData.DT_RowId,
+      dataType: 'html',
+      success: function(data) {
+        div.html(data).removeClass('loading');
+        __currency_convert_recursively(div);
+      }
+    });
+
+    return div;
+  }
 </script>
 @endsection
