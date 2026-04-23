@@ -383,7 +383,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
             Route::post('/update-account-transaction/{id}', [AccountController::class, 'updateAccountTransaction'])->name('update-transaction');
             Route::get('/get-account-balance/{id}', [AccountController::class, 'getAccountBalance'])->name('balance');
             Route::get('/balance-sheet', [AccountReportsController::class, 'balanceSheet'])->name('balance-sheet');
+            Route::get('/balance-sheet/print', [AccountReportsController::class, 'printBalanceSheet'])->name('balance-sheet.print');
             Route::get('/trial-balance', [AccountReportsController::class, 'trialBalance'])->name('trial-balance');
+            Route::get('/trial-balance/print', [AccountReportsController::class, 'printTrialBalance'])->name('trial-balance.print');
             Route::get('/payment-account-report', [AccountReportsController::class, 'paymentAccountReport'])->name('payment-report');
             Route::get('/link-account/{id}', [AccountReportsController::class, 'getLinkAccount'])->name('link-account');
             Route::post('/link-account', [AccountReportsController::class, 'postLinkAccount'])->name('link-account.post');

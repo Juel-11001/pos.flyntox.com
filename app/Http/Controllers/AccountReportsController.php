@@ -54,54 +54,11 @@ class AccountReportsController extends Controller
 
         $business_id = session()->get('user.business_id');
         if (request()->ajax()) {
-            $end_date = ! empty(request()->input('end_date')) ? $this->transactionUtil->uf_date(request()->input('end_date')) : \Carbon::now()->format('Y-m-d');
-            $location_id = ! empty(request()->input('location_id')) ? request()->input('location_id') : null;
-
-            $purchase_details = $this->transactionUtil->getPurchaseTotals(
+            return $this->getBalanceSheetData(
                 $business_id,
-                null,
-                $end_date,
-                $location_id
+                request()->input('end_date'),
+                request()->input('location_id')
             );
-            $sell_details = $this->transactionUtil->getSellTotals(
-                $business_id,
-                null,
-                $end_date,
-                $location_id
-            );
-
-            $transaction_types = ['sell_return'];
-
-            $sell_return_details = $this->transactionUtil->getTransactionTotals(
-                $business_id,
-                $transaction_types,
-                null,
-                $end_date,
-                $location_id
-            );
-
-            $account_details = $this->getAccountBalance($business_id, $end_date, 'others', $location_id);
-            // $capital_account_details = $this->getAccountBalance($business_id, $end_date, 'capital');
-
-            //Get Closing stock
-            $permitted_locations = auth()->user()->permitted_locations();
-            
-            $closing_stock = $this->transactionUtil->getOpeningClosingStock(
-                $business_id,
-                $end_date,
-                $location_id,
-                $permitted_locations
-            );
-
-            $output = [
-                'supplier_due' => $purchase_details['purchase_due'],
-                'customer_due' => $sell_details['invoice_due'] - $sell_return_details['total_sell_return_inc_tax'],
-                'account_balances' => $account_details,
-                'closing_stock' => $closing_stock,
-                'capital_account_details' => null,
-            ];
-
-            return $output;
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
@@ -111,6 +68,92 @@ class AccountReportsController extends Controller
         }
 
         return view('account_reports.balance_sheet')->with(compact('business_locations'));
+    }
+
+    /**
+     * Render balance sheet in a dedicated print page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function printBalanceSheet(Request $request)
+    {
+        if (! $this->isAiTemplateRequest()) {
+            abort(404);
+        }
+
+        if (! auth()->user()->can('account.access')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = session()->get('user.business_id');
+        $location_id = $request->input('location_id');
+        $end_date_input = $request->input('end_date');
+        $data = $this->getBalanceSheetData($business_id, $end_date_input, $location_id);
+
+        $business = session()->get('business');
+        $business_name = $business->name ?? session()->get('business.name');
+        $location_name = __('report.all_locations');
+
+        if (! empty($location_id)) {
+            $location = BusinessLocation::where('business_id', $business_id)->find($location_id);
+            if (! empty($location)) {
+                $location_name = $location->name;
+            }
+        }
+
+        $title = $business_name . ' | ' . __('account.balance_sheet');
+        $end_date = ! empty($end_date_input) ? $end_date_input : \Carbon::now()->format('Y-m-d');
+
+        return view($this->viewPath('balance_sheet_print'))->with(compact(
+            'data',
+            'title',
+            'business_name',
+            'location_name',
+            'end_date'
+        ));
+    }
+
+    /**
+     * Render trial balance in a dedicated print page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function printTrialBalance(Request $request)
+    {
+        if (! $this->isAiTemplateRequest()) {
+            abort(404);
+        }
+
+        if (! auth()->user()->can('account.access')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = session()->get('user.business_id');
+        $location_id = $request->input('location_id');
+        $end_date_input = $request->input('end_date');
+        $data = $this->getTrialBalanceData($business_id, $end_date_input, $location_id);
+
+        $business = session()->get('business');
+        $business_name = $business->name ?? session()->get('business.name');
+        $location_name = __('report.all_locations');
+
+        if (! empty($location_id)) {
+            $location = BusinessLocation::where('business_id', $business_id)->find($location_id);
+            if (! empty($location)) {
+                $location_name = $location->name;
+            }
+        }
+
+        $title = $business_name . ' | ' . __('account.trial_balance');
+        $end_date = ! empty($end_date_input) ? $end_date_input : \Carbon::now()->format('Y-m-d');
+
+        return view($this->viewPath('trial_balance_print'))->with(compact(
+            'data',
+            'title',
+            'business_name',
+            'location_name',
+            'end_date'
+        ));
     }
 
     /**
@@ -127,34 +170,11 @@ class AccountReportsController extends Controller
         $business_id = session()->get('user.business_id');
 
         if (request()->ajax()) {
-            $end_date = ! empty(request()->input('end_date')) ? $this->transactionUtil->uf_date(request()->input('end_date')) : \Carbon::now()->format('Y-m-d');
-            $location_id = ! empty(request()->input('location_id')) ? request()->input('location_id') : null;
-
-            $purchase_details = $this->transactionUtil->getPurchaseTotals(
+            return $this->getTrialBalanceData(
                 $business_id,
-                null,
-                $end_date,
-                $location_id
+                request()->input('end_date'),
+                request()->input('location_id')
             );
-            $sell_details = $this->transactionUtil->getSellTotals(
-                $business_id,
-                null,
-                $end_date,
-                $location_id
-            );
-
-            $account_details = $this->getAccountBalance($business_id, $end_date, 'others', $location_id);
-
-            // $capital_account_details = $this->getAccountBalance($business_id, $end_date, 'capital');
-
-            $output = [
-                'supplier_due' => $purchase_details['purchase_due'],
-                'customer_due' => $sell_details['invoice_due'],
-                'account_balances' => $account_details,
-                'capital_account_details' => null,
-            ];
-
-            return $output;
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id, true);
@@ -237,6 +257,95 @@ class AccountReportsController extends Controller
                                 ->pluck('balance', 'name');
 
         return $account_details;
+    }
+
+    /**
+     * Build balance sheet dataset for ajax and print.
+     *
+     * @param  int  $business_id
+     * @param  string|null  $end_date_input
+     * @param  int|string|null  $location_id
+     * @return array
+     */
+    private function getBalanceSheetData($business_id, $end_date_input = null, $location_id = null)
+    {
+        $end_date = ! empty($end_date_input) ? $this->transactionUtil->uf_date($end_date_input) : \Carbon::now()->format('Y-m-d');
+        $location_id = ! empty($location_id) ? $location_id : null;
+
+        $purchase_details = $this->transactionUtil->getPurchaseTotals(
+            $business_id,
+            null,
+            $end_date,
+            $location_id
+        );
+        $sell_details = $this->transactionUtil->getSellTotals(
+            $business_id,
+            null,
+            $end_date,
+            $location_id
+        );
+
+        $sell_return_details = $this->transactionUtil->getTransactionTotals(
+            $business_id,
+            ['sell_return'],
+            null,
+            $end_date,
+            $location_id
+        );
+
+        $account_details = $this->getAccountBalance($business_id, $end_date, 'others', $location_id);
+
+        $permitted_locations = auth()->user()->permitted_locations();
+        $closing_stock = $this->transactionUtil->getOpeningClosingStock(
+            $business_id,
+            $end_date,
+            $location_id,
+            $permitted_locations
+        );
+
+        return [
+            'supplier_due' => $purchase_details['purchase_due'],
+            'customer_due' => $sell_details['invoice_due'] - $sell_return_details['total_sell_return_inc_tax'],
+            'account_balances' => $account_details,
+            'closing_stock' => $closing_stock,
+            'capital_account_details' => null,
+        ];
+    }
+
+    /**
+     * Build trial balance dataset for ajax and print.
+     *
+     * @param  int  $business_id
+     * @param  string|null  $end_date_input
+     * @param  int|string|null  $location_id
+     * @return array
+     */
+    private function getTrialBalanceData($business_id, $end_date_input = null, $location_id = null)
+    {
+        $end_date = ! empty($end_date_input) ? $this->transactionUtil->uf_date($end_date_input) : \Carbon::now()->format('Y-m-d');
+        $location_id = ! empty($location_id) ? $location_id : null;
+
+        $purchase_details = $this->transactionUtil->getPurchaseTotals(
+            $business_id,
+            null,
+            $end_date,
+            $location_id
+        );
+        $sell_details = $this->transactionUtil->getSellTotals(
+            $business_id,
+            null,
+            $end_date,
+            $location_id
+        );
+
+        $account_details = $this->getAccountBalance($business_id, $end_date, 'others', $location_id);
+
+        return [
+            'supplier_due' => $purchase_details['purchase_due'],
+            'customer_due' => $sell_details['invoice_due'],
+            'account_balances' => $account_details,
+            'capital_account_details' => null,
+        ];
     }
 
     /**

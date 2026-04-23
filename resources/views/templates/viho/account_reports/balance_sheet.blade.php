@@ -228,8 +228,7 @@
         </table>
     </div>
     <div class="box-footer">
-      <button type="button" class="btn btn-primary text-white no-print pull-right"
-        onclick="window.print()">
+      <button type="button" class="btn btn-primary text-white no-print pull-right" id="print_balance_sheet_report">
         <i class="fa fa-print"></i> @lang('messages.print')</button>
     </div>
   </div>
@@ -255,7 +254,65 @@ $(document).ready(function() {
   $('#bal_sheet_location_id').change(function() {
     update_balance_sheet();
   });
+
+  $(document).on('click', '#print_balance_sheet_report', function() {
+    printBalanceSheetWithIframe();
+  });
 });
+
+function getBalanceSheetPrintableHtml() {
+  var title_html = $('.box-header.print_section').html() || '';
+  var table_html = $('.box-body').html() || '';
+
+  return '<div class="balance-sheet-print">' +
+    '<div class="print-header">' + title_html + '</div>' +
+    '<div class="print-body">' + table_html + '</div>' +
+    '</div>';
+}
+
+function printBalanceSheetWithIframe() {
+  var href = '{{ route('ai-template.account.balance-sheet.print') }}';
+  var params = [];
+  var end_date = $('input#end_date').val();
+  var location_id = $('#bal_sheet_location_id').val();
+  var iframe_id = 'balance_sheet_print_iframe';
+  var iframe = document.getElementById(iframe_id);
+  var print_url;
+
+  if (end_date) {
+    params.push('end_date=' + encodeURIComponent(end_date));
+  }
+
+  if (location_id) {
+    params.push('location_id=' + encodeURIComponent(location_id));
+  }
+
+  params.push('print_on_load=1');
+  print_url = href + '?' + params.join('&');
+
+  if (iframe) {
+    iframe.parentNode.removeChild(iframe);
+  }
+
+  iframe = document.createElement('iframe');
+  iframe.id = iframe_id;
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.style.visibility = 'hidden';
+  iframe.onload = function() {
+    setTimeout(function() {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    }, 300);
+  };
+
+  iframe.src = print_url;
+  document.body.appendChild(iframe);
+}
 
 function update_balance_sheet() {
   var loader = '<i class="fas fa-sync fa-spin fa-fw"></i>';

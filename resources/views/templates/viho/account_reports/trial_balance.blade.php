@@ -197,7 +197,7 @@
         </table>
     </div>
     <div class="box-footer">
-      <button type="button" class="btn btn-primary text-white no-print pull-right" onclick="window.print()">
+      <button type="button" class="btn btn-primary text-white no-print pull-right" id="print_trial_balance_report">
         <i class="fa fa-print"></i> @lang('messages.print')</button>
     </div>
   </div>
@@ -223,7 +223,55 @@ $(document).ready(function() {
   $('#trial_bal_location_id').change(function() {
     update_trial_balance();
   });
+
+  $(document).on('click', '#print_trial_balance_report', function() {
+    printTrialBalanceWithIframe();
+  });
 });
+
+function printTrialBalanceWithIframe() {
+  var href = '{{ route('ai-template.account.trial-balance.print') }}';
+  var params = [];
+  var end_date = $('input#end_date').val();
+  var location_id = $('#trial_bal_location_id').val();
+  var iframe_id = 'trial_balance_print_iframe';
+  var iframe = document.getElementById(iframe_id);
+  var print_url;
+
+  if (end_date) {
+    params.push('end_date=' + encodeURIComponent(end_date));
+  }
+
+  if (location_id) {
+    params.push('location_id=' + encodeURIComponent(location_id));
+  }
+
+  params.push('print_on_load=1');
+  print_url = href + '?' + params.join('&');
+
+  if (iframe) {
+    iframe.parentNode.removeChild(iframe);
+  }
+
+  iframe = document.createElement('iframe');
+  iframe.id = iframe_id;
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.style.visibility = 'hidden';
+  iframe.onload = function() {
+    setTimeout(function() {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    }, 300);
+  };
+
+  iframe.src = print_url;
+  document.body.appendChild(iframe);
+}
 
 function update_trial_balance() {
   var loader = '<i class="fas fa-sync fa-spin fa-fw"></i>';
