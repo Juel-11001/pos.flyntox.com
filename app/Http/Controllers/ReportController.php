@@ -143,6 +143,86 @@ class ReportController extends Controller
     }
 
     /**
+     * Render Profit & Loss in a dedicated print page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function printProfitLoss(Request $request)
+    {
+        if (! auth()->user()->can('profit_loss_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+        $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
+
+        $location_id = ! empty($request->input('location_id')) ? $request->input('location_id') : null;
+        $start_date = ! empty($request->input('start_date')) ? $request->input('start_date') : $fy['start'];
+        $end_date = ! empty($request->input('end_date')) ? $request->input('end_date') : $fy['end'];
+        $user_id = $request->input('user_id') ?? null;
+
+        $permitted_locations = auth()->user()->permitted_locations();
+        $data = $this->transactionUtil->getProfitLossDetails(
+            $business_id,
+            $location_id,
+            $start_date,
+            $end_date,
+            $user_id,
+            $permitted_locations
+        );
+
+        $stocks = [
+            'opening_stock_by_sp' => null,
+            'closing_stock_by_sp' => null,
+        ];
+
+        $day_before_start_date = \Carbon\Carbon::createFromFormat('Y-m-d', $start_date)
+            ->subDay()
+            ->format('Y-m-d');
+
+        $stocks['opening_stock_by_sp'] = $this->transactionUtil->getOpeningClosingStock(
+            $business_id,
+            $day_before_start_date,
+            $location_id,
+            true,
+            true,
+            $permitted_locations
+        );
+
+        $stocks['closing_stock_by_sp'] = $this->transactionUtil->getOpeningClosingStock(
+            $business_id,
+            $end_date,
+            $location_id,
+            false,
+            true,
+            $permitted_locations
+        );
+
+        $business = session()->get('business');
+        $business_name = $business->name ?? session()->get('business.name');
+        $location_name = __('report.all_locations');
+
+        if (! empty($location_id)) {
+            $location = BusinessLocation::where('business_id', $business_id)->find($location_id);
+            if (! empty($location)) {
+                $location_name = $location->name;
+            }
+        }
+
+        $title = $business_name . ' | ' . __('report.profit_loss');
+
+        return view('report.partials.profit_loss_print')->with(compact(
+            'data',
+            'stocks',
+            'title',
+            'business_name',
+            'location_name',
+            'start_date',
+            'end_date'
+        ));
+    }
+
+    /**
      * Shows product report of a business
      *
      * @return \Illuminate\Http\Response

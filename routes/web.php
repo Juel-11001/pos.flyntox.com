@@ -431,6 +431,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
         Route::resource('account-types', AccountController::class);
         // Reports (Viho) - Batch 1
         Route::get('reports/profit-loss', [ReportController::class, 'getProfitLoss'])->name('reports.profit-loss');
+        Route::get('reports/profit-loss/print', [ReportController::class, 'printProfitLoss'])->name('reports.profit-loss.print');
         Route::get('reports/purchase-sell', [ReportController::class, 'getPurchaseSell'])->name('reports.purchase-sell');
         Route::get('reports/tax-report', [ReportController::class, 'getTaxReport'])->name('reports.tax-report');
 

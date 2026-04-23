@@ -1,6 +1,75 @@
 @extends('templates.viho.layout')
 @section('title', __('report.customer') . ' - ' . __('report.supplier') . ' ' . __('report.reports'))
 
+@push('styles')
+<style>
+  .viho-contact-report-filters .form-group {
+    position: relative;
+    margin-bottom: 22px;
+  }
+
+  .viho-contact-report-filters .select2-container {
+    width: 100% !important;
+    z-index: 10;
+  }
+
+  .viho-contact-report-filters .select2-container--open {
+    z-index: 99999 !important;
+  }
+
+  .viho-contact-report-filters .select2-dropdown {
+    z-index: 99999 !important;
+  }
+
+  .viho-contact-report-filters .select2-results__options {
+    pointer-events: auto;
+  }
+
+  .viho-contact-report-filters .select2-selection--single {
+    height: 40px;
+    display: flex;
+    align-items: center;
+  }
+
+  .viho-contact-report-filters .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+    padding-left: 12px;
+  }
+
+  .viho-contact-report-filters .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+  }
+
+  .daterangepicker {
+    z-index: 2000 !important;
+  }
+
+  #scr_date_filter {
+    cursor: pointer;
+    background-color: #fff;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 1400px) {
+    .viho-contact-report-filters {
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: -8px;
+      margin-right: -8px;
+    }
+
+    .viho-contact-report-filters > [class*="col-"] {
+      flex: 0 0 20%;
+      max-width: 20%;
+      width: 20%;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+</style>
+@endpush
+
 @section('content')
 
 <!-- Content Header (Page header) -->
@@ -19,7 +88,7 @@
     <div class="col-md-12">
       @component('components.filters', ['title' => __('report.filters')])
 
-      <div class="row">
+      <div class="row viho-contact-report-filters">
         <div class="col-sm-12 col-md-6 col-xl-4 col-xxl-3">
           <div class="form-group">
             {!! Form::label('cg_customer_group_id', __( 'lang_v1.customer_group_name' ) . ':') !!}
@@ -111,9 +180,48 @@
   $(document).ready(function() {
     // Ensure previous bindings are cleared if this script runs again.
     $('#cnt_customer_group_id, #contact_type, #cs_report_location_id, #scr_contact_id').off('change.contactReport');
-    $('#scr_date_filter').off('cancel.daterangepicker.contactReport');
+    $('#scr_date_filter').off('.contactReport');
+    $('#cnt_customer_group_id, #contact_type, #cs_report_location_id, #scr_contact_id').off('.contactReportSelect2');
 
     var supplier_report_tbl = null;
+    var contactFilterSelectors = '#cnt_customer_group_id, #contact_type, #cs_report_location_id, #scr_contact_id';
+
+    $(contactFilterSelectors).each(function() {
+      var $select = $(this);
+
+      if ($select.hasClass('select2-hidden-accessible')) {
+        $select.select2('destroy');
+      }
+
+      $select.select2({
+        width: '100%',
+        dropdownParent: $select.closest('.form-group')
+      });
+    });
+
+    $(contactFilterSelectors).on('select2:open.contactReportSelect2', function() {
+      $(this).closest('.form-group').css('z-index', 99999);
+    });
+
+    $(contactFilterSelectors).on('select2:close.contactReportSelect2', function() {
+      $(this).closest('.form-group').css('z-index', '');
+    });
+
+    function getContactReportDateRange() {
+      var picker = $('#scr_date_filter').data('daterangepicker');
+
+      if (!picker) {
+        return {
+          start: moment().subtract(29, 'days').format('YYYY-MM-DD'),
+          end: moment().format('YYYY-MM-DD')
+        };
+      }
+
+      return {
+        start: picker.startDate.format('YYYY-MM-DD'),
+        end: picker.endDate.format('YYYY-MM-DD')
+      };
+    }
 
     if ($.fn.DataTable.isDataTable('#supplier_report_tbl')) {
       supplier_report_tbl = $('#supplier_report_tbl').DataTable();
@@ -130,8 +238,9 @@
             d.contact_type = $('#contact_type').val();
             d.location_id = $('#cs_report_location_id').val();
             d.contact_id = $('#scr_contact_id').val();
-            d.start_date = $('input#scr_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD');
-            d.end_date = $('input#scr_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD');
+            var range = getContactReportDateRange();
+            d.start_date = range.start;
+            d.end_date = range.end;
           }
         },
         columnDefs: [
@@ -171,19 +280,43 @@
       });
     }
 
-    if ($('#scr_date_filter').length == 1 && !$('#scr_date_filter').data('daterangepicker')) {
-      $('#scr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
-        $('#scr_date_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
-        supplier_report_tbl.ajax.reload();
-      });
+    if ($('#scr_date_filter').length == 1) {
+      if (!$('#scr_date_filter').data('daterangepicker')) {
+        $('#scr_date_filter').daterangepicker(
+          $.extend(true, {}, dateRangeSettings, {
+            autoUpdateInput: true,
+            locale: $.extend(true, {}, dateRangeSettings.locale || {}, {
+              format: moment_date_format
+            })
+          }),
+          function(start, end) {
+            $('#scr_date_filter').val(start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format));
+            supplier_report_tbl.ajax.reload();
+          }
+        );
+      }
+
+      var picker = $('#scr_date_filter').data('daterangepicker');
+      if (picker) {
+        $('#scr_date_filter').val(
+          picker.startDate.format(moment_date_format) + ' ~ ' + picker.endDate.format(moment_date_format)
+        );
+      }
     }
 
-    $('#scr_date_filter').on('cancel.daterangepicker.contactReport', function() {
-      $('#scr_date_filter').val('');
+    $('#scr_date_filter').on('click.contactReport focus.contactReport', function() {
+      var picker = $(this).data('daterangepicker');
+      if (picker) {
+        picker.show();
+      }
+    });
+
+    $('#scr_date_filter').on('cancel.daterangepicker.contactReport', function(ev, picker) {
+      $(this).val(picker.startDate.format(moment_date_format) + ' ~ ' + picker.endDate.format(moment_date_format));
       supplier_report_tbl.ajax.reload();
     });
 
-    $('#cnt_customer_group_id, #contact_type, #cs_report_location_id, #scr_contact_id').on('change.contactReport', function() {
+    $(contactFilterSelectors).on('change.contactReport', function() {
       supplier_report_tbl.ajax.reload();
     });
   });

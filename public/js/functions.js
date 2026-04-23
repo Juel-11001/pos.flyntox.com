@@ -230,8 +230,23 @@ function round_to_iraqi_dinnar(value) {
 }
 
 function __select2(selector) {
-    if ($('html').attr('dir') == 'rtl') selector.select2({ dir: 'rtl' });
-    else selector.select2();
+    selector.each(function() {
+        var $element = $(this);
+        var options = {};
+        var $filterGroup = $element.closest('.filters-card .form-group');
+
+        if ($('html').attr('dir') == 'rtl') {
+            options.dir = 'rtl';
+        }
+
+        // In Viho/AI filter cards, keep the dropdown inside its field wrapper
+        // so the next filter row does not block mouse interaction.
+        if ($filterGroup.length) {
+            options.dropdownParent = $filterGroup;
+        }
+
+        $element.select2(options);
+    });
 }
 
 function update_font_size() {

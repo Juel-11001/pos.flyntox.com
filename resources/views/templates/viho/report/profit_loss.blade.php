@@ -122,7 +122,7 @@
 
         <div class="row no-print">
           <div class="col-sm-12 mb-2">
-            <button class="btn btn-primary pull-right" aria-label="Print" onclick="window.print();">
+            <button class="btn btn-primary pull-right" aria-label="Print" id="print_profit_loss_report" data-href="{{ route('ai-template.reports.profit-loss.print') }}">
               <i class="fa fa-print"></i> @lang('messages.print')
             </button>
           </div>
@@ -355,6 +355,52 @@
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+    $(document).on('click', '#print_profit_loss_report', function() {
+        var href = $(this).data('href');
+        var params = [];
+
+        if ($('#profit_loss_date_filter').length && $('#profit_loss_date_filter').data('daterangepicker')) {
+            params.push('start_date=' + encodeURIComponent(
+                $('#profit_loss_date_filter').data('daterangepicker').startDate.format('YYYY-MM-DD')
+            ));
+            params.push('end_date=' + encodeURIComponent(
+                $('#profit_loss_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD')
+            ));
+        }
+
+        if ($('#profit_loss_location_filter').length && $('#profit_loss_location_filter').val()) {
+            params.push('location_id=' + encodeURIComponent($('#profit_loss_location_filter').val()));
+        }
+
+        var print_url = href + '?' + params.join('&');
+        var iframe_id = 'profit_loss_print_iframe';
+        var iframe = document.getElementById(iframe_id);
+
+        if (iframe) {
+            iframe.parentNode.removeChild(iframe);
+        }
+
+        iframe = document.createElement('iframe');
+        iframe.id = iframe_id;
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        iframe.style.visibility = 'hidden';
+
+        iframe.onload = function() {
+            setTimeout(function() {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            }, 300);
+        };
+
+        iframe.src = print_url;
+        document.body.appendChild(iframe);
+    });
+
     function syncProfitLossLocationTitle() {
         var fallback_name = '{{ session()->get('business.name') }}';
         var selected_location_name = $('#profit_loss_location_filter option:selected').text() || fallback_name;

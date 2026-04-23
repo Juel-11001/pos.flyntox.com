@@ -30,6 +30,12 @@
             /* Prevent the collapse toggle link/header from overlapping the filter body in some themes. */
             .filters-card {
                 position: relative;
+                overflow: visible;
+            }
+
+            .filters-card .box-body,
+            .filters-card .form-group {
+                overflow: visible;
             }
 
             .filters-card .box-header {
@@ -44,10 +50,73 @@
                 z-index: 1 !important;
             }
 
-            .filters-card .panel-collapse {
+            body.viho-template-active .daterangepicker {
+                z-index: 10050 !important;
+                max-width: min(760px, calc(100vw - 24px));
+                box-sizing: border-box;
+                position: fixed !important;
+            }
+
+            body.viho-template-active .daterangepicker .ranges {
+                max-height: none;
+                overflow: visible;
+            }
+
+            body.viho-template-active .daterangepicker .calendar-table,
+            body.viho-template-active .daterangepicker .drp-calendar {
+                max-width: 100%;
+            }
+
+            body.viho-template-active .daterangepicker.dropdown-menu {
+                overflow: hidden;
+            }
+
+            body.viho-template-active .daterangepicker .ranges ul {
+                max-height: none;
+                overflow: visible;
+            }
+
+            body.viho-template-active .daterangepicker .ranges::-webkit-scrollbar,
+            body.viho-template-active .daterangepicker .ranges ul::-webkit-scrollbar {
+                width: 0;
+                height: 0;
+            }
+
+            @media (max-width: 767px) {
+                body.viho-template-active .daterangepicker {
+                    width: calc(100vw - 24px) !important;
+                }
+
+                body.viho-template-active .daterangepicker .ranges,
+                body.viho-template-active .daterangepicker .drp-calendar {
+                    width: 100% !important;
+                }
+            }
+
+            /* .filters-card .panel-collapse {
                 position: relative;
                 z-index: 9999;
+                overflow: visible;
             }
+
+            .filters-card .box-body,
+            .filters-card .form-group {
+                position: relative;
+                overflow: visible;
+            }
+
+            .filters-card .select2-container {
+                width: 100% !important;
+            }
+
+            .filters-card .select2-container--open,
+            .filters-card .select2-dropdown {
+                z-index: 10050 !important;
+            }
+
+            .filters-card .select2-results__options {
+                pointer-events: auto;
+            } */
         </style>
     @endpush
 
@@ -55,6 +124,12 @@
         (function () {
             if (window.__filtersCardGuardInstalled) return;
             window.__filtersCardGuardInstalled = true;
+            var isVihoTemplate = function () {
+                return !!(
+                    (window.template && window.template === 'viho') ||
+                    (document.body && document.body.classList.contains('viho-template-active'))
+                );
+            };
 
             var markInteracting = function (target) {
                 var collapseEl = target && target.closest ? target.closest('.filters-card .panel-collapse') : null;
