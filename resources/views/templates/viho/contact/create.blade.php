@@ -196,26 +196,14 @@
               <span class="input-group-addon">
                 <i class="fa fa-user"></i>
               </span>
-              {!! Form::select('assigned_to_users[]', $users ?? [], null , ['class' => 'form-control select2 w-100',
-              'id' => 'assigned_to_users', 'multiple', 'style' => 'width: 100%; flex: 1 auto;']); !!}
+              {!! Form::select('assigned_to_users', $users ?? [], null , ['class' => 'form-control select2',
+              'id' => 'assigned_to_users', 'placeholder' => __('messages.please_select'), 'style' => 'width: 100%;']); !!}
             </div>
           </div>
         </div>
         @endif
         <div class="clearfix"></div>
-        <div class="col-sm-4 individual" style="display: none;">
-          <div class="form-group">
-            {!! Form::label('dob', __('lang_v1.dob') . ':') !!}
-            <div class="input-group">
-              <span class="input-group-addon">
-                <i class="fa fa-calendar"></i>
-              </span>
 
-              {!! Form::text('dob', null, ['class' => 'form-control dob-date-picker','placeholder' => __('lang_v1.dob'),
-              'readonly']); !!}
-            </div>
-          </div>
-        </div>
 
         <!-- lead additional field -->
         <div class="col-md-4 lead_additional_div" @if(!$is_lead_form) style="display: none;" @endif>
@@ -252,8 +240,8 @@
               <span class="input-group-addon">
                 <i class="fa fa-user"></i>
               </span>
-              {!! Form::select('user_id[]', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'user_id',
-              'multiple', 'style' => 'width: 100%;'] + ($is_lead_form ? ['required' => true] : [])); !!}
+              {!! Form::select('user_id', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'user_id',
+              'placeholder' => __('messages.please_select'), 'style' => 'width: 100%;'] + ($is_lead_form ? ['required' => true] : [])); !!}
             </div>
           </div>
         </div>
@@ -290,7 +278,7 @@
               {!! Form::label('opening_balance', __('lang_v1.opening_balance') . ':') !!}
               <div class="input-group">
                 <span class="input-group-addon">
-                  <i class="fas fa-money-bill-alt"></i>
+                  <i class="fas fa-money-bill"></i>
                 </span>
                 {!! Form::text('opening_balance', 0, ['class' => 'form-control input_number']); !!}
               </div>
@@ -783,5 +771,97 @@
     });
 
   syncVihoContactTypeFields();
+
+  if ($.fn.select2) {
+    var $modal = $form.closest('.modal');
+    function initSelect2($element) {
+      if ($element.hasClass('select2-hidden-accessible')) {
+        $element.select2('destroy');
+      }
+      $element.select2({
+        dropdownParent: $modal,
+        width: '100%',
+        closeOnSelect: !$element.prop('multiple'),
+      });
+    }
+
+    $form.find('.select2').each(function() {
+      var $select = $(this);
+      if ($select.is(':visible')) {
+        initSelect2($select);
+      }
+    });
+
+    $form.find('#contact_type').on('change.vihoSelect2Init', function() {
+      var $userId = $form.find('#user_id');
+      if ($userId.length && $userId.is(':visible') && !$userId.hasClass('select2-hidden-accessible')) {
+        initSelect2($userId);
+      }
+    });
+  }
 })(jQuery);
 </script>
+<style>
+  #contact_add_form .select2-container--default .select2-selection--single {
+    border: 1px solid #e6edef;
+    border-radius: 6px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+  }
+
+  #contact_add_form .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+    padding-left: 12px;
+    color: #444;
+  }
+
+  #contact_add_form .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+  }
+
+  #contact_add_form .select2-container--default .select2-selection--multiple {
+    border: 1px solid #e6edef;
+    border-radius: 6px;
+    min-height: 38px;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  #contact_add_form .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: #24695c;
+    border: 1px solid #1a4b41;
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  #contact_add_form .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin-right: 5px;
+  }
+
+  #contact_add_form .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #fff !important;
+    background: transparent;
+  }
+
+  #contact_add_form .input-group .select2-container {
+    flex: 1 1 auto;
+    width: 1% !important;
+  }
+
+  #contact_add_form .input-group .select2-selection--multiple {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  #contact_add_form .select2-container--default .select2-search--inline .select2-search__field {
+    margin-top: 0;
+    height: 32px;
+  }
+</style>
