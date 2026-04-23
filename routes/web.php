@@ -208,6 +208,9 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         // POS (Viho)
         Route::resource('pos', SellPosController::class)->names('pos');
+        Route::get('/sells/pos/get-product-suggestion', [SellPosController::class, 'getProductSuggestion'])->name('pos.get-product-suggestion');
+        Route::get('/sells/pos/get-featured-products/{location_id}', [SellPosController::class, 'getFeaturedProducts'])->name('pos.get-featured-products');
+        Route::get('/sells/pos/get-recent-transactions', [SellPosController::class, 'getRecentTransactions'])->name('pos.get-recent-transactions');
 
         Route::get('users', [ManageUserController::class, 'index'])->name('users.index');
         Route::get('users/create', [ManageUserController::class, 'create'])->name('users.create');

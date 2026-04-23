@@ -1977,7 +1977,12 @@ class SellPosController extends Controller
 
             $show_prices = !empty($pos_settings['show_pricing_on_product_sugesstion']);
 
-            return view('sale_pos.partials.product_list')
+            $view_path = 'sale_pos.partials.product_list';
+            if ($this->isAiTemplateRequest() || request()->get('is_ai_template') == 'true') {
+                $view_path = 'templates.viho.sale_pos.partials.product_list';
+            }
+
+            return view($view_path)
                 ->with(compact('products', 'allowed_group_prices', 'show_prices'));
         }
     }
@@ -2581,8 +2586,13 @@ class SellPosController extends Controller
         $location = BusinessLocation::findOrFail($id);
         $featured_products = $location->getFeaturedProducts();
 
+        $view_path = 'sale_pos.partials.featured_products';
+        if ($this->isAiTemplateRequest() || request()->get('is_ai_template') == 'true') {
+            $view_path = 'templates.viho.sale_pos.partials.featured_products';
+        }
+
         if (!empty($featured_products)) {
-            return view('sale_pos.partials.featured_products')->with(compact('featured_products'));
+            return view($view_path)->with(compact('featured_products'));
         } else {
             return '';
         }
