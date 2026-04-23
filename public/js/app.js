@@ -1662,6 +1662,40 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: '/expense-categories',
+        columns: [
+            {
+                data: function (row) {
+                    return row && row.name !== undefined ? row.name : row && row[0] !== undefined ? row[0] : '';
+                },
+                name: 'name',
+                defaultContent: '',
+            },
+            {
+                data: function (row) {
+                    return row && row.code !== undefined ? row.code : row && row[1] !== undefined ? row[1] : '';
+                },
+                name: 'code',
+                defaultContent: '',
+            },
+            {
+                data: function (row) {
+                    return row && row.action !== undefined ? row.action : row && row[2] !== undefined ? row[2] : '';
+                },
+                name: 'action',
+                orderable: false,
+                searchable: false,
+                defaultContent: '',
+                render: function (data, type) {
+                    if (type !== 'display' || data === null || data === undefined) {
+                        return data;
+                    }
+                    if (typeof data === 'string' && data.indexOf('&lt;') !== -1) {
+                        return $('<textarea/>').html(data).text();
+                    }
+                    return data;
+                },
+            },
+        ],
         columnDefs: [
             {
                 targets: 2,
@@ -1670,13 +1704,21 @@ $(document).ready(function () {
             },
         ],
     });
-    $(document).on('submit', 'form#expense_category_add_form', function (e) {
+    $(document).off('submit.expenseCategory', 'form#expense_category_add_form');
+    $(document).on('submit.expenseCategory', 'form#expense_category_add_form', function (e) {
         e.preventDefault();
-        var data = $(this).serialize();
+        e.stopImmediatePropagation();
+        var $form = $(this);
+        if ($form.data('isSubmitting')) {
+            return false;
+        }
+        $form.data('isSubmitting', true);
+        $form.find('button[type="submit"]').prop('disabled', true);
+        var data = $form.serialize();
 
         $.ajax({
             method: 'POST',
-            url: $(this).attr('action'),
+            url: $form.attr('action'),
             dataType: 'json',
             data: data,
             success: function (result) {
@@ -1686,11 +1728,20 @@ $(document).ready(function () {
                     expense_cat_table.ajax.reload();
                 } else {
                     toastr.error(result.msg);
+                    $form.data('isSubmitting', false);
+                    $form.find('button[type="submit"]').prop('disabled', false);
                 }
             },
+            error: function () {
+                toastr.error(LANG.something_went_wrong);
+                $form.data('isSubmitting', false);
+                $form.find('button[type="submit"]').prop('disabled', false);
+            },
         });
+        return false;
     });
-    $(document).on('click', 'button.delete_expense_category', function () {
+    $(document).off('click.expenseCategory', 'button.delete_expense_category');
+    $(document).on('click.expenseCategory', 'button.delete_expense_category', function () {
         swal({
             title: LANG.sure,
             text: LANG.confirm_delete_expense_category,

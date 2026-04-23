@@ -4,12 +4,12 @@
 @push('styles')
 <style>
 /* Make DataTables controls match Viho layout */
-#expense_category_table_wrapper {
+#ai_expense_category_table_wrapper {
   width: 100% !important;
   display: block !important;
 }
 
-#expense_category_table {
+#ai_expense_category_table {
   width: 100% !important;
 }
 
@@ -75,7 +75,7 @@
           <div class="col-sm-12 col-md-3 text-md-end" id="expense_category_dt_filter"></div>
         </div>
         <div class="d-flex w-100 overflow-auto">
-          <table class="table table-bordered table-striped" id="expense_category_table" style="min-width: 800px;">
+          <table class="table table-bordered table-striped" id="ai_expense_category_table" style="min-width: 800px;">
             <thead>
               <tr>
                 <th>@lang('expense.category_name')</th>
@@ -105,14 +105,14 @@
 <script>
 $(document).ready(function() {
   // Destroy existing DataTable if it exists to prevent reinitialization error
-  if ($.fn.DataTable && $.fn.DataTable.isDataTable('#expense_category_table')) {
+  if ($.fn.DataTable && $.fn.DataTable.isDataTable('#ai_expense_category_table')) {
     try {
-      $('#expense_category_table').DataTable().destroy();
+      $('#ai_expense_category_table').DataTable().destroy();
     } catch (e) {}
   }
 
   // Initialize DataTable
-  expense_category_table = $('#expense_category_table').DataTable({
+  expense_category_table = $('#ai_expense_category_table').DataTable({
     processing: true,
     serverSide: true,
     fixedHeader: false,
@@ -186,18 +186,18 @@ $(document).ready(function() {
     ],
     drawCallback: function () {
       // Viho template doesn't ship Glyphicons; convert to FontAwesome for this page only.
-      $('#expense_category_table')
+      $('#ai_expense_category_table')
         .find('i.glyphicon.glyphicon-edit')
         .removeClass('glyphicon glyphicon-edit')
         .addClass('fa fa-edit');
-      $('#expense_category_table')
+      $('#ai_expense_category_table')
         .find('i.glyphicon.glyphicon-trash')
         .removeClass('glyphicon glyphicon-trash')
         .addClass('fa fa-trash');
     },
     initComplete: function() {
       var relocate = function() {
-        var $wrapper = $('#expense_category_table_wrapper');
+        var $wrapper = $('#ai_expense_category_table_wrapper');
         if ($wrapper.length < 1) return;
 
         var $length = $wrapper.find('.dataTables_length');
@@ -224,9 +224,17 @@ $(document).ready(function() {
 
 
 // Create / update expense category (modal form)
-$(document).on('submit', 'form#expense_category_add_form', function(e) {
+// Remove global/default handlers first to prevent duplicate submits on Viho page.
+$(document).off('submit', 'form#ai_expense_category_add_form');
+$(document).on('submit', 'form#ai_expense_category_add_form', function(e) {
   e.preventDefault();
+  e.stopImmediatePropagation();
   var $form = $(this);
+  if ($form.data('isSubmitting')) {
+    return false;
+  }
+  $form.data('isSubmitting', true);
+  $form.find('button[type="submit"]').prop('disabled', true);
   var data = $form.serialize();
 
   $.ajax({
@@ -243,14 +251,21 @@ $(document).on('submit', 'form#expense_category_add_form', function(e) {
         }
       } else {
         toastr.error(result.msg || LANG.something_went_wrong);
+        $form.data('isSubmitting', false);
+        $form.find('button[type="submit"]').prop('disabled', false);
       }
     },
     error: function() {
       toastr.error(LANG.something_went_wrong);
+      $form.data('isSubmitting', false);
+      $form.find('button[type="submit"]').prop('disabled', false);
     }
   });
+  return false;
 });
 
+// Remove global/default handlers first to prevent duplicate delete requests.
+$(document).off('click', 'button.delete_expense_category');
 $(document).on('click', 'button.delete_expense_category', function() {
   swal({
     title: LANG.sure,
