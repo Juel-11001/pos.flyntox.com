@@ -1,65 +1,112 @@
-<div class="modal-dialog" role="document">
-  <div class="modal-content">
-    {!! Form::open(['url' => action([\App\Http\Controllers\PrinterController::class, 'store']), 'method' => 'post', 'id' => 'printer_add_form' ]) !!}
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <h4 class="modal-title">@lang( 'printer.add_printer' )</h4>
+@extends('templates.viho.layout')
+@section('title', __('printer.add_printer'))
+
+@section('content')
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3>@lang('printer.add_printer')</h3>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="modal-body">
-      <div class="row">
+
+    <div class="row">
         <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('name', __( 'printer.name' ) . ':*') !!}
-            {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __( 'printer.name' ) ]); !!}
-          </div>
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">@lang('printer.add_printer')</h5>
+                    <a class="btn btn-outline-primary btn-sm" href="{{ route('ai-template.printers.index') }}">
+                        @lang('messages.close')
+                    </a>
+                </div>
+                <div class="card-body">
+                    {!! Form::open([
+                        'url' => route('ai-template.printers.store'),
+                        'method' => 'post',
+                        'id' => 'add_printer_form',
+                    ]) !!}
+
+                    <div class="row g-3">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                {!! Form::label('name', __('printer.name') . ':*') !!}
+                                {!! Form::text('name', null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'placeholder' => __('lang_v1.printer_name_help'),
+                                ]) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                {!! Form::label('connection_type', __('printer.connection_type') . ':*') !!}
+                                {!! Form::select('connection_type', $connection_types, null, ['class' => 'form-control select2']) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                {!! Form::label('capability_profile', __('printer.capability_profile') . ':*') !!}
+                                @show_tooltip(__('tooltip.capability_profile'))
+                                {!! Form::select('capability_profile', $capability_profiles, null, ['class' => 'form-control select2']) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                {!! Form::label('char_per_line', __('printer.character_per_line') . ':*') !!}
+                                {!! Form::number('char_per_line', 42, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'placeholder' => __('lang_v1.char_per_line_help'),
+                                ]) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12" id="ip_address_div">
+                            <div class="form-group">
+                                {!! Form::label('ip_address', __('printer.ip_address') . ':*') !!}
+                                {!! Form::text('ip_address', null, [
+                                    'class' => 'form-control',
+                                    'required',
+                                    'placeholder' => __('lang_v1.ip_address_help'),
+                                ]) !!}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12" id="port_div">
+                            <div class="form-group">
+                                {!! Form::label('port', __('printer.port') . ':*') !!}
+                                {!! Form::text('port', 9100, ['class' => 'form-control', 'required']) !!}
+                                <span class="help-block">@lang('lang_v1.port_help')</span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 hide" id="path_div">
+                            <div class="form-group">
+                                {!! Form::label('path', __('printer.path') . ':*') !!}
+                                {!! Form::text('path', null, ['class' => 'form-control', 'required']) !!}
+                                <span class="help-block">
+                                    <b>@lang('lang_v1.connection_type_windows'): </b> @lang('lang_v1.windows_type_help') <code>LPT1</code> (parallel) /
+                                    <code>COM1</code> (serial).<br>
+                                    <b>@lang('lang_v1.connection_type_linux'): </b> @lang('lang_v1.linux_type_help') <code>/dev/lp0</code> (parallel),
+                                    <code>/dev/usb/lp1</code> (USB), <code>/dev/ttyUSB0</code> (USB-Serial),
+                                    <code>/dev/ttyS0</code> (serial).<br>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 text-center mt-2">
+                            <button type="submit" class="btn btn-primary btn-big">@lang('messages.save')</button>
+                        </div>
+                    </div>
+
+                    {!! Form::close() !!}
+                </div>
+            </div>
         </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('connection_type', __( 'printer.connection_type' ) . ':*') !!}
-            {!! Form::select('connection_type', $connection_types, null, ['class' => 'form-control select2', 'required', 'style' => 'width:100%;']); !!}
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            {!! Form::label('capability_profile', __( 'printer.capability_profile' ) . ':*') !!}
-            {!! Form::select('capability_profile', $capability_profiles, null, ['class' => 'form-control select2', 'required', 'style' => 'width:100%;']); !!}
-          </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('char_per_line', __( 'printer.char_per_line' ) . ':') !!}
-            {!! Form::number('char_per_line', null, ['class' => 'form-control', 'placeholder' => __( 'printer.char_per_line' ) ]); !!}
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('ip_address', __( 'printer.ip_address' ) . ':') !!}
-            {!! Form::text('ip_address', null, ['class' => 'form-control', 'placeholder' => __( 'printer.ip_address' ) ]); !!}
-            <span class="help-block">@lang('printer.ip_address_help')</span>
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('port', __( 'printer.port' ) . ':') !!}
-            {!! Form::number('port', null, ['class' => 'form-control', 'placeholder' => __( 'printer.port' ) ]); !!}
-            <span class="help-block">@lang('printer.port_help')</span>
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <div class="form-group">
-            {!! Form::label('path', __( 'printer.path' ) . ':') !!}
-            {!! Form::text('path', null, ['class' => 'form-control', 'placeholder' => __( 'printer.path' ) ]); !!}
-            <span class="help-block">@lang('printer.path_help')</span>
-          </div>
-        </div>
-      </div>
     </div>
-    <div class="modal-footer">
-      <button type="submit" class="btn btn-primary">@lang('messages.save')</button>
-      <button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-    </div>
-    {!! Form::close() !!}
-  </div>
-</div>
+@endsection

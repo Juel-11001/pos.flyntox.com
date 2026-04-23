@@ -137,7 +137,9 @@ class PrinterController extends Controller
             ];
         }
 
-        return redirect('printers')->with('status', $output);
+        $redirect_route = $this->isAiTemplateRequest() ? 'ai-template.printers.index' : 'printers.index';
+
+        return redirect()->route($redirect_route)->with('status', $output);
     }
 
     /**
@@ -212,7 +214,9 @@ class PrinterController extends Controller
             ];
         }
 
-        return redirect('printers')->with('status', $output);
+        $redirect_route = $this->isAiTemplateRequest() ? 'ai-template.printers.index' : 'printers.index';
+
+        return redirect()->route($redirect_route)->with('status', $output);
     }
 
     /**

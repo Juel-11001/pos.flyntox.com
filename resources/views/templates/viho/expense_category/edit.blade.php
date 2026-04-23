@@ -1,7 +1,7 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
 
-    {!! Form::open(['url' => route('ai-template.expense-categories.update', [$expense_category->id]), 'method' => 'PUT', 'id' => 'expense_category_add_form' ]) !!}
+    {!! Form::open(['url' => route('ai-template.expense-categories.update', [$expense_category->id]), 'method' => 'PUT', 'id' => 'ai_expense_category_add_form' ]) !!}
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
