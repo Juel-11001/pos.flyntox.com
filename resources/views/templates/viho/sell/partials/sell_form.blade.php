@@ -92,84 +92,84 @@
           '',
           ]) !!}
 
-          @if (!empty($price_groups))
-          @if (count($price_groups) > 1)
-          <div class="col-sm-12 col-md-6 col-xl-3">
-            <div class="form-group">
-              <div class="input-group flex-nowrap">
-                <span class="input-group-addon d-flex align-items-center justify-content-center">
-                  <i class="fas fa-money-bill"></i>
-                </span>
+          <div class="row">
+            @if (!empty($price_groups))
+              @if (count($price_groups) > 1)
+                <div class="col-sm-12 col-md-6 col-xl-3">
+                  <div class="form-group">
+                    <div class="input-group flex-nowrap">
+                      <span class="input-group-addon d-flex align-items-center justify-content-center">
+                        <i class="fas fa-money-bill"></i>
+                      </span>
+                      @php
+                      reset($price_groups);
+                      $selected_price_group =
+                      !empty($default_price_group_id) &&
+                      array_key_exists($default_price_group_id, $price_groups)
+                      ? $default_price_group_id
+                      : null;
+                      @endphp
+                      {!! Form::hidden('hidden_price_group', key($price_groups), ['id' => 'hidden_price_group']) !!}
+                      {!! Form::select('price_group', $price_groups, $selected_price_group, [
+                      'class' => 'form-control select2',
+                      'id' => 'price_group',
+                      'style' => 'width: 100%;',
+                      ]) !!}
+                      <span class="input-group-addon">
+                        @show_tooltip(__('lang_v1.price_group_help_text'))
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              @else
                 @php
                 reset($price_groups);
-                $selected_price_group =
-                !empty($default_price_group_id) &&
-                array_key_exists($default_price_group_id, $price_groups)
-                ? $default_price_group_id
-                : null;
                 @endphp
-                {!! Form::hidden('hidden_price_group', key($price_groups), ['id' => 'hidden_price_group']) !!}
-                {!! Form::select('price_group', $price_groups, $selected_price_group, [
-                'class' => 'form-control select2',
-                'id' => 'price_group',
-                'style' => 'width: 100%;',
-                ]) !!}
-                <span class="input-group-addon">
-                  @show_tooltip(__('lang_v1.price_group_help_text'))
-                </span>
-              </div>
-            </div>
-          </div>
-          @else
-          <div class="row">
-            @php
-            reset($price_groups);
-            @endphp
-            {!! Form::hidden('price_group', key($price_groups), ['id' => 'price_group']) !!}
-            @endif
+                {!! Form::hidden('price_group', key($price_groups), ['id' => 'price_group']) !!}
+              @endif
             @endif
 
             {!! Form::hidden('default_price_group', null, ['id' => 'default_price_group']) !!}
 
             @if (in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-            <div class="col-sm-12 col-md-6 col-xl-3">
-              <div class="form-group">
-                {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
-                <div class="input-group flex-nowrap">
-                  <span class="input-group-addon d-flex align-items-center justify-content-center">
-                    <i class="fa fa-external-link-square text-primary service_modal_btn"></i>
-                  </span>
-                  {!! Form::select('types_of_service_id', $types_of_service, null, [
-                  'class' => 'form-control',
-                  'id' => 'types_of_service_id',
-                  'style' => 'width: 100%;',
-                  'placeholder' => __('lang_v1.select_types_of_service'),
-                  ]) !!}
+              <div class="col-sm-12 col-md-6 col-xl-3">
+                <div class="form-group">
+                  {!! Form::hidden('types_of_service_price_group', null, ['id' => 'types_of_service_price_group']) !!}
+                  <div class="input-group flex-nowrap">
+                    <span class="input-group-addon d-flex align-items-center justify-content-center">
+                      <i class="fa fa-external-link-square text-primary service_modal_btn"></i>
+                    </span>
+                    {!! Form::select('types_of_service_id', $types_of_service, null, [
+                    'class' => 'form-control',
+                    'id' => 'types_of_service_id',
+                    'style' => 'width: 100%;',
+                    'placeholder' => __('lang_v1.select_types_of_service'),
+                    ]) !!}
 
-                  <span class="input-group-addon d-flex align-items-center justify-content-center">
-                    @show_tooltip(__('lang_v1.types_of_service_help'))
-                  </span>
+                    <span class="input-group-addon d-flex align-items-center justify-content-center">
+                      @show_tooltip(__('lang_v1.types_of_service_help'))
+                    </span>
+                  </div>
+                  <small>
+                    <p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p>
+                  </small>
                 </div>
-                <small>
-                  <p class="help-block hide" id="price_group_text">@lang('lang_v1.price_group'): <span></span></p>
-                </small>
               </div>
-            </div>
             @endif
 
             @if (in_array('subscription', $enabled_modules))
-            <div class="col-sm-12 col-md-6 col-xl-4">
-              <div class="checkbox d-flex align-items-center">
-                <label>
-                  {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
-                  @lang('lang_v1.subscribe')?
-                </label>
-                <button type="button" data-toggle="modal" data-target="#recurringInvoiceModal" class="btn btn-link">
-                  <i class="fa fa-external-link"></i>
-                </button>
-                @show_tooltip(__('lang_v1.recurring_invoice_help'))
+              <div class="col-sm-12 col-md-6 col-xl-4">
+                <div class="checkbox d-flex align-items-center">
+                  <label>
+                    {!! Form::checkbox('is_recurring', 1, false, ['class' => 'input-icheck', 'id' => 'is_recurring']) !!}
+                    @lang('lang_v1.subscribe')?
+                  </label>
+                  <button type="button" data-toggle="modal" data-target="#recurringInvoiceModal" class="btn btn-link">
+                    <i class="fa fa-external-link"></i>
+                  </button>
+                  @show_tooltip(__('lang_v1.recurring_invoice_help'))
+                </div>
               </div>
-            </div>
             @endif
           </div>
           <div class="row justify-content-between">
