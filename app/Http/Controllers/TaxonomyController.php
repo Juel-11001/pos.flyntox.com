@@ -193,6 +193,12 @@ class TaxonomyController extends Controller
         }
 
         try {
+            $request->validate([
+                'name' => 'required',
+                'category_type' => 'required',
+                'parent_id' => 'required_if:add_as_sub_cat,1',
+            ]);
+
             $input = $request->only(['name', 'short_code', 'category_type', 'description']);
             if (! empty($request->input('add_as_sub_cat')) && $request->input('add_as_sub_cat') == 1 && ! empty($request->input('parent_id'))) {
                 $input['parent_id'] = $request->input('parent_id');
@@ -278,6 +284,11 @@ class TaxonomyController extends Controller
     {
         if (request()->ajax()) {
             try {
+                $request->validate([
+                    'name' => 'required',
+                    'parent_id' => 'required_if:add_as_sub_cat,1',
+                ]);
+
                 $input = $request->only(['name', 'description']);
                 $business_id = $request->session()->get('user.business_id');
 

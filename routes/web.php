@@ -336,6 +336,8 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
         // Selling Price Groups (Viho)
         Route::get('selling-price-group/update-product-price', [SellingPriceGroupController::class, 'updateProductPrice'])->name('update-product-price');
+        Route::get('export-product-price', [SellingPriceGroupController::class, 'export'])->name('export-product-price');
+        Route::post('import-product-price', [SellingPriceGroupController::class, 'import'])->name('import-product-price');
         Route::get('selling-price-group/activate-deactivate/{id}', [SellingPriceGroupController::class, 'activateDeactivate']);
         Route::resource('selling-price-group', SellingPriceGroupController::class);
 

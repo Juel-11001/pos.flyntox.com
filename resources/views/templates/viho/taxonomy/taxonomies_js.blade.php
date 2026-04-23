@@ -1,4 +1,56 @@
 <script type="text/javascript">
+    var category_table;
+
+    function getCategoryModal() {
+        return $('div.category_modal').first();
+    }
+
+    function syncTaxonomyParentState($form) {
+        if (!$form || !$form.length) {
+            return;
+        }
+
+        var $toggle = $form.find('input[name="add_as_sub_cat"]');
+        var $parentWrap = $form.find('#parent_cat_div');
+        var $parentSelect = $form.find('select[name="parent_id"]');
+        var shouldShowParent = $toggle.is(':checked');
+
+        $parentWrap.toggleClass('hide', !shouldShowParent);
+        $parentSelect.prop('required', shouldShowParent);
+
+        if (!$parentSelect.hasClass('select2-hidden-accessible')) {
+            $parentSelect.select2({
+                width: '100%',
+                dropdownParent: $form.closest('.modal-content')
+            });
+        }
+
+        if (!shouldShowParent) {
+            $parentSelect.val('').trigger('change');
+        }
+    }
+
+    function showTaxonomyAjaxError(xhr) {
+        var message = "@lang('messages.something_went_wrong')";
+
+        if (xhr && xhr.responseJSON) {
+            if (xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+
+            if (xhr.responseJSON.errors) {
+                $.each(xhr.responseJSON.errors, function (key, value) {
+                    if ($.isArray(value) && value.length) {
+                        message = value[0];
+                        return false;
+                    }
+                });
+            }
+        }
+
+        toastr.error(message);
+    }
+
     $(document).ready(function () {
 
         function getTaxonomiesIndexPage() {
@@ -32,6 +84,7 @@
                     processing: true,
                     serverSide: true,
                     fixedHeader: false,
+                    ajax: taxonomy_index_url,
                     pageLength: 25,
                     lengthMenu: [
                         [10, 25, 50, 100, -1],
@@ -112,9 +165,25 @@
 
         initializeTaxonomyDataTable();
     });
-    $(document).on('submit', 'form#category_add_form', function (e) {
+    $(document)
+        .off('change.vihoTaxonomyParent', 'form#category_add_form input[name="add_as_sub_cat"], form#category_edit_form input[name="add_as_sub_cat"]')
+        .on('change.vihoTaxonomyParent', 'form#category_add_form input[name="add_as_sub_cat"], form#category_edit_form input[name="add_as_sub_cat"]', function () {
+            syncTaxonomyParentState($(this).closest('form'));
+        });
+
+    $(document)
+        .off('submit.vihoTaxonomyAdd', 'form#category_add_form')
+        .on('submit.vihoTaxonomyAdd', 'form#category_add_form', function (e) {
         e.preventDefault();
         var form = $(this);
+        var addAsSubCategory = form.find('input[name="add_as_sub_cat"]').is(':checked');
+        var parentId = form.find('select[name="parent_id"]').val();
+
+        if (addAsSubCategory && !parentId) {
+            toastr.error("@lang('category.select_parent_category')");
+            return false;
+        }
+
         var data = form.serialize();
 
         $.ajax({
@@ -127,7 +196,7 @@
             },
             success: function (result) {
                 if (result.success === true) {
-                    $('div.category_modal').modal('hide');
+                    getCategoryModal().modal('hide');
                     toastr.success(result.msg);
                     if (typeof category_table !== 'undefined') {
                         category_table.ajax.reload();
@@ -142,40 +211,63 @@
                     toastr.error(result.msg);
                 }
             },
+            error: function (xhr) {
+                showTaxonomyAjaxError(xhr);
+            },
         });
-    });
-    $(document).on('click', 'button.edit_category_button', function () {
-        $('div.category_modal').load($(this).data('href'), function () {
-            $(this).modal('show');
+        });
 
-            $('form#category_edit_form').submit(function (e) {
-                e.preventDefault();
-                var form = $(this);
-                var data = form.serialize();
-
-                $.ajax({
-                    method: 'POST',
-                    url: $(this).attr('action'),
-                    dataType: 'json',
-                    data: data,
-                    beforeSend: function (xhr) {
-                        __disable_submit_button(form.find('button[type="submit"]'));
-                    },
-                    success: function (result) {
-                        if (result.success === true) {
-                            $('div.category_modal').modal('hide');
-                            toastr.success(result.msg);
-                            category_table.ajax.reload();
-                        } else {
-                            toastr.error(result.msg);
-                        }
-                    },
-                });
+    $(document)
+        .off('click.vihoTaxonomyEdit', 'button.edit_category_button')
+        .on('click.vihoTaxonomyEdit', 'button.edit_category_button', function () {
+            var $modal = getCategoryModal();
+            $modal.load($(this).data('href'), function () {
+                syncTaxonomyParentState($modal.find('form#category_edit_form'));
+                $modal.modal('show');
             });
         });
-    });
 
-    $(document).on('click', 'button.delete_category_button', function () {
+    $(document)
+        .off('submit.vihoTaxonomyEdit', 'form#category_edit_form')
+        .on('submit.vihoTaxonomyEdit', 'form#category_edit_form', function (e) {
+            e.preventDefault();
+            var form = $(this);
+            var addAsSubCategory = form.find('input[name="add_as_sub_cat"]').is(':checked');
+            var parentId = form.find('select[name="parent_id"]').val();
+
+            if (addAsSubCategory && !parentId) {
+                toastr.error("@lang('category.select_parent_category')");
+                return false;
+            }
+
+            $.ajax({
+                method: 'POST',
+                url: form.attr('action'),
+                dataType: 'json',
+                data: form.serialize(),
+                beforeSend: function () {
+                    __disable_submit_button(form.find('button[type="submit"]'));
+                },
+                success: function (result) {
+                    if (result.success === true) {
+                        getCategoryModal().modal('hide');
+                        toastr.success(result.msg);
+                        if (typeof category_table !== 'undefined') {
+                            category_table.ajax.reload();
+                        }
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function (xhr) {
+                    showTaxonomyAjaxError(xhr);
+                },
+            });
+        });
+
+    $(document)
+        .off('click.vihoTaxonomyDelete', 'button.delete_category_button')
+        .on('click.vihoTaxonomyDelete', 'button.delete_category_button', function () {
         swal({
             title: LANG.sure,
             icon: 'warning',
@@ -202,5 +294,11 @@
                 });
             }
         });
-    });
+        });
+
+    $(document)
+        .off('shown.bs.modal.vihoTaxonomy', 'div.category_modal')
+        .on('shown.bs.modal.vihoTaxonomy', 'div.category_modal', function () {
+            syncTaxonomyParentState($(this).find('form#category_add_form, form#category_edit_form'));
+        });
 </script>

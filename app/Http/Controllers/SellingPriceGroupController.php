@@ -29,6 +29,14 @@ class SellingPriceGroupController extends Controller
     {
         return 'templates.viho.selling_price_group.' . $view;
     }
+
+    /**
+     * Get update product price redirect path based on current template.
+     */
+    protected function updateProductPriceRedirectPath()
+    {
+        return $this->isAiTemplateRequest() ? 'ai-template/selling-price-group/update-product-price' : 'update-product-price';
+    }
     /**
      * All Utils instance.
      */
@@ -428,10 +436,10 @@ class SellingPriceGroupController extends Controller
                 'msg' => $e->getMessage(),
             ];
 
-            return redirect('update-product-price')->with('notification', $output);
+            return redirect($this->updateProductPriceRedirectPath())->with('notification', $output);
         }
 
-        return redirect('update-product-price')->with('status', $output);
+        return redirect($this->updateProductPriceRedirectPath())->with('status', $output);
     }
 
     /**
