@@ -42,3 +42,49 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Initialize DataTable for printer table
+    $('#printer_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '/ai-template/printers',
+        columns: [
+            { data: 'name', name: 'name' },
+            { data: 'connection_type', name: 'connection_type' },
+            { data: 'char_per_line', name: 'char_per_line' },
+            { data: 'capability_profile', name: 'capability_profile' },
+            { data: 'action', name: 'action', orderable: false, searchable: false }
+        ],
+        columnDefs: [
+            {
+                targets: 4,
+                orderable: false,
+                searchable: false,
+            },
+        ],
+        drawCallback: function(settings) {
+            // Initialize feather icons after table draw
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        },
+        initComplete: function() {
+            // Initialize feather icons on initial load
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            var api = this.api();
+            api.on('draw.dt', function() {
+                // Initialize feather icons after each draw
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            });
+        }
+    });
+});
+</script>
+@endpush

@@ -72,6 +72,20 @@ class TypesOfServiceController extends Controller
                             ? route('ai-template.types-of-service.destroy', [$row->id])
                             : route('types-of-service.destroy', [$row->id]);
 
+                        if ($is_viho) {
+                            $html = '<div class="btn-showcase d-flex flex-nowrap" role="group" aria-label="Action Buttons">';
+                            $html .=
+                                '<button data-href="' . $edit_url . '" class="btn btn-primary btn-xs d-inline-flex align-items-center justify-content-center btn-modal edit_type_of_service_button" data-container=".type_of_service_modal" title="' . __("messages.edit") . '">' .
+                                '<i data-feather="edit" style="width: 14px; height: 14px;"></i>' .
+                                '</button>';
+                            $html .=
+                                '<button data-href="' . $delete_url . '" class="btn btn-danger btn-xs delete_type_of_service d-inline-flex align-items-center justify-content-center" title="' . __("messages.delete") . '">' .
+                                '<i data-feather="trash-2" style="width: 14px; height: 14px;"></i>' .
+                                '</button>';
+                            $html .= '</div>';
+                            return $html;
+                        }
+
                         return '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-sm tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container=".type_of_service_modal"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>
                             &nbsp;
                         <button data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-sm tw-dw-btn-error delete_type_of_service"><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>';

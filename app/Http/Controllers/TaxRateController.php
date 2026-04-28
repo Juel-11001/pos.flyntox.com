@@ -72,6 +72,27 @@ class TaxRateController extends Controller
                             ? route('ai-template.tax-rates.destroy', [$row->id])
                             : route('tax-rates.destroy', [$row->id]);
 
+                        if ($is_viho) {
+                            $html = '<div class="btn-showcase d-flex flex-nowrap" role="group" aria-label="Action Buttons">';
+
+                            if (auth()->user()->can('tax_rate.update')) {
+                                $html .=
+                                    '<button data-href="' . $edit_url . '" class="btn btn-primary btn-xs d-inline-flex align-items-center justify-content-center edit_tax_rate_button" title="' . __("messages.edit") . '">' .
+                                    '<i data-feather="edit" style="width: 14px; height: 14px;"></i>' .
+                                    '</button>';
+                            }
+
+                            if (auth()->user()->can('tax_rate.delete')) {
+                                $html .=
+                                    '<button data-href="' . $delete_url . '" class="btn btn-danger btn-xs delete_tax_rate_button d-inline-flex align-items-center justify-content-center" title="' . __("messages.delete") . '">' .
+                                    '<i data-feather="trash-2" style="width: 14px; height: 14px;"></i>' .
+                                    '</button>';
+                            }
+
+                            $html .= '</div>';
+                            return $html;
+                        }
+
                         $html = '';
                         if (auth()->user()->can('tax_rate.update')) {
                             $html .= '<button data-href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary edit_tax_rate_button"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</button>&nbsp;';

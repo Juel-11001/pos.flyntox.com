@@ -60,6 +60,27 @@ class PrinterController extends Controller
                             ? route('ai-template.printers.destroy', [$row->id])
                             : route('printers.destroy', [$row->id]);
 
+                        if ($is_viho) {
+                            $html = '<div class="btn-showcase d-flex flex-nowrap" role="group" aria-label="Action Buttons">';
+
+                            if (auth()->user()->can('printer.update')) {
+                                $html .=
+                                    '<a href="' . $edit_url . '" class="btn btn-primary btn-xs d-inline-flex align-items-center justify-content-center" title="' . __("messages.edit") . '">' .
+                                    '<i data-feather="edit" style="width: 14px; height: 14px;"></i>' .
+                                    '</a>';
+                            }
+
+                            if (auth()->user()->can('printer.delete')) {
+                                $html .=
+                                    '<button data-href="' . $delete_url . '" class="btn btn-danger btn-xs delete_printer_button d-inline-flex align-items-center justify-content-center" title="' . __("messages.delete") . '">' .
+                                    '<i data-feather="trash-2" style="width: 14px; height: 14px;"></i>' .
+                                    '</button>';
+                            }
+
+                            $html .= '</div>';
+                            return $html;
+                        }
+
                         $html = '';
                         if (auth()->user()->can('printer.update')) {
                             $html .= '<a href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>&nbsp;';
@@ -72,8 +93,8 @@ class PrinterController extends Controller
                     }
                 )
                 ->removeColumn('id')
-                ->rawColumns([7])
-                ->make(false);
+                ->rawColumns(['action'])
+                ->make(true);
         }
 
         return view($this->isAiTemplateRequest() ? $this->viewPath('index') : 'printer.index');

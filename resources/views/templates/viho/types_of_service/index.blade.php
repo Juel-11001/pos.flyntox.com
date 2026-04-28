@@ -58,8 +58,9 @@
 @section('javascript')
 <script type="text/javascript">
 $(document).ready(function() {
+  // Destroy existing DataTable if it exists (initialized by app.js)
   if ($.fn.DataTable.isDataTable('#types_of_service_table')) {
-    return;
+    $('#types_of_service_table').DataTable().destroy();
   }
 
   types_of_service_table = $('#types_of_service_table').DataTable({
@@ -88,6 +89,10 @@ $(document).ready(function() {
     ],
     fnDrawCallback: function(oSettings) {
       __currency_convert_recursively($('#types_of_service_table'));
+      // Initialize feather icons after table draw
+      if (typeof feather !== 'undefined') {
+        feather.replace();
+      }
     },
     initComplete: function() {
       var relocate = function() {
@@ -109,7 +114,15 @@ $(document).ready(function() {
       var api = this.api();
       api.on('draw.dt', function() {
         relocate();
+        // Initialize feather icons after table draw
+        if (typeof feather !== 'undefined') {
+          feather.replace();
+        }
       });
+      // Initialize feather icons on initial load
+      if (typeof feather !== 'undefined') {
+        feather.replace();
+      }
     }
   });
 });

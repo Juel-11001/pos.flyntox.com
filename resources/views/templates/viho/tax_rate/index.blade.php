@@ -54,4 +54,63 @@
 </div>
 
 <div class="modal fade tax_rate_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Override DataTable AJAX URL for viho template
+    if ($.fn.DataTable.isDataTable('#tax_rates_table')) {
+        $('#tax_rates_table').DataTable().destroy();
+    }
+    $('#tax_rates_table').DataTable({
+        processing: true,
+        serverSide: true,
+        fixedHeader: false,
+        ajax: '/ai-template/tax-rates',
+        columnDefs: [
+            {
+                targets: 2,
+                orderable: false,
+                searchable: false,
+            },
+        ],
+        drawCallback: function(settings) {
+            var relocate = function() {
+                var $wrapper = $('#tax_rates_table_wrapper');
+                if ($wrapper.length < 1) return;
+
+                var $length = $wrapper.find('.dataTables_length');
+                var $filter = $wrapper.find('.dataTables_filter');
+                var $info = $wrapper.find('.dataTables_info');
+                var $paginate = $wrapper.find('.dataTables_paginate');
+
+                if ($length.length) $('#tax_rates_dt_length').empty().append($length);
+                if ($filter.length) $('#tax_rates_dt_filter').empty().append($filter);
+                if ($info.length) $('#tax_rates_dt_info').empty().append($info);
+                if ($paginate.length) $('#tax_rates_dt_paginate').empty().append($paginate);
+            };
+            relocate();
+
+            // Initialize feather icons after table draw
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        },
+        initComplete: function() {
+            // Initialize feather icons on initial load
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            var api = this.api();
+            api.on('draw.dt', function() {
+                // Initialize feather icons after each draw
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            });
+        }
+    });
+});
+</script>
+@endpush
 @endsection
