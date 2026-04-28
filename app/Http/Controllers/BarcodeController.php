@@ -56,6 +56,25 @@ class BarcodeController extends Controller
                             ? route('ai-template.barcodes.set_default', [$row->id])
                             : route('barcodes.set_default', [$row->id]);
 
+                        if ($is_viho) {
+                            $html = '<div class="btn-showcase d-flex flex-nowrap" role="group" aria-label="Action Buttons">';
+                            $html .=
+                                '<a href="' . $edit_url . '" class="btn btn-primary btn-xs d-inline-flex align-items-center justify-content-center" title="' . __("messages.edit") . '">' .
+                                '<i data-feather="edit" style="width: 14px; height: 14px;"></i>' .
+                                '</a>';
+                            $html .=
+                                '<button type="button" data-href="' . $delete_url . '" class="btn btn-danger btn-xs delete_barcode_button d-inline-flex align-items-center justify-content-center" ' . ($row->is_default ? 'disabled' : '') . ' title="' . __("messages.delete") . '">' .
+                                '<i data-feather="trash-2" style="width: 14px; height: 14px;"></i>' .
+                                '</button>';
+                            if ($row->is_default) {
+                                $html .= '<button type="button" class="btn btn-success btn-xs d-inline-flex align-items-center justify-content-center" disabled title="' . __('barcode.default') . '"><i data-feather="check" style="width: 14px; height: 14px;"></i></button>';
+                            } else {
+                                $html .= '<button class="btn btn-info btn-xs set_default d-inline-flex align-items-center justify-content-center" data-href="' . $set_default_url . '" title="' . __('barcode.set_as_default') . '"><i data-feather="check-circle" style="width: 14px; height: 14px;"></i></button>';
+                            }
+                            $html .= '</div>';
+                            return $html;
+                        }
+
                         $html = '<a href="' . $edit_url . '" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> ' . __('messages.edit') . '</a>
                             &nbsp;
                             <button type="button" data-href="' . $delete_url . '" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_barcode_button" ' . ($row->is_default ? 'disabled' : '') . '><i class="glyphicon glyphicon-trash"></i> ' . __('messages.delete') . '</button>&nbsp;';
@@ -78,8 +97,8 @@ class BarcodeController extends Controller
                 })
                 ->removeColumn('id')
                 ->removeColumn('is_default')
-                ->rawColumns([0, 2])
-                ->make(false);
+                ->rawColumns(['name', 'action'])
+                ->make(true);
         }
 
         return view($this->isAiTemplateRequest() ? $this->viewPath('index') : 'barcode.index');
