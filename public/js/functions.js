@@ -398,17 +398,63 @@ function __sum_stock(table, class_name, label_direction = 'right') {
 }
 
 function __print_receipt(section_id = null) {
-    // Viho-only: hide app chrome (sidebar/header) during receipt printing.
-    // Kept scoped so default template remains unaffected.
-    var $body = $('body');
-    var is_viho_template = (typeof window.template !== 'undefined' && window.template === 'viho');
-    if (is_viho_template) {
-        $body.addClass('viho-printing-receipt');
-        window.onafterprint = function() {
-            $body.removeClass('viho-printing-receipt');
-        };
+    if (section_id == null) {
+        section_id = 'receipt_section';
     }
 
+    var is_viho_template = (typeof window.template !== 'undefined' && window.template === 'viho') || 
+                           ($('#__is_viho_template').val() == 'true') ||
+                           (window.location.href.indexOf('ai-template') > -1);
+    
+    if (is_viho_template) {
+        var iframe_id = 'global_print_iframe';
+        var iframe = document.getElementById(iframe_id);
+        if (iframe) {
+            iframe.parentNode.removeChild(iframe);
+        }
+
+        iframe = document.createElement('iframe');
+        iframe.id = iframe_id;
+        iframe.setAttribute('style', 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;');
+        document.body.appendChild(iframe);
+
+        var doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write('<html><head><title>' + document.title + '</title>');
+        
+        // Copy all stylesheets and inline styles to the iframe
+        $('style, link[rel="stylesheet"]').each(function() {
+            doc.write($(this).prop('outerHTML'));
+        });
+
+        doc.write('</head><body style="background:white !important; margin:0; padding:0;">');
+        var content = $('#' + section_id).html();
+        
+        if (!content || content.trim() == '') {
+            content = '<p style="text-align:center;">Loading...</p>';
+        }
+
+        // Just write the content directly without extra wrappers to keep it clean
+        doc.write(content);
+        doc.write('</body></html>');
+        doc.close();
+
+        iframe.onload = function() {
+            setTimeout(function() {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                
+                if (section_id === 'receipt_section') {
+                    setTimeout(function() {
+                        $('#receipt_section').html('');
+                    }, 1000);
+                }
+            }, 500);
+        };
+        return;
+    }
+
+    // Default behavior for other templates
     if (section_id) {
         var imgs = document.getElementById(section_id).getElementsByTagName("img");
     } else {

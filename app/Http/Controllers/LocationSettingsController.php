@@ -57,7 +57,10 @@ class LocationSettingsController extends Controller
                             ->get()
                             ->pluck('name', 'id');
 
-        return view('location_settings.index')
+        $is_viho = request()->segment(1) === 'ai-template' || request()->is('ai-template/*');
+        $view_path = $is_viho ? 'templates.viho.location_settings.index' : 'location_settings.index';
+
+        return view($view_path)
             ->with(compact('location', 'printReceiptOnInvoice', 'receiptPrinterType', 'printers', 'invoice_layouts', 'invoice_schemes'));
     }
 
