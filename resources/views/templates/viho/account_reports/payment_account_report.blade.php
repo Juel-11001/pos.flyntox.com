@@ -40,6 +40,49 @@
 .paging_simple_numbers {
   margin-left: auto !important;
 }
+
+/* Style Tailwind buttons to look like Bootstrap buttons in Viho template */
+#payment_account_report .tw-dw-btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+#payment_account_report .tw-dw-btn-info {
+  color: #24695c;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+#payment_account_report .tw-dw-btn-info:hover {
+  color: #fff;
+  background-color: #24695c;
+  border-color: #24695c;
+}
+
+/* Action column specific styling */
+#payment_account_report td:nth-child(8) .tw-dw-btn {
+  color: #fff;
+  background-color: #24695c;
+  border-color: #b8daff;
+}
+
+#payment_account_report td:nth-child(8) .tw-dw-btn:hover {
+  color: #fff;
+  background-color: #24695c;
+  border-color: #24695c;
+}
 </style>
 @endpush
 
