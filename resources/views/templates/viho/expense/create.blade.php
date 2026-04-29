@@ -180,7 +180,7 @@
   </div>
   @endcomponent
   <div class="col-sm-12 text-center">
-    <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-dw-btn-md text-white">@lang('messages.save')</button>
+    <button type="submit" class="btn btn-primary tw-dw-btn-md text-white mb-5">@lang('messages.save')</button>
   </div>
   {!! Form::close() !!}
 </section>
